@@ -1,10 +1,10 @@
-AC_INIT([Luma's EIA-608 Tools], [0.1a], [], [608tools], [])
+AC_INIT([EIA-608 Tools], [0.1a], [], [608tools], [])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_SRCDIR(lib608/608.h)
-LT_INIT([disable-shared, static, win32-dll])
 AC_PROG_CC
 AM_PROG_AR
 AC_PROG_INSTALL
+LT_INIT([disable-shared, static, win32-dll])
 AC_C_BIGENDIAN
 AC_C_CONST
 AC_CONFIG_HEADERS([lib608/config.h])
