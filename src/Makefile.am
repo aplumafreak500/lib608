@@ -5,3 +5,5 @@ lib608_la_LDFLAGS = -version-info 0:1:0
 include_HEADERS = 608.h
 raw2scc_SOURCES = raw2scc.c
 scc2raw_SOURCES = scc2raw.c
+raw2scc_LDADD = lib608.la
+scc2raw_LDADD = lib608.la
