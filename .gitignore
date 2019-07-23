@@ -8,6 +8,8 @@ compile
 config.h
 config.h.in
 config.log
+config.guess
+config.sub
 config.status
 configure
 configure.scan
@@ -18,6 +20,8 @@ libtool
 m4
 missing
 stamp-h1
+ar-lib
+ltmain.sh
 *~
 *.html
 *.log
