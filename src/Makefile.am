@@ -1,0 +1,7 @@
+bin_PROGRAMS = raw2scc scc2raw
+lib_LTLIBRARIES = lib608.la
+lib608_la_SOURCES = scc.c raw.c
+lib608_la_LDFLAGS = -version-info 0:1:0
+include_HEADERS = 608.h
+raw2scc_SOURCES = raw2scc.c
+scc2raw_SOURCES = scc2raw.c
