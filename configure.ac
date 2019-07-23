@@ -7,6 +7,7 @@ AC_PROG_INSTALL
 LT_INIT([disable-shared, static, win32-dll])
 AC_C_BIGENDIAN
 AC_C_CONST
+AX_FUNC_GETOPT_LONG
 AC_CONFIG_HEADERS([lib608/config.h])
 AC_CONFIG_FILES([
  Makefile
