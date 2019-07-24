@@ -5,10 +5,10 @@ License: GPL v3 or later
 (see License.txt)
 */
 
-struct VersionInfo {
+typedef struct {
 	u16 major;
 	u16 minor;
 	u16 revision;
 	u16 build;
-	const char* git_rev;
-}
+	char git_rev[10];
+} VersionInfo;
