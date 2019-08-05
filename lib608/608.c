@@ -10,7 +10,7 @@ License: GPL v3 or later
 #include "log.h"
 
 const timecode default_timecode = {0, 0, 0, 0, false};
-const VersionInfo library_version = {0, 0, 0, 0x20, ""};
+const VersionInfo library_version = {0, 1, 0, 0xc0, ""};
 
 // no idea why the 1/2 frame is needed but idk
 s64 tc2int(timecode pts, f32 fps) {
