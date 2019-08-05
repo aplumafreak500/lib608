@@ -6,28 +6,45 @@ License: GPL v3 or later
 */
 
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
 #include <getopt.h>
 
 #include "608.h"
-#include "version.h"
+#include "config.h" // for git
 #include "log.h"
 
-static const VersionInfo versionInfo = {0, 0, 0, 1, ""}; // todo: proper git integration
+static const VersionInfo versionInfo = {0, 1, 0, 0x1000, ""}; // todo: proper git integration
+
+enum{
+	MODE_RAW,
+	MODE_DVD,
+	MODE_NW4R
+};
+
+static void prog_header(char* name);
 
 int main(int argc, char **argv) {
-	// prog_header();
-	change_log_level(0xff);
-	bool8 dvdmode = false;
-	f32 fps = 30.0f;
+	u8 log_level = LOG_DEFAULT;
+	// todo: check for color support (pipes vs console)
+	use_colors = true;
+	prog_header(argv[0]);
+	change_log_level(log_level);
+	u8 mode = MODE_RAW;
+	f32 fps = 29.97003f; // HACK: just above 29.97 fps to prevent false positives for out of order scc input 
 	bool8 field1 = false;
 	bool8 field2 = false;
-	bool8 dropframe = true;
+	bool8 swap = !WORDS_BIGENDIAN;
 	char* file_path = NULL;
 	char* file_path2 = NULL;
-
-	// todo: check for color support (pipes vs console)
-	bool8 use_colors = true;
-
+	char* output_file = NULL;
+	timecode start_timecode = default_timecode;
+	s32 stc_hrs;
+	u8 stc_min;
+	u8 stc_sec;
+	u8 stc_frames;
+	timecode pad_tc = default_timecode;
 	int c;
 
 	struct option long_options[] = {
@@ -35,11 +52,14 @@ int main(int argc, char **argv) {
 		{"fps", required_argument, 0, 0x80},
 		{"field1", no_argument, 0, '1'},
 		{"field2", no_argument, 0, '2'},
+		{"swap", no_argument, 0, 0x86},
 		{"mode", required_argument, 0, 'm'},
 		{"input2", required_argument, 0, 0x81},
 		{"verbose", no_argument, 0, 'v'},
 		{"quiet", no_argument, 0, 'q'},
 		{"version", no_argument, 0, 0x82},
+		{"start_time", required_argument, 0, 0x84},
+		{"end_time", required_argument, 0, 0x85},
 		{"log_level", required_argument, 0, 0x83},
 		{"help", no_argument, 0, 'h'},
 		{"dropframe", no_argument, 0, 'd'},
@@ -66,37 +86,72 @@ int main(int argc, char **argv) {
 				field2 = true;
 				break;
 			case 'q':
-				// change_log_level(LOG_FATAL | LOG_ERROR);
+				change_log_level(LOG_FATAL | LOG_ERROR);
 				break;
 			case 'h':
 				// usage();
-				exit(0);
-				return 1;
+				return 2;
 			case 'i':
 				log_write(LOG_DEBUG, use_colors, "in = %s\n", optarg);
 				file_path = optarg;
 				break;
 			case 'm':
-				log_write(LOG_DEBUG, use_colors, "mode = %s\n", optarg);
-				// todo: dvd/raw
+				if (strcasecmp("dvd", optarg) == 0) {
+					mode = MODE_DVD;
+				}
+				else if (strcasecmp("raw", optarg) == 0) {
+					mode = MODE_RAW;
+				}
+				else if (strcasecmp("nw4r", optarg) == 0) {
+					mode = MODE_NW4R;
+				}
+				else {
+					log_write(LOG_WARN, use_colors, "--mode must be either 'dvd', 'raw', or 'nw4r', assuming raw mode\n", optarg);
+					mode = MODE_RAW;
+				}
+				log_write(LOG_DEBUG, use_colors, "dvdmode = %hhu\n", mode);
 				break;
 			case 'v':
-				// change_log_level(LOG_VERBOSE);
+				change_log_level(LOG_VERBOSE);
 				break;
 			case 0x80:
-				log_write(LOG_DEBUG, use_colors, "fps = %s\n", optarg);
-				// todo: char* to f32
+				if (sscanf(optarg, "%f", &fps) == 0) {
+					log_write(LOG_WARN, use_colors, "Invalid parameter for option --fps: %s (will assume 29.97 fps)\n", optarg);
+					fps = 30.0f/1.001f;
+				}
+				log_write(LOG_DEBUG, use_colors, "fps = %f\n", fps);
 				break;
 			case 0x81:
 				file_path2 = optarg;
 				break;
 			case 0x82:
 				// version();
-				exit(0);
 				return 2;
 			case 0x83:
-				log_write(LOG_DEBUG, use_colors, "log level = %s\n", optarg);
-				// todo: char* to u8
+				if (sscanf(optarg, "%hhu", &log_level) == 0) {
+					log_write(LOG_WARN, use_colors, "Invalid parameter for option --log_level: %s (assuming %d)\n", optarg, LOG_DEFAULT);
+				}
+				log_write(LOG_DEBUG, use_colors, "log level = %hhu\n",  log_level);
+				change_log_level(log_level);
+				break;
+			case 0x84:
+				sscanf(optarg, "%02d:%02hhu:%02hhu:%02hhu", &stc_hrs, &stc_min, &stc_sec, &stc_frames);
+				start_timecode.hours = stc_hrs;
+				start_timecode.minutes = stc_min;
+				start_timecode.seconds = stc_sec;
+				start_timecode.frames = stc_frames;
+				log_write(LOG_DEBUG, use_colors, "start_tc %02d:%02hhu:%02hhu:%02hhu\n", start_timecode.hours, start_timecode.minutes, start_timecode.seconds, start_timecode.frames);
+				break;
+			case 0x85:
+				sscanf(optarg, "%02d:%02hhu:%02hhu:%02hhu", &stc_hrs, &stc_min, &stc_sec, &stc_frames);
+				pad_tc.hours = stc_hrs;
+				pad_tc.minutes = stc_min;
+				pad_tc.seconds = stc_sec;
+				pad_tc.frames = stc_frames;
+				log_write(LOG_DEBUG, use_colors, "end_tc %02d:%02hhu:%02hhu:%02hhu\n", pad_tc.hours, pad_tc.minutes, pad_tc.seconds, pad_tc.frames);
+				break;
+			case 0x86:
+				swap = !swap;
 				break;
 			case ':':
 				if (optopt < 0x80) {
@@ -105,29 +160,200 @@ int main(int argc, char **argv) {
 				else {
 					log_write(LOG_ERROR, use_colors, "Option %s requires an argument\n", argv[curind]);
 				}
-				exit(1);
-				return 4;
+				return 1;
 			case '?':
   	      default:
-				if (optopt | (optopt < 0x80)) {
-					log_write(LOG_ERROR, use_colors, "Invalid option -%c\n", optopt);
+				if (optopt) {
+					log_write(LOG_WARN, use_colors, "Invalid option -%c (ignoring)\n", optopt);
 				}
 				else {
-					log_write(LOG_ERROR, use_colors, "Invalid option %s\n", argv[curind]);
+					log_write(LOG_WARN, use_colors, "Invalid option %s (ignoring)\n", argv[curind]);
 				}
-				exit(1);
-				return 3;
+				break;
 		}
 	}
-	// todo: output file
 	if (optind < argc) {
-		log_write(LOG_DEBUG, use_colors, "non-option ARGV-elements: ");
-		while (optind < argc) {
-			log_write(LOG_DEBUG, use_colors, "%s ", argv[optind++]);
-		}
-		log_write(LOG_DEBUG, use_colors, "\n");
+		output_file = argv[optind++];
+		log_write(LOG_DEBUG, use_colors, "output to %s...\n", output_file);
 	}
-	// todo: call library function
-	exit(0);
+	if (optind < argc) {
+		while (optind < argc) {
+			log_write(LOG_WARN, use_colors, "Trailing option %s was found (ignoring).\n", argv[optind++]);
+		}
+	}
+
+	if ((file_path == NULL) || (strcmp("", file_path) == 0)) {
+		log_write(LOG_ERROR, use_colors, "An input file is required.\n");
+		return 3;
+	}
+
+	FILE* in_file = fopen(file_path, "r");
+	if (in_file == NULL) {
+		log_write(LOG_ERROR, use_colors, "Can't open file %s (%d: %s)\n", file_path, errno, strerror(errno));
+		return 3;
+	}
+
+	if ((output_file == NULL) || (strcmp("", output_file) == 0)) {
+		log_write(LOG_ERROR, use_colors, "An output file is required.\n");
+		fclose(in_file);
+		return 3;
+	}
+
+	FILE* out_file = fopen(output_file, "w+");
+	if (out_file == NULL) {
+		log_write(LOG_ERROR, use_colors, "Can't open file %s (%d: %s)\n", output_file, errno, strerror(errno));
+		fclose(in_file);
+		return 3;
+	}
+
+	const char* mode_str[] = {"raw", "dvd", "nw4r"};
+
+	if (field1 && field2 && mode != MODE_DVD) {
+		log_write(LOG_ERROR, use_colors, "Mode %s can't contain both fields 1 and 2!\n", mode_str[mode]);
+		return 4;
+	}
+	
+	if (mode != MODE_DVD && file_path2 != NULL) {
+		log_write(LOG_WARN, use_colors, "Mode != dvd, not opening file %s\n", file_path2);
+		file_path2 = NULL;
+	}
+
+	// DVD format second file
+	FILE* in_file2 = NULL;
+
+	// Raw format only supports Field 1. If fields are unset or if only Field 2 is set, set Field 1 and unset Field 2.
+	if (mode == MODE_RAW) {
+		field1 = true;
+		field2 = false;
+	}
+	// NW4R format supports Field 1 or 2, but not both at once. If none was specified, we assume Field 1.
+	else if (mode == MODE_NW4R) {
+		if (!field1 && !field2) {
+			field1=true;
+		}
+	}
+	// DVD format can accept two inputs.
+	else if (mode == MODE_DVD) {
+		if ((file_path2 == NULL) || (strcmp("", file_path2) == 0)) {
+			if (field1 && field2) {
+				log_write(LOG_WARN, use_colors, "Fields 1 and 2 are set, but second input is unspecified. Output will only contain Field 1.\n");
+				field1 = true;
+				field2 = false;
+			}
+		}
+		in_file2 = fopen(file_path2, "r");
+		if (in_file2 == NULL) {
+			if (field1 && field2) {
+				log_write(LOG_WARN, use_colors, "Can't open file %s (%d: %s), output will only contain Field 1.\n", file_path2, errno, strerror(errno));
+				field1 = true;
+				field2 = false;
+			}
+			else if (!field1 && field2) {
+				log_write(LOG_WARN, use_colors, "Can't open file %s (%d: %s), output will only contain Field 2.\n", file_path, errno, strerror(errno));
+				field1 = false;
+				field2 = true;
+			}
+			else {
+				log_write(LOG_WARN, use_colors, "Can't open file %s (%d: %s), output will only contain Field 1.\n", file_path, errno, strerror(errno));
+				field1 = true;
+				field2 = false;
+			}
+			file_path2 = NULL;
+		}
+	}
+	else { // Should never happen
+		log_write(LOG_FATAL, use_colors, "Invalid mode set (possibly corrupted memory?)\n");
+		return -1;
+	}
+
+	// For NW4R format
+	u8 field = 254; // for extreme edge cases, use an even negative number so Field 1 can be assumed
+	if (field1 && !field2) field = 0;
+	else if (!field1 && field2) field = 1;
+
+	if (mode != MODE_NW4R && swap != !WORDS_BIGENDIAN) {
+		log_write(LOG_WARN, use_colors, "Option --swap is relevant only when mode = NW4R (ignoring) \n");
+		swap = !WORDS_BIGENDIAN;
+	}
+
+	log_write(LOG_INFO, use_colors, "Input: %s\nOutput: %s\nFPS: %f\nMode: %s\nTimestamp Offset: %02d:%02hhu:%02hhu:%02hhu\nFields: %s%s", file_path, output_file, fps, mode_str[mode], start_timecode.hours, start_timecode.minutes, start_timecode.seconds, start_timecode.frames, field1 ? "1" : "", field2 ? "2" : "");
+
+	// file 2
+	if (file_path2 != NULL) {
+		log_write(LOG_INFO, false, "Input 2: %s", file_path2);
+	}
+	log_write(LOG_INFO, false, "\n");
+	if (mode == MODE_NW4R) {
+		log_write(LOG_INFO, false, "NW4R Endianness: %s", swap ? "big": "little");
+	}
+	log_write(LOG_INFO, false, "\n");
+	
+	int read_ccs;
+	scc_entry* ccd = ReadSCC(in_file, &read_ccs);
+	log_write(LOG_TRACE, use_colors, "address of ccd 0x%08x\n", (int) ccd);
+	if (ccd == NULL) {
+		log_write(LOG_FATAL, use_colors, "Bad address of output data\n");
+		fclose(in_file);
+		if (in_file2 != NULL) {
+			fclose(in_file2);
+		}
+		fclose(out_file);
+		return 5;
+	}
+
+	// DVD format
+	int read_ccs2 = 0;
+	scc_entry* ccd2 = NULL;
+	if (mode == MODE_DVD && in_file2 != NULL) { 
+		ccd2 = ReadSCC(in_file2, &read_ccs2);
+		log_write(LOG_TRACE, use_colors, "address of ccd2 0x%08x\n", (int) ccd2);
+		if (ccd2 == NULL) {
+			log_write(LOG_FATAL, use_colors, "Bad address of output data\n");
+			fclose(in_file);
+			fclose(in_file2);
+			fclose(out_file);
+			return 5;
+		}
+	}
+
+	if (mode == MODE_RAW) {
+		WriteRaw(ccd, &read_ccs, out_file, fps, start_timecode, pad_tc);
+	}
+	else if (mode == MODE_DVD) {
+		if (!field1 && field2) {
+			// WriteDVD(ccd2, &read_ccs2, ccd, &read_ccs, out_file, fps, start_timecode, pad_tc, 5);
+		}
+		else {
+			// WriteDVD(ccd, &read_ccs, ccd2, &read_ccs2, out_file, fps, start_timecode, pad_tc, 5);
+		}
+	}
+	else {
+		// todo: option --swap
+		WriteNW4R(ccd, &read_ccs, out_file, field, swap);
+	}
+
+	if (ccd != NULL) {
+		free(ccd);
+	}
+	if (ccd2 != NULL) {
+		free(ccd2);
+	}
+	fclose(in_file);
+	if (in_file2 != NULL) {
+		fclose(in_file2);
+	}
+	fclose(out_file);
 	return 0;
+}
+
+static void prog_header(char* name) {
+	log_write(LOG_APPLICATION, false, "%s version %hd.%hd.%hd.%hd", name, versionInfo.major, versionInfo.minor, versionInfo.revision, versionInfo.build);
+	if (strcmp("", versionInfo.git_rev) != 0) {
+		log_write(LOG_APPLICATION, false, " g%s", versionInfo.git_rev);
+	}
+	log_write(LOG_APPLICATION, false, "\nlib608 version: %hd.%hd.%hd.%hd", library_version.major, library_version.minor, library_version.revision, library_version.build);
+	if (strcmp("", library_version.git_rev) != 0) {
+		log_write(LOG_APPLICATION, false, " g%s", library_version.git_rev);
+	}
+	log_write(LOG_APPLICATION, false, "\n\n%s is distributed under the terms of the GNU General Public License v3 or later; view these terms in the included License.txt file.\n\n", name);
 }

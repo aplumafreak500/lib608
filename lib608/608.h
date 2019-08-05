@@ -5,6 +5,8 @@ License: GPLv3 or later
 (see License.txt)
 */
 
+#pragma once
+#include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -41,4 +43,48 @@ typedef volatile f64 vf64;
 
 /* Everything else */
 
-u8 debug;
+typedef struct __attribute__((packed, aligned(4))) {
+	s16 hours:12; // up to 2047 hours
+	u8 minutes:6;
+	u8 seconds:6;
+	u8 frames:7; // up to 127 fps
+	bool8 drop:1;
+} timecode;
+
+typedef struct {
+	union {
+		timecode tc;
+		u32 raw;
+	} pts;
+	int entry_count;
+	u16 entries[];
+} scc_entry;
+
+typedef struct {
+	u16 major;
+	u16 minor;
+	u16 revision;
+	u16 build;
+	char git_rev[10];
+} VersionInfo;
+
+const timecode default_timecode;
+const VersionInfo library_version;
+
+// 608.c
+s64 tc2int(timecode pts, f32 fps);
+timecode int2tc(s64 pts, f32 fps, bool8 drop);
+u8 byteswap8(u8 in);
+u16 byteswap16(u16 in);
+u32 byteswap24(u32 in);
+u32 byteswap32(u32 in);
+u64 byteswap48(u64 in);
+u64 byteswap64(u64 in);
+u16 fixParity(u16 in);
+
+// scc.c
+scc_entry* ReadSCC(FILE* scc, size_t* length);
+
+// raw.c
+int WriteRaw(scc_entry* in, size_t* length, FILE* out, f32 fps, timecode start, timecode end);
+int WriteNW4R(scc_entry* in, size_t* length, FILE* out, u8 field, bool8 swap);

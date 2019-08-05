@@ -11,6 +11,7 @@ License: GPL v3 or later
 #include "log.h"
 
 static u8 log_level = LOG_DEFAULT;
+bool8 use_colors = true;
 
 static const struct {
 	u8 level;

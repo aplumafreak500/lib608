@@ -14,10 +14,12 @@ License: GPL v3 or later
 #define LOG_LIBRARY 0x40
 #define LOG_APPLICATION 0x80
 
-#define LOG_DEFAULT LOG_FATAL | LOG_ERROR | LOG_WARN | LOG_INFO
+#define LOG_DEFAULT LOG_FATAL | LOG_ERROR | LOG_WARN | LOG_INFO | LOG_APPLICATION | LOG_LIBRARY
 #define LOG_ALL 0xff
 #define LOG_SILENT 0
-#define LOG_VERBOSE LOG_DEFAULT | LOG_LIBRARY | LOG_APPLICATION
+#define LOG_VERBOSE LOG_DEFAULT | LOG_DEBUG
+
+bool8 use_colors;
 
 int log_write(u8 level, bool8 color, char* fmt, ...);
 u8 change_log_level(u8 newLevel);
