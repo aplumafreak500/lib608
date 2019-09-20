@@ -15,7 +15,7 @@ License: GPL v3 or later
 #include "config.h" // for git
 #include "log.h"
 
-static const VersionInfo versionInfo = {0, 0, 0, 0x40, ""}; // todo: proper git integration
+static const VersionInfo versionInfo = {0, 5, 0, 0, ""}; // todo: proper git integration
 
 enum{
 	MODE_RAW,
