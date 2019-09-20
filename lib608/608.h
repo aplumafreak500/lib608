@@ -44,11 +44,11 @@ typedef volatile f64 vf64;
 /* Everything else */
 
 typedef struct __attribute__((packed, aligned(4))) {
-	s16 hours:12; // up to 2047 hours
-	u8 minutes:6;
-	u8 seconds:6;
-	u8 frames:7; // up to 127 fps
-	bool8 drop:1;
+	s32 hours:12; // up to 2047 hours
+	u32 minutes:6;
+	u32 seconds:6;
+	u32 frames:7; // up to 127 fps
+	bool32 drop:1;
 } timecode;
 
 typedef struct {
@@ -56,7 +56,7 @@ typedef struct {
 		timecode tc;
 		u32 raw;
 	} pts;
-	int entry_count;
+	unsigned int entry_count;
 	u16 entries[];
 } scc_entry;
 
@@ -84,7 +84,15 @@ u16 fixParity(u16 in);
 
 // scc.c
 scc_entry* ReadSCC(FILE* scc, size_t* length);
+u32 WriteSCC(scc_entry* in, size_t* length, FILE* out);
+bool8 IsSCCFile(FILE* file);
 
 // raw.c
-int WriteRaw(scc_entry* in, size_t* length, FILE* out, f32 fps, timecode start, timecode end);
-int WriteNW4R(scc_entry* in, size_t* length, FILE* out, u8 field, bool8 swap);
+unsigned int MAX_NULLS; // only ReadRaw uses this value
+scc_entry* ReadRaw(FILE* raw, size_t* length, f32 fps, timecode start, bool8 drop);
+scc_entry* ReadNW4R(FILE* nw4r, size_t* length);
+u32 WriteRaw(scc_entry* in, size_t* length, FILE* out, f32 fps, timecode start, timecode end);
+u32 WriteNW4R(scc_entry* in, size_t* length, FILE* out, u8 field, bool8 swap);
+bool8 IsRawFile(FILE* file);
+bool8 IsNW4RFile(FILE* file);
+u8 GetNW4RField(FILE* file);

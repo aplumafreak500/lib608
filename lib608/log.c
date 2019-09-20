@@ -35,7 +35,6 @@ int log_write(u8 level, bool8 color, char *fmt, ...) {
 	int result;
 	if (color) {
 		const char* colorcode = NULL;
-		int color_index = 0;
 		for (int i = 0; i < 9; i++) {
 			if ((colors[i].level & level) != 0) {
 				colorcode = colors[i].color_code;

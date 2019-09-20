@@ -28,6 +28,8 @@ ltmain.sh
 *.la
 *.so*
 *.a
+*.s
+*.i
 .deps
 *.tar*
 *.zip
