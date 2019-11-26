@@ -37,3 +37,6 @@ ltmain.sh
 *.lo
 *.gcno
 *.gcda
+.version
+.tarball-version
+*.pc

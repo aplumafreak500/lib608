@@ -11,7 +11,7 @@ License: GPL v3 or later
 #include "log.h"
 
 static u8 log_level = LOG_DEFAULT;
-bool8 use_colors = true;
+bool8 use_colors = false;
 
 static const struct {
 	u8 level;
@@ -32,7 +32,7 @@ int log_write(u8 level, bool8 color, char *fmt, ...) {
 	if ((log_level & level) == 0) {
 		return 0;
 	}
-	int result;
+	int result = 0;
 	if (color) {
 		const char* colorcode = NULL;
 		for (int i = 0; i < 9; i++) {

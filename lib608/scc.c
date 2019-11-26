@@ -61,7 +61,7 @@ scc_entry* ReadSCC(FILE* scc, size_t* length) {
 	u8* end_ptr = (u8*) cc_data+allocated;
 	log_write(LOG_TRACE, use_colors, "ReadSCC: *** Pointer Locations ***\n\toutput_ptr 0x%08x\n\tend_ptr 0x%08x\n\tcc_data 0x%08x\n", (u32) output_ptr, (u32) end_ptr, (u32) cc_data);
 	while (fgets(read_buffer, 4096, scc) != NULL) {
-		if (sscanf(read_buffer, "%02hd:%02hhd:%02hhd%c%02hhd", &hr, &min, &sec, &drop, &frames) != 5) {
+		if (sscanf(read_buffer, "%hd:%02hhd:%02hhd%c%02hhd", &hr, &min, &sec, &drop, &frames) != 5) {
 			// Could've just been a newline, lol
 			if ((strcmp("\n", read_buffer) == 0) | (strcmp("\r\n", read_buffer) == 0) | (strcmp("\n\r", read_buffer) == 0)) {
 				line++;
@@ -213,6 +213,7 @@ bool8 IsSCCFile(FILE* file) {
 		// check eof
 		else if (feof(file)) {
 			log_write(LOG_ERROR, use_colors, "IsSCCFile: unexpected end of file\n");
+			fseek(file, 0, SEEK_SET);
 			return false;
 		}
 		ret = false; // if file was read successfully but is not SCC format

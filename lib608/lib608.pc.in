@@ -1,0 +1,9 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+Name: Luma's EIA-608 Library
+Version: 0.1a
+Description: A library for conversion of EIA-608 closed-captioning files, based on McPoodle's SCC tools.
+Cflags: -I${includedir}
+Libs: -L${libdir} -l608

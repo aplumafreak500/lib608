@@ -31,13 +31,13 @@ typedef struct {
 	u8 padding[8];
 } ccdata_hdr;
 
-static const char* file_header = "\xff\xff\xff\xff";
+static const char* const file_header = "\xff\xff\xff\xff";
 static const bcc_hdr bcc1_header = {
 	.magic = "BCC1",
 	.bom = 0xfeff,
 	.version_high = 1,
 	.version_low = 0,
-	.header_size = sizeof(bcc_hdr), 
+	.header_size = sizeof(bcc_hdr),
 	.section_count = 1,
 	.sections = {
 		[0] = {
@@ -130,10 +130,10 @@ scc_entry* ReadRaw(FILE* raw, size_t* length, f32 fps, timecode start, bool8 dro
 			output = false;
 			log_write(LOG_TRACE, use_colors, "ReadRaw: Stopping output\n");
 		}
-		bool8 isControlCode = (cc | 0x97f) == 0x1d7f;
+		bool8 isControlCode = (cc | 0x90f) == 0x1d2f;
 		bool8 isXDS = (cc | 0xf7f) == 0xf7f;
 		if (isControlCode || isXDS) {
-			u16 control_check = cc & 0x7f;
+			u16 control_check = cc & 0x2f;
 			u16 xds_check = (cc & 0xf00) >> 8;
 			bool8 isValidXDSCode = isXDS && (xds_check > 0) && (xds_check <= 0xf);
 			if ((isControlCode && ((control_check == 0x20) || (control_check == 0x25) || (control_check == 0x26) || (control_check == 0x27) || (control_check == 0x29) || (control_check == 0x2a) || (control_check == 0x2b))) || (isValidXDSCode && xds_check != 0xf)) {
@@ -235,6 +235,9 @@ NW4R_read_error:
 				header.sections[i].offset = byteswap32(header.sections[i].offset);
 				header.sections[i].size = byteswap32(header.sections[i].size);
 			}
+		}
+		if (header.version_high != 1 && header.version_low != 0) {
+			log_write(LOG_WARN, use_colors, "ReadNW4R: Header reports format version v%d.%d. File may not be compatible with this version of lib608.\n", header.version_high, header.version_low);
 		}
 		if (header.section_count == 0) {
 			log_write(LOG_ERROR, use_colors, "ReadNW4R: Section count is 0!\n");
@@ -488,6 +491,7 @@ bool8 IsRawFile(FILE* file) {
 		// check eof
 		else if (feof(file)) {
 			log_write(LOG_ERROR, use_colors, "IsRawFile: unexpected end of file\n");
+			fseek(file, 0, SEEK_SET);
 			return false;
 		}
 		else { // fread was successful but didn't return expected amount of bytes
@@ -523,6 +527,7 @@ IsNW4R_read_error:
 		// check eof
 		else if (feof(file)) {
 			log_write(LOG_ERROR, use_colors, "IsNW4RFile: unexpected end of file\n");
+			fseek(file, 0, SEEK_SET);
 			return false;
 		}
 		else { // fread was successful but didn't return expected amount of bytes
@@ -590,6 +595,7 @@ u8 GetNW4RField(FILE* file) {
 		// check eof
 		else if (feof(file)) {
 			log_write(LOG_ERROR, use_colors, "GetNW4RField: unexpected end of file\n");
+			fseek(file, 0, SEEK_SET);
 			return 254;
 		}
 		else { // fread was successful but didn't return expected amount of bytes
@@ -598,7 +604,7 @@ u8 GetNW4RField(FILE* file) {
 		}
 	}
 	if (memcmp(check.magic, "BCC1", 4) == 0) {
-		ret = 0; 
+		ret = 0;
 	}
 	else if (memcmp(check.magic, "BCC2", 4) == 0) {
 		ret = 1;

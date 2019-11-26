@@ -10,12 +10,13 @@ License: GPL v3 or later
 #include <string.h>
 #include <errno.h>
 #include <getopt.h>
+#include <unistd.h>
 
 #include "608.h"
 #include "config.h" // for git
 #include "log.h"
 
-static const VersionInfo versionInfo = {0, 5, 0, 0, ""}; // todo: proper git integration
+static const VersionInfo versionInfo = {0, 5, 0, 0, VERSION}; // todo: proper git integration
 
 enum{
 	MODE_RAW,
@@ -28,8 +29,8 @@ static void usage(char* name);
 
 int main(int argc, char **argv) {
 	u8 log_level = LOG_DEFAULT;
-	// todo: check for color support (pipes vs console)
-	use_colors = true;
+	// is this the right way to do that?
+	use_colors = isatty(STDERR_FILENO);
 	prog_header(argv[0]);
 	change_log_level(log_level);
 	u8 mode = MODE_RAW;
@@ -279,10 +280,10 @@ int main(int argc, char **argv) {
 
 	// file 2
 	if (output_file2 != NULL) {
-		log_write(LOG_INFO, false, "Output 2: %s", output_file2);
+		log_write(LOG_INFO, false, "\nOutput 2: %s", output_file2);
 	}
 	log_write(LOG_INFO, false, "\n");
-	
+
 	unsigned int read_ccs;
 	scc_entry* ccd;
 	//unsigned int read_ccs2;
@@ -328,11 +329,11 @@ int main(int argc, char **argv) {
 static void prog_header(char* name) {
 	log_write(LOG_APPLICATION, false, "%s version %hd.%hd.%hd.%hd", name, versionInfo.major, versionInfo.minor, versionInfo.revision, versionInfo.build);
 	if (strcmp("", versionInfo.git_rev) != 0) {
-		log_write(LOG_APPLICATION, false, " g%s", versionInfo.git_rev);
+		log_write(LOG_APPLICATION, false, " %s", versionInfo.git_rev);
 	}
 	log_write(LOG_APPLICATION, false, "\nlib608 version: %hd.%hd.%hd.%hd", library_version.major, library_version.minor, library_version.revision, library_version.build);
 	if (strcmp("", library_version.git_rev) != 0) {
-		log_write(LOG_APPLICATION, false, " g%s", library_version.git_rev);
+		log_write(LOG_APPLICATION, false, " %s", library_version.git_rev);
 	}
 	log_write(LOG_APPLICATION, false, "\n\n%s is distributed under the terms of the GNU General Public License v3 or later; view these terms in the included License.txt file.\n\n", name);
 }
