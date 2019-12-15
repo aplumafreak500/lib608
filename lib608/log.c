@@ -17,15 +17,15 @@ static const struct {
 	u8 level;
 	char color_code[7];
 } colors[9] = {
-	{LOG_FATAL, "\e[31;m"},
-	{LOG_ERROR, "\e[91;m"},
-	{LOG_WARN, "\e[93;m"},
-	{LOG_INFO, "\e[92;m"},
-	{LOG_DEBUG, "\e[94;m"},
-	{LOG_TRACE, "\e[32;m"},
-	{LOG_LIBRARY, "\e[35;m"},
-	{LOG_APPLICATION, "\e[36;m"},
-	{0, "\e[m;"},
+	{LOG_FATAL, "\x1b[31;m"},
+	{LOG_ERROR, "\x1b[91;m"},
+	{LOG_WARN, "\x1b[93;m"},
+	{LOG_INFO, "\x1b[92;m"},
+	{LOG_DEBUG, "\x1b[94;m"},
+	{LOG_TRACE, "\x1b[32;m"},
+	{LOG_LIBRARY, "\x1b[35;m"},
+	{LOG_APPLICATION, "\x1b[36;m"},
+	{0, "\x1b[m;"},
 };
 
 int log_write(u8 level, bool8 color, char *fmt, ...) {
