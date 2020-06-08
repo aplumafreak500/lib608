@@ -1,0 +1,98 @@
+$FontName           = Arial
+$FontSize           = 36
+$Bold               = FALSE
+$UnderLined         = FALSE
+$Italic             = FALSE
+$HorzAlign          = Center
+$VertAlign          = Bottom
+$XOffset            = 0
+$YOffset            = 0
+$ColorIndex1        = 0
+$ColorIndex2        = 1
+$ColorIndex3        = 2
+$ColorIndex4        = 3
+$Contrast1          = 15
+$Contrast2          = 0
+$Contrast3          = 15
+$Contrast4          = 0
+$ForceDisplay       = FALSE
+$FadeIn             = 0
+$FadeOut            = 0
+$TapeOffset         = TRUE
+
+00:00:34:14,00:00:36:13,A witch! A witch!
+00:00:38:13,00:00:41:12,A witch! We found a witch!
+00:00:44:06,00:00:47:12,We've got a witch!|A witch! A witch!
+00:00:55:06,00:00:56:06,Whoa there!
+00:00:57:12,00:01:00:07,We have found a witch.|Maywe burn her?
+00:01:03:04,00:01:06:08,- How do you know she is a witch?|- She looks like one.
+00:01:08:04,00:01:10:09,Bring her forward.
+00:01:10:10,00:01:13:03,I'm not a witch!|I'm not a witch!
+00:01:13:04,00:01:15:05,But you are dressed as one.
+00:01:15:06,00:01:18:03,- They dressed me like this.|- No, we didn't.
+00:01:18:04,00:01:20:09,And this isn't my nose.|It's a false one.
+00:01:24:06,00:01:24:07,Whoa there!
+00:01:24:07,00:01:27:07,- Well?|- We did do the nose.
+00:01:27:08,00:01:31:02,- The nose?|- And the hat. But she is a witch!
+00:01:34:11,00:01:38:06,- Did you dress her up like this?|- No, no!
+00:01:38:07,00:01:41:06,Yes. A bit.
+00:01:41:07,00:01:43:13,She has got a wart.
+00:01:43:14,00:01:45:15,What makes you think|she's a witch?
+00:01:46:01,00:01:48:01,She turned me into a newt!
+00:01:49:03,00:01:50:07,A newt?
+00:01:54:09,00:01:56:03,I got better.
+00:01:56:04,00:01:58:03,Burn her anyway!
+00:02:01:10,00:02:04:08,Quiet! Quiet!
+00:02:04:09,00:02:07:14,There are ways of telling|whether she is a witch.
+00:02:07:15,00:02:12:04,- Are there? What are they? Tell us.|- Do they hurt?
+00:02:12:05,00:02:15:03,Tell me, what do you do with witches?
+00:02:15:04,00:02:16:10,Burn them!
+00:02:18:05,00:02:20:15,And what do you burn,|apart from witches?
+00:02:21:01,00:02:24:06,- More witches!|- Wood!
+00:02:24:07,00:02:27:07,So why do witches burn?
+00:02:38:10,00:02:41:02,- 'Cause they're made of wood?|- Good!
+00:02:44:01,00:02:49:03,- How do we tell if she is made ofwood?|- Build a bridge out ofher.
+00:02:49:05,00:02:52:14,But can you not also make bridges|out of stone?
+00:02:53:14,00:02:55:06,Oh, yeah.
+00:02:56:04,00:02:59:07,Does wood sink in water?
+00:02:59:08,00:03:02:09,- No, it floats.|- Throw her into the pond!
+00:03:06:01,00:03:08:14,What also floats in water?
+00:03:09:00,00:03:11:04,- Bread.|- Apples.
+00:03:11:05,00:03:14:07,- Very small rocks.|- Cider! Great gravy.
+00:03:14:08,00:03:16:11,- Cherries. Mud.|- Churches.
+00:03:16:12,00:03:18:11,- Lead.|- A duck!
+00:03:21:01,00:03:22:07,Exactly.
+00:03:23:14,00:03:25:14,So, logically--
+00:03:26:01,00:03:30:14,If she weighs the same as a duck...
+00:03:33:05,00:03:34:14,she's made of wood.
+00:03:34:15,00:03:36:07,And therefore?
+00:03:38:08,00:03:39:12,A witch!
+00:03:42:11,00:03:44:15,- A duck! A duck!|- Here's a duck.
+00:03:45:01,00:03:47:04,We shall use my largest scales.
+00:03:54:07,00:03:56:06,Burn the witch!
+00:04:08:05,00:04:12:02,Remove the supports!
+00:04:16:00,00:04:17:07,A witch!
+00:04:17:08,00:04:19:04,It's a fair cop.
+00:04:26:14,00:04:27:14,Whoa there!
+00:04:28:02,00:04:31:06,Who are you, who are so wise|in the ways of science?
+00:04:31:07,00:04:33:14,I am Arthur, king of the Britons.
+00:04:34:00,00:04:36:01,My Liege!
+00:04:36:02,00:04:38:12,Good Sir Knight, will you come with me|to Camelot...
+00:04:38:13,00:04:41:09,and join us at the Round Table?
+00:04:41:10,00:04:44:04,My Liege, I would be honored!
+00:04:44:05,00:04:47:06,- What is your name?|- Bedevere, my Liege.
+00:04:47:07,00:04:50:14,Then I dub you Sir Bedevere...
+00:04:50:15,00:04:53:07,Knight of the Round Table.
+00:04:53:08,00:04:58:04,^IThe wise Sir Bedevere was the first|^Ito join King Arthur's knights.
+00:04:58:05,00:05:01:09,^IBut other illustrious names|^Iwere soon to follow.
+00:05:01:10,00:05:04:06,^I"Sir Lancelot the Brave.
+00:05:04:07,00:05:07:02,^ISir Galahad the Pure.
+00:05:07:04,00:05:10:03,^IAnd Sir Robin the|^INot-Quite-So-Brave-As Sir Lancelot...
+00:05:10:05,00:05:12:08,^Iwho had nearly fought|^Ithe Dragon of Angnor...
+00:05:12:09,00:05:15:09,^Iwho nearly stoodup to|^Ithe Chicken of Bristol...
+00:05:15:10,00:05:19:08,^Iand wet himself at|^Ithe Battle of Badon Hill.
+00:05:19:09,00:05:24:07,^IAnd the aptly named,|^ISir Not-Appearing-In-This-Film.
+00:05:24:08,00:05:27:11,^ITogether they formed a band|^Iwhose names and deeds...
+00:05:27:12,00:05:30:05,^Iwere retold throughout the centuries. "
+00:05:30:06,00:05:32:14,^IThe Knights of the Round Table.
+00:05:32:15,00:00:00:00,And that, my Liege, is how we know|the Earth to be banana-shaped.
