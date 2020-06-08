@@ -1,0 +1,6 @@
+*.pl text eol=crlf
+cc_mux.pl eol=lf
+pas2scc.pl eol=lf
+*.raw binary
+*.bin binary
+*.gp binary

@@ -1,0 +1,48 @@
+1
+00:00:27,900 --> 00:00:37,900
+<font color="#ffff00">A long, long time ago, this country was overrun by deep forests. Within these forests lived the gods of old.</font>
+
+2
+00:01:22,400 --> 00:01:27,900
+<b>Mononoke Hime</b>
+
+3
+00:01:38,110 --> 00:01:41,530
+[ Distant screaming ]
+
+4
+00:01:41,530 --> 00:01:42,350
+<font color="#00ff00">¡<u>Yakkuru</u>!</font>
+
+5
+00:01:48,580 --> 00:01:49,590
+<font color="#ff3366">¡<u>Ani-sama</u>!</font>
+
+6
+00:01:50,260 --> 00:01:53,370
+<font color="#00ff00">Good timing, <u>Hi-sama</u> is ordering everyone to go back to the village.</font>
+
+7
+00:01:53,370 --> 00:01:54,620
+<font color="#ff3366">Yes, <u>Ji-sama</u> also says so.</font>
+
+8
+00:01:54,620 --> 00:01:55,690
+<font color="#00ff00"><u><i>¿Ji</i>-sama</u>?</font>
+
+9
+00:01:55,690 --> 00:01:56,760
+<font color="#ff3366">He said that the forest is strange.</font>
+
+10
+00:01:56,760 --> 00:01:58,050
+<font color="#00ff00">The birds all disappeared.</font>
+
+11
+00:01:58,050 --> 00:01:59,490
+<font color="#ff3366">¡All the <i>creatures</i> have disappeared, too!</font>
+
+12
+00:01:59,490 --> 00:02:02,000
+<font color="#00ff00">I see, I'm going to check on <u>Ji-sama</u>.</font>
+

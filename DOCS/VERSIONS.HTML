@@ -1,0 +1,639 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<html>
+<head>
+<title>SCC Tools Version History</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css" media="screen">
+<!--
+  H2 {align: center;}
+  TD {vertical-align: top;}
+-->
+</style>
+</head>
+<body>
+<h3 align="center">SCC Tools Version History</h3>
+
+<p>Components of SCC Tools (bold means changed by latest update):</p>
+<ul>
+<li><b><a href="#CCADJ">CCADJ</a></b></li>
+<li><b><a href="#CCASDI">CCASDI</a></b></li>
+<li><b><a href="#RAW2SCC">RAW2SCC</a></b></li>
+<li><a href="#SCC_RIP">SCC_RIP</a> (was DVB2SCC, no longer maintained)</li>
+<li><a href="#SCC2RAW">SCC2RAW</a></li>
+<li><a href="#SUBRIP2SCC">SUBRIP2SCC</a></li>
+<li><a href="#VOBSUB2SCC">VOBSUB2SCC</a></li>
+<li><a href="#CC_MUX">CC_MUX</a> (new tool)</li>
+<li><a href="#DVR2SCC">DVR2SCC</a> (new tool)</li>
+<li><a href="#PAS2SCC">PAS2SCC</a> (new tool)</li>
+<li><a href="#CCExtract">CCExtract</a></li>
+<li><a href="#doc">Documentation</a> (besides keeping it up to date with
+  the tool changes)</li>
+<li><a href="#format">SCC and CCD Formats</a></li>
+</ul>
+
+<table border="1" width="90%" align="center">
+<tr><th colspan="3"><a name="CCADJ">CCADJ</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td><b>2.8</b></td><td>January 7, 2005</td><td><ul>
+    <li>Added <code>-m</code> argument to multiply against all
+        timecodes.</li></ul></td></tr>
+  <tr><td>2.7.2</td><td>January 2, 2004</td><td><ul>
+    <li>Updated e-mail and web addresses</li></ul></td></tr>
+  <tr><td>2.7.1</td><td>August 13, 2003</td><td><ul>
+    <li>Fixed rounding bug in timecode conversions introduced by
+        2.7.</li></ul></td></tr>
+  <tr><td>2.7</td><td>August 11, 2003</td><td><ul>
+    <li>Fixed bug in timecode conversions introduced by 2.6.</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed logic for drop-type timecodes (hopefully once and for
+        all).</li></ul></td></tr>
+  <tr><td>2.1</td><td>February 13, 2003</td><td><ul>
+    <li>Thanks to Dan Wilson, I have corrected a basic misunderstanding
+        concerning the definition of "non-dropframe" vs. "dropframe" timebases.
+        This led to corrections to the internal calculations of all six tools,
+        the addition of a <code>-td</code> argument to set the timebase to
+        dropframe, and the ability to read and output dropframe timecodes
+        (which change the last colon into a semicolon:
+        <code>HH:MM:SS;FF</code>).</li></ul></td></tr>
+  <tr><td>2.0</td><td>February 9, 2003</td>
+    <td align="center"><i>(No change)</i></td></tr>
+  <tr><td>1.3</td><td>January 19, 2003</td><td><ul>
+    <li>Fixed another bug in <code>-o</code> that wouldn't allow negative
+        offsets.</li></ul></td></tr>
+  <tr><td>1.2</td><td>October 13, 2002</td><td><ul>
+    <li>Able to handle double-spaced SCC files now.</li>
+    <li>Fixed bug in <code>-o</code> that wouldn't allow negative
+        offsets.</li>
+    <li>Clarified usage note for negative timecodes.</li></ul></td></tr>
+  <tr><td>1.1</td><td>August 24, 2002</td><td><ul>
+    <li>Fixed bug of invalid timecodes (such as 00:08:11:30).</li>
+    <li>Added check for timecodes that are out of order.</li></ul></td></tr>
+  <tr><td>1.0</td><td>April 13, 2002</td><td><ul>
+    <li>Initial release</li></ul></td></tr>
+<tr><th colspan="3"><a name="CCASDI">CCASDI</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td><b>3.5</b></td><td>May 5, 2005</td><td><ul>
+    <li>Fixed numerous XDS bugs, including using the wrong filler byte
+        (0x80 instead of 0x40). Fixed <a href="CC_XDS.HTML">XDS</a> page to
+        match. Also replaced xds.bin file in sample
+        directory. Thanks to Ji-Liang Song for spotting this
+        problem.</li></ul></td></tr>
+  <tr><td><b>3.4</b></td><td>February 25, 2005</td><td><ul>
+    <li>Fixed character set comparison (was always using ITV
+        set).</li></ul></td></tr>
+  <tr><td><b>3.3.1</b></td><td>January 27, 2005</td><td><ul>
+    <li>Bug fix to catch lines dropped by 3.3.</li></ul></td></tr>
+  <tr><td><b>3.3</b></td><td>January 25, 2005</td><td><ul>
+    <li>Fixed subtitle output to only include one channel.</li></ul></td></tr>
+  <tr><td><b>3.2</b></td><td>October 23, 2004</td><td><ul>
+    <li>Fixed spacing problem for CCD->SCC conversion</li></ul></td></tr>
+  <tr><td>3.1</td><td>September 4, 2004</td><td><ul>
+    <li>Fixed subtitle export to handle roll-up and paint-on captions
+      properly.</li>
+    <li>Swapped definitions of single right and single left quotation marks
+      (<code>{rsq}<code> and <code>{lsq}</code>).</li></ul></td></tr>
+  <tr><td>3.0</td><td>March 17, 2004</td><td><ul>
+    <li>Numerous fixes to XDS format, causing CCD format to go to 1.2:</li>
+    <ul><li>Fixed definition of XDS class bytes and added continuation class
+        bytes (all but <code>C</code>urrent were wrong).</li>
+      <li>Added support for interrupted and resumed XDS packets.</li>
+      <li>Changed beginning of XDS checksum from <code>C</code> to
+          <code>\C</code>.</li>
+      <li>XDS <code>ST</code>, <code>MD</code>, <code>TD</code>,
+          <code>IC</code> and <code>CH</code> fields re-arranged to allow
+          interruption.</li>
+      <li>XDS <code>ST</code>, <code>MD</code>, <code>TD</code>,
+          <code>TM</code> and <code>IC</code> Tape Delay character changed from
+          <code>D</code> to <code>T</code>.</li>
+      <li>XDS <code>ST</code>, <code>MD</code>, <code>TD</code> and
+          <code>IC</code> No Leap Day character changed from <code>N</code> to
+          <code>A</code>.</li>
+      <li>XDS <code>PR</code> system change: <code>CE</code>=<code>0x18</code>,
+          <code>CF</code>=<code>0x38</code> for byte 3, no byte 4 change.</li>
+      <li>XDS <code>AR</code> changed <code>16:9</code>/<code>4:3</code> to
+          <code>A</code>/<code>_</code>.</li>
+      <li>XDS <code>MD</code> and <code>NC</code> split Call Letters with space
+          to get Channel Number.</li></ul>
+    <li>Added definitions for Channel 3 and 4 codes, where they differ from
+        Channel 1/2.</li>
+    <li>Added remaining channels to <code>-c</code> option</li></ul></td></tr>
+  <tr><td>2.10</td><td>February 15, 2004</td><td><ul>
+    <li>Added subtitle export format of Adobe Encore, which is set by using
+        a file extension of <code>.txt</code>.</li></ul></td></tr>
+  <tr><td>2.9</td><td>January 2, 2004</td><td><ul>
+    <li>Updated e-mail and web addresses</li>
+    <li>Added support for the following <a href="CC_CODES.HTML">codes</a>:
+        <code>{CSS}</code>, <code>{CSD}</code>, <code>{CS1}</code>,
+        <code>{CS2}</code>, <code>{CSC}</code>, <code>{CSK}</code>, and
+        <code>{CGU}</code>.</li>
+    <li>Added support for the following XDS <a href="CC_XDS.HTML">types</a>:
+        <code>PD</code> and <code>MD</code> (for <code>C</code>urrent and
+        <code>F</code>uture classes); <code>TS</code> (for the
+        c<code>H</code>annel class); <code>CP</code>, <code>CH</code> and
+        <code>CM</code> (for the <code>M</code>iscellaneous class); and
+        <code>WB</code> and <code>WM</code> (for the <code>P</code>ublic Service
+        class).</li></ul></td></tr>
+  <tr><td>2.8</td><td>October 7, 2003</td><td>Fixed the following formatting
+      bugs with <code>-s</code> output:<ul>
+    <li>A line with italics or underline in the middle would lose the part
+        before the formatting.</li>
+    <li>Color codes did not reset italics and underline formatting like they
+        should.</li>
+    <li>End of italics or underline formatting was not being output.</li>
+    <li>Entire lines that were italicized or underlined were not having each
+        line separately formatted.</li>
+    <li>Formatting codes (colors, italics, and underline, on or off) are
+        supposed to insert a space.</li></ul></td></tr>
+  <tr><td>2.7.2</td><td>September 17, 2003</td><td><ul>
+    <li>Fixed bug that dropped odd captions during the <code>-s</code>
+        conversion when there was no gap between captions.</li></ul></td></tr>
+  <tr><td>2.7.1</td><td>August 13, 2003</td><td><ul>
+    <li>Fixed rounding bug in timecode conversions introduced by
+        2.7.</li></ul></td></tr>
+  <tr><td>2.7</td><td>August 11, 2003</td><td><ul>
+    <li>Fixed bug in timecode conversions introduced by 2.6.</li>
+    <li>Changed <code>-s</code> function to output subtitles. Default is SubRip
+        format (changing extension from .SCC to .SRT). By providing the name of
+        an output file with the appropriate extension, the subtitles can also
+        be in MicroDVD format (.SUB), SAMI format (.SMI), PowerDivX format
+        (.PSB), Sub-Station Alpha format (.SSA) or Advanced Sub-Station format
+        (.ASS). My thanks to Gabest for posting the source code of his VobSub
+        tool online for me to study, since this routine is basically his code
+        translated from C++ to Perl.</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed logic for drop-type timecodes (hopefully once and for all).</li>
+    <li>Undocumented XDS formats will now be input/output as hex-dumps without
+        crashing the program, as it appears that at least one DVB format uses
+        them.</li></ul></td></tr>
+  <tr><td>2.1</td><td>February 13, 2003</td><td><ul>
+    <li>Thanks to Dan Wilson, I have corrected a basic misunderstanding
+        concerning the definition of "non-dropframe" vs. "dropframe" timebases.
+        This led to corrections to the internal calculations of all six tools,
+        the addition of a <code>-td</code> argument to set the timebase to
+        dropframe, and the ability to read and output dropframe timecodes
+        (which change the last colon into a semicolon:
+        <code>HH:MM:SS;FF</code>).</li></ul></td></tr>
+  <tr><td>2.0</td><td>February 9, 2003</td><td><ul>
+    <li>With the exception of CCADJ, all tools are now able to handle leaving
+        off the output file argument, by making a reasonable guess based on the
+        input name (for example, running CCASDI with an argument of
+        "captions.scc" will produce an output file of "captions.ccd"). If you
+        want an output name different than the default, you can still provide
+        it as the last argument.</li>
+    <li>First version to create <a href="#format">CCD</a> version 1.1 (which
+        can handle ITV and XDS codes).</li>
+    <li>Yet another try at the negative timecodes problem. Hopefully, this will
+        fix the problem.</li>
+    <li>The "timecodes out of order" error message now reports the line number
+        of the input file where the problem was found.</li>
+    <li>The program now assumes that the channel is 1, which allows it to
+        handle XDS codes.</li></ul></td></tr>
+  <tr><td>1.3</td><td>January 19, 2003</td><td><ul>
+    <li>Fixed another bug in <code>-o</code> that wouldn't allow negative
+        offsets.</li></ul></td></tr>
+  <tr><td>1.2.1</td><td>November 19, 2002</td><td><ul>
+    <li>Corrected mis-naming of the <code>-a</code> flag (incorrectly named
+        <code>-p</code> in 1.2).</li></ul></td></tr>
+  <tr><td>1.2</td><td>October 13, 2002</td><td><ul>
+    <li>Made SCC output file double-spaced to conform with SCC
+        specification (CCD files remain single-spaced).</li>
+    <li>Fixed translation of box corner extended characters.</li>
+    <li>Fixed bug with SCC->CCD when first timecode is 00:00:00:00.</li>
+    <li>Added <code>-a</code> flag to adjust display times to start times
+        (CCD to SCC) and start times to display times (SCC to CCD).</li>
+    <li>Fixed bug in <code>-o</code> that wouldn't allow negative
+        offsets.</li></ul></td></tr>
+  <tr><td>1.1</td><td>August 24, 2002</td><td><ul>
+    <li>Fixed bug of invalid timecodes (such as 00:08:11:30).</li>
+    <li>Added check for timecodes that are out of order.</li></ul></td></tr>
+  <tr><td>1.0</td><td>April 13, 2002</td><td><ul>
+    <li>Initial release</li></ul></td></tr>
+<tr><th colspan="3"><a name="RAW2SCC">RAW2SCC</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td><b>2.10</b></td><td>February 25, 2005</td><td><ul>
+    <li>Channel changes in the raw file now force a new
+        line.</li></ul></td></tr>
+  <tr><td>2.9</td><td>September 22, 2004</td><td><ul>
+    <li>Trimmed <code>8080</code> (null) codes off the end of SCC lines.</li>
+    <li>A line break will now be added whenever two or more null codes are
+      found in a row in the middle of a line.  This limit can be changed with
+      the new <code>-l</code> parameter (<code>-l8</code> to increase it to 8
+      null codes in a row, for example).</li></ul></td></tr>
+  <tr><td>2.8</td><td>March 17, 2004</td><td><ul>
+    <li>Added in new Channel 3 & 4 codes for
+        line-splitting.</li></ul></td></tr>
+  <tr><td>2.7.2</td><td>January 2, 2004</td><td><ul>
+    <li>Updated e-mail and web addresses</li></ul></td></tr>
+  <tr><td>2.7.1</td><td>August 13, 2003</td><td><ul>
+    <li>Fixed rounding bug in timecode conversions introduced by
+        2.7.</li></ul></td></tr>
+  <tr><td>2.7</td><td>August 11, 2003</td><td><ul>
+    <li>Fixed bug in timecode conversions introduced by 2.6.</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed logic for drop-type timecodes (hopefully once and for
+        all).</li>
+    <li>Added ability to extract Field 2 from DVD-style input files.</li>
+    <li>Put each XDS sequence on its own line in the SCC
+        output.</li></ul></td></tr>
+  <tr><td>2.1</td><td>February 13, 2003</td><td><ul>
+    <li>Thanks to Dan Wilson, I have corrected a basic misunderstanding
+        concerning the definition of "non-dropframe" vs. "dropframe" timebases.
+        This led to corrections to the internal calculations of all six tools,
+        the addition of a <code>-td</code> argument to set the timebase to
+        dropframe, and the ability to read and output dropframe timecodes
+        (which change the last colon into a semicolon:
+        <code>HH:MM:SS;FF</code>).</li></ul></td></tr>
+  <tr><td>2.0</td><td>February 9, 2003</td><td><ul>
+    <li>With the exception of CCADJ, all tools are now able to handle leaving
+        off the output file argument, by making a reasonable guess based on the
+        input name (for example, running CCASDI with an argument of
+        "captions.scc" will produce an output file of "captions.ccd"). If you
+        want an output name different than the default, you can still provide
+        it as the last argument.</li>
+    <li>When parsing data, a new line will be started if the mode is switched,
+        for example from pop-on captions to text captions.</li></ul></td></tr>
+  <tr><td>1.3</td><td>January 19, 2003</td><td><ul>
+    <li>Fixed another bug in <code>-o</code> that wouldn't allow negative
+        offsets.</li></ul></td></tr>
+  <tr><td>1.2</td><td>October 13, 2002</td>
+    <td><ul><li>Made SCC output file double-spaced to conform with SCC
+        specification.</li>
+      <li>Removed 40-code (80-character) line limit, so each SCC line will now
+        always be the start of a caption or a caption clear.</li></ul></td></tr>
+  <tr><td>1.1</td><td>August 24, 2002</td>
+    <td><ul><li>Fixed bug of invalid timecodes (such as
+      00:08:11:30).</li></ul></td></tr>
+  <tr><td>1.0</td><td>April 13, 2002</td>
+    <td><ul><li>Initial release</li></ul></td></tr>
+<tr><th colspan="3"><a name="SCC_RIP">SCC_RIP</a> (no longer being
+  maintained)</th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>3.0</td><td>March 17, 2004</td><td><ul>
+    <li>Improved DVD <code>0xff</code>, <code>0xff</code> algorithm in case
+        pattern is not <code>0x80</code> (thanks to Keith Hui).</li>
+    <li>Added in Channel 3 & 4 codes for SCC
+        line-splitting.</li></ul></td></tr>
+  <tr><td>2.8.1</td><td>February 17, 2004</td><td><ul>
+    <li>Fixed open file handle for DVD-format output.</li>
+    <li>Swapped documentation for ReplayTV 4000 & 5000 models (this change was
+        invisible to the user).</li></ul></td></tr>
+  <tr><td>2.8</td><td>February 11, 2004</td><td><ul>
+    <li>Added ability to handle DVD-style captions with <code>0xff</code>,
+        <code>0xff</code> pattern (produced by Hauppauge WinTV-250 and
+        Panasonic DMR E-50, among others).</li>
+    <li>fixed major bug with DVD format that would lead to empty
+        output</li></ul></td></tr>
+  <tr><td>2.7.2</td><td>January 2, 2004</td><td><ul>
+    <li>Updated e-mail and web addresses</li>
+    <li>Tool made obsolete by <a href="#CCExtract">CCExtract</a>, which does the
+        same job a lot faster.</li></ul></td></tr>
+  <tr><td>2.7.1</td><td>August 13, 2003</td><td><ul>
+    <li>Fixed rounding bug in timecode conversions introduced by
+        2.7.</li></ul></td></tr>
+  <tr><td>2.7</td><td>August 11, 2003</td><td><ul>
+    <li>Fixed bug in timecode conversions introduced by 2.6.</li>
+    <li>Added ability to rip captions from MPEG's produced by the 5000 series
+        of ReplayTV receivers (previous code only supported 4000
+        series).</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed logic for drop-type timecodes (hopefully once and for
+        all).</li>
+    <li>Added ability to extract Field 2 from those formats that support it
+        (DVD and ReplayTV).</li>
+    <li>Put each XDS sequence on its own line in the SCC
+        output.</li></ul></td></tr>
+  <tr><td>2.5</td><td>May 17, 2003</td><td><ul>
+    <li>New name for DVB2SCC.</li>
+    <li>Added logic to rip captions from DVD MPEG files.</li>
+    <li>Fixed DVD file creation logic so output works with CCParser.</li>
+    <li>Added <code>-td</code> flag to output dropframe timecodes.</li>
+    <li>Set to exit without creating the SCC file if no captions are
+        found.</li></ul></td></tr>
+<tr><th colspan="3">DVB2SCC</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>2.4</td><td>May 10, 2003</td><td><ul>
+    <li>Added more <code>binmode</code> statements where needed, which should
+        fix the problem of the program terminating early.</li></ul></td></tr>
+  <tr><td>2.3</td><td>May 8, 2003</td><td><ul>
+    <li>DishTV: Figured out that captions were being transmitted in GOP, not
+        chronological order. Captions are now output in the correct order.</li>
+    <li>DishTV: Fixed incorrect repeating of caption codes (the repeat code
+        should only apply to commands, not character pairs).</li></ul></td></tr>
+  <tr><td>2.2</td><td>April 13, 2003</td><td><ul>
+    <li>Added tool to package (support for ReplayTV captions, with DishTV not
+        working).</li></ul></td></tr>
+<tr><th colspan="3"><a name="SCC2RAW">SCC2RAW</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>2.7.2</td><td>January 2, 2004</td><td><ul>
+    <li>Updated e-mail and web addresses</li>
+    <li>Changed default output file extension from <code>.dat</code> to
+        <code>.bin</code>.</li></ul></td></tr>
+  <tr><td>2.7.1</td><td>August 13, 2003</td><td><ul>
+    <li>Fixed rounding bug in timecode conversions introduced by
+        2.7.</li></ul></td></tr>
+  <tr><td>2.7</td><td>August 11, 2003</td><td><ul>
+    <li>Fixed bug in timecode conversions introduced by 2.6.</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed logic for drop-type timecodes (hopefully once and for
+        all).</li>
+    <li>Added ability to insert Field 2 data into DVD-style output.</li>
+    <li>Changed <code>-s</code> parameter to <code>-o</code>, to match the
+        other tools.</li></ul></td></tr>
+  <tr><td>2.1</td><td>February 13, 2003</td><td><ul>
+    <li>Thanks to Dan Wilson, I have corrected a basic misunderstanding
+        concerning the definition of "non-dropframe" vs. "dropframe" timebases.
+        This led to corrections to the internal calculations of all six tools,
+        the addition of a <code>-td</code> argument to set the timebase to
+        dropframe, and the ability to read and output dropframe timecodes
+        (which change the last colon into a semicolon:
+        <code>HH:MM:SS;FF</code>).</li></ul></td></tr>
+  <tr><td>2.0</td><td>February 9, 2003</td><td><ul>
+    <li>With the exception of CCADJ, all tools are now able to handle leaving
+        off the output file argument, by making a reasonable guess based on the
+        input name (for example, running CCASDI with an argument of
+        "captions.scc" will produce an output file of "captions.ccd"). If you
+        want an output name different than the default, you can still provide
+        it as the last argument.</li>
+    <li>Changed argument list to resemble that of the other tools.</li>
+    <li>The "timecodes out of order" error message now reports the line number
+        of the input file where the problem was found.</li></ul></td></tr>
+  <tr><td>1.2</td><td>October 13, 2002</td>
+    <td><ul><li>Able to handle double-spaced SCC files now.</li>
+      <li>Fixed rounding error in timecodes.</li></ul></td></tr>
+  <tr><td>1.1</td><td>August 24, 2002</td>
+    <td><ul><li>Initial release</li></ul></td></tr>
+<tr><th colspan="3"><a name="SUBRIP2SCC">SUBRIP2SCC</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>2.9</td><td>February 14, 2004</td><td><ul>
+    <li>Added logic to convert "<code>*</code>" to note character and
+        <code>-k</code> option to not do it.</li>
+    <li>Moved display line timecodes up by 2 frames to fix timing problem.</li>
+    <li>Fixed logic for positioning of clear code in middle of display
+        line.</li></ul></td></tr>
+  <tr><td>2.8.1</td><td>January 2, 2004</td><td><ul>
+    <li>Updated e-mail and web addresses</li></ul></td></tr>
+  <tr><td>2.8</td><td>October 7, 2003</td><td><ul>
+    <li>Fixed handling of subtitles with no gap between them so that the
+        resulting output would work with SCC2RAW.</li></ul></td></tr>
+  <tr><td>2.7.1</td><td>August 13, 2003</td><td><ul>
+    <li>Fixed rounding bug in timecode conversions introduced by
+        2.7.</li></ul></td></tr>
+  <tr><td>2.7</td><td>August 11, 2003</td><td><ul>
+    <li>Fixed bug in timecode conversions introduced by 2.6.</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed logic for drop-type timecodes (hopefully once and for
+        all).</li></ul></td></tr>
+  <tr><td>2.2</td><td>May 6, 2003</td><td><ul>
+    <li>Fixed a problem with line numbering that was putting bottom rows too
+        high on the screen.</li>
+    <li>Fixed a problem where processing would stop if a space were found at
+        position 32 in a line.</li>
+    <li>Clarified the error message that displays if a 3-line subtitle is
+        found.</li></ul></td></tr>
+  <tr><td>2.1</td><td>February 13, 2003</td><td><ul>
+    <li>Thanks to Dan Wilson, I have corrected a basic misunderstanding
+        concerning the definition of "non-dropframe" vs. "dropframe" timebases.
+        This led to corrections to the internal calculations of all six tools,
+        the addition of a <code>-td</code> argument to set the timebase to
+        dropframe, and the ability to read and output dropframe timecodes
+        (which change the last colon into a semicolon:
+        <code>HH:MM:SS;FF</code>).</li></ul></td></tr>
+  <td>2.0</td><td>February 9, 2003</td><td><ul>
+    <li>Added tool to package.</li>
+    <li>With the exception of CCADJ, all tools are now able to handle leaving
+        off the output file argument, by making a reasonable guess based on the
+        input name (for example, running CCASDI with an argument of
+        "captions.scc" will produce an output file of "captions.ccd"). If you
+        want an output name different than the default, you can still provide
+        it as the last argument.</li></ul></td></tr>
+<tr><th colspan="3"><a name="VOBSUB2SCC">VOBSUB2SCC</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>3.1</td><td>September 26, 2004</td><td><ul>
+    <li>The tool now remembers which of two packets with the same timestamp had
+      captions, and repeats that choice for all-null packets until the next
+      caption packet is found.  This fixes a timing issue that occurs when you
+      select the same all-null packet each time.</li></ul></td></tr>
+  <tr><td>3.0</td><td>September 22, 2004</td><td><ul>
+    <li>Completely re-wrote parsing algorithm to handle duplicate captions
+      (method used in 2.8 and 2.9 was wrong).</li>
+    <li>Dropped <code>-1</code> and <code>-2</code> parameters, as duplicate
+      captions can now be detected and removed without user intervention.</li>
+    <li>Fixed file naming for .sub.cc.raw files (i.e.
+      <code>VTS01.sub.cc.raw</code> will now generate <code>VTS01.bin</code>
+      and <code>VTS01.scc</code> instead of <code>VTS01.sub.bin</code> and
+      <code>VTS01.sub.scc</code>).</li></ul></td></tr>
+  <tr><td>2.9</td><td>September 21, 2004</td><td><ul>
+    <li>Added in Channel 3 & 4 codes for SCC line-splitting (from
+      RAW2SCC 2.8).</li>
+    <li>Trimmed <code>8080</code> (null) codes off of end of SCC lines (from
+      RAW2SCC 2.9).</li>
+    <li>Broke SCC line anytime more than 2 null codes in a row are found (this
+      limit can be changed with the new parameter <code>-l</code> (see RAW2SCC
+      version 2.9).</li>
+    <li>Changed <code>-d1</code> and <code>-d2</code> parameters to
+      <code>-1</code> and <code>-2</code> parameters (to be consistent with other
+      tools in the package).</li></ul></td></tr>
+  <tr><td>2.8</td><td>September 21, 2004</td><td><ul>
+    <li>Added ability to remove duplicate captions, controlled by the new
+      parameters <code>-d1</code> and <code>-d2</code>.</li></ul></td></tr>
+  <tr><td>2.7.2</td><td>January 2, 2004</td><td><ul>
+    <li>Updated e-mail and web addresses</li></ul></td></tr>
+  <tr><td>2.7.1</td><td>August 13, 2003</td><td><ul>
+    <li>Fixed rounding bug in timecode conversions introduced by
+        2.7.</li></ul></td></tr>
+  <tr><td>2.7</td><td>August 11, 2003</td><td><ul>
+    <li>Fixed bug in timecode conversions introduced by 2.6.</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed logic for drop-type timecodes (hopefully once and for
+        all).</li>
+    <li>Put each XDS sequence on its own line in the SCC
+        output.</li></ul></td></tr>
+  <tr><td>2.1</td><td>February 13, 2003</td><td><ul>
+    <li>Thanks to Dan Wilson, I have corrected a basic misunderstanding
+        concerning the definition of "non-dropframe" vs. "dropframe" timebases.
+        This led to corrections to the internal calculations of all six tools,
+        the addition of a <code>-td</code> argument to set the timebase to
+        dropframe, and the ability to read and output dropframe timecodes
+        (which change the last colon into a semicolon:
+        <code>HH:MM:SS;FF</code>).</li>
+    <li>The output of this tool was not including tab characters between the
+        timecodes and the content.</li></ul></td></tr>
+  <td>2.0</td><td>February 9, 2003</td><td><ul>
+    <li>Added tool to package.</li>
+    <li>With the exception of CCADJ, all tools are now able to handle leaving
+        off the output file argument, by making a reasonable guess based on the
+        input name (for example, running CCASDI with an argument of
+        "captions.scc" will produce an output file of "captions.ccd"). If you
+        want an output name different than the default, you can still provide
+        it as the last argument.</li></ul></td></tr>
+<tr><th colspan="3"><a name="CC_MUX">CC_MUX</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>1.0</td><td>March 2, 2004</td><td><ul>
+    <li>Added tool to package.</li></ul></td></tr>
+<tr><th colspan="3"><a name="DVR2SCC">DVR2SCC</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>1.0</td><td>February 17, 2004</td><td><ul>
+    <li>Added tool to package.</li></ul></td></tr>
+<tr><th colspan="3"><a name="PAS2SCC">PAS2SCC</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>1.0</td><td>February 14, 2004</td><td><ul>
+    <li>Added tool to package.</li></ul></td></tr>
+<tr><th colspan="3"><a name="CCExtract">CCExtract</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>2.0</td><td>August 27, 2004</td><td><ul>
+    <li>Re-wrote entire procedure using General Parser sample code so that
+      caption code is aware of picture type (required by ATSC format).</li>
+    <li>Added DSS-SD captions (as documented in video.bdl).</li>
+    <li>Added PES.bdl to the CCExtract.gp project.  This improves the ability
+      of CCExtract to handle program streams.  Unfortunately, it also hurts the
+      ability to parse certain problematic files, so I created a new project
+      file called CCExtract_VES.gp that does not include
+      PES.bdl.</li></ul></td></tr>
+  <tr><td>1.4</td><td>August 21, 2004</td><td><ul>
+    <li>Added ATSC format generated by Pinnacle MediaStream.</li></ul></td></tr>
+  <tr><td>1.3</td><td>March 17, 2004</td><td><ul>
+    <li>Improved <code>ff ff</code> DVD format handling to use pattern flag
+        (thanks to Keith Hui)</li></ul></td></tr>
+  <tr><td>1.2</td><td>February 29, 2004</td><td><ul>
+    <li>Swapped field output for both ReplayTV 4000 and 5000 formats.</li>
+    <li>Swapped identification of ReplayTV 4000 and 5000 formats (this change
+        was invisible to the user).</li></ul></td></tr>
+  <tr><td>1.1</td><td>February 11, 2004</td><td><ul>
+    <li>Handle special case of DVD format with <code>ff xx xx ff yy yy</code>
+        pattern (produced by Hauppauge WinTV-250 and Panasonic DMR-E50H, among
+        others).</li></ul></td></tr>
+  <tr><td>1.0</td><td>January 2, 2004</td><td><ul>
+    <li>Added tool to package (module for <a
+    href="http://www.geocities.com/mcpoodle43/SCC_TOOLS/GeneralParser.zip">General
+    Parser</a> to rip captions from MPEG files).  Should have same capabilities
+    as SCC_RIP tool (which is now obsolete).</li></ul></td></tr>
+<tr><th colspan="3"><a name="doc">Documentation</a> (versions
+  match <a href="#CCASDI">CCASDI</a>)</th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>3.0</td><td>March 17, 2004</td><td><ul>
+    <li>Completely re-wrote <a href="CC_XDS.HTML">XDS</a> document to be easier
+        to read (as well and being factually accurate for the first time).</li>
+    <li>Revised <a href="CC_CODES.HTML">codes</a> and
+        <a href="CC_CHARS.HTML">characters</a> documents to include Channels
+        3 and 4.</li>
+    <li>Added "Connect to Remote Graph" tip for GraphEdit.</li>
+    <li>Abandoned ideal of keeping all tool versions in sync and re-organized
+        this version page accordingly.</li>
+    <li>Revised DVD caption format section of the Caption Format page to
+        include observed variations.</li></ul></td></tr>
+  <tr><td>2.9</td><td>January 2, 2004</td><td><ul>
+    <li>Added descriptions of missing codes (<code>{CSS}</code>,
+        <code>{CSD}</code>, <code>{CS1}</code>, <code>{CS2}</code>,
+        <code>{CSC}</code>, <code>{CSK}</code>, <code>{CGU}</code>) and XDS
+        types (<code>PD</code> and <code>MD</code> [for <code>C</code>urrent
+        and <code>F</code>uture classes]; <code>TS</code> [for the
+        c<code>H</code>annel class]; <code>CP</code>, <code>CH</code> and
+        <code>CM</code> [for the <code>M</code>iscellaneous class]; and
+        <code>WB</code> and <code>WM</code> [for the <code>P</code>ublic Service
+        class]).  The codes all belong to a group called Closed Group Codes,
+        while the XDS types are filed under their respective classes.</li>
+    <li>Documented DVD caption format in detail on the Caption Format
+        page.</li>
+    <li>Added documentation for how to use the General Parser tool to rip
+        captions from MPEG files a lot faster than SCC_RIP did.</li>
+    <li>Rewrote VCD sections of main document to cover what I've learned in the
+        last few months about VCD closed captions.</li></ul></td></tr>
+  <tr><td>2.6</td><td>July 27, 2003</td><td><ul>
+    <li>Fixed mistakes in the Characters page (switched <code>{rsq}</code> and
+        <code>{lsq}</code>) and Codes page (extra character in some CCD
+        codes).</li>
+    <li>Added documentation of undocumented packets in the XDS
+        page.</li></ul></td></tr>
+  <tr><td>2.0</td><td>February 9, 2003</td><td><ul>
+    <li>Corrected most references of "field" to "channel".</li>
+    <li>Added a page <a href="SCC_FORMAT.HTML">explaining</a> what Line 21
+        Closed Captions are and how they are transmitted, including
+        explanations of eXtended Data Service (XDS) and Interactive TeleVision
+        (ITV).</li>
+    <li>Moved <a href="VERSIONS.HTML">Version History</a> to its own page, with
+        only the latest change retained on the main page.</li>
+    <li>Added new pages for <a href="CC_XDS.HTML">XDS</a> and
+        <a href="CC_ITV.HTML">ITV</a>.</li></ul></td></tr>
+  <tr><td>1.2</td><td>October 13, 2002</td><td><ul>
+    <li>Brought HTML up to strict 4.01.</li>
+    <li>Added Version History section.</li></ul></td></tr>
+  <tr><td>1.1</td><td>August 24, 2002</td><td><ul>
+    <li>Added note that Dump filter must be used in GraphEdit instead
+        of FileWriter filter.</li>
+    <li>Filled in missing Word shortcuts in CCD Character
+        document.</li></ul></td></tr>
+  <tr><td>1.0</td><td>April 13, 2002</td><td><ul>
+    <li>Initial release</li></ul></td></tr>
+<tr><th colspan="3"><a name="format">SCC & CCD
+  Formats</a></th></tr>
+<tr><th>Version</th><th width="130">Date</th><th>Changes</th></tr>
+  <tr><td>1.2<td>March 17, 2004</td>
+    <td>Debut of version 1.2 of the Closed Caption Disassembly format (with
+      a header of <code>SCC_disassembly V1.2</code>). All tools from this point
+      will be backward-compatible with earlier formats except for XDS, which
+      was so completely wrong in version 1.1 that CCASDI can not be trusted
+      to handle it correctly.  If you have the original .SCC file with the XDS
+      codes, run CCASDI on it to get a workable .CCD file.<ul>
+    <li>XDS single-character class codes are now two-character, to
+        differentiate between start and continue codes (ex. <code>F</code> for
+        Future class has been split into <code>Fs</code> and <code>Fc</code>
+        for Future start and Future continue classes.</li>
+    <li>In accordance with XDS requirements, all XDS packets can now be split
+        at any byte-pair boundary.  Currently, the code only allows a maximum
+        of one split per packet.</li>
+    <li>Many XDS packets had their data re-arranged in CCD format in order to
+        allow the data to be split (see <a href="#CCASDI">CCASDI</a> changes
+        for 3.0).</li>
+    <li>A few values were changed to prevent confusion.  For example, in the
+        <code>TD</code> type packet, "<code>D</code>" meant both "Daylight
+        Savings Time" and "Tape Delay", so the code for the latter was changed
+        to "<code>T</code>".  The complete list of changes can be found under
+        <a href="#CCASDI">CCASDI</a>'s 3.0 entry.</li>
+    <li>Changed beginning of XDS checksum from <code>C</code> to
+        <code>\C</code>.</li>
+    <li>The <code>CHANNEL</code> keyword can now be used to change the channel
+        to <code>3</code> or <code>4</code>.  It must be <code>3</code> for
+        XDS.</li></ul></td></tr>
+  <tr><td rowspan="2">1.1</td><td rowspan="2">February 9, 2003</td>
+    <td>Debut of version 1.1 of the Closed Caption Disassembly format (with a
+      header of <code>SCC_disassembly V1.1</code>). All of the tools from this
+      point on are designed to be able to read either 1.0 or 1.1, but will only
+      write in 1.1.<ul>
+    <li>The <code>FIELD</code> at the top of the file has been changed to
+        <code>CHANNEL</code>. I had gotten my terms mixed up. The documentation
+        now goes into great detail about the difference between them.</li>
+    <li>The revised <code>CHANNEL</code> command can also be used in the body
+        of the CCD file to switch the channel at will. The command must be on
+        a line by itself, and can only be followed by <code>1</code> or
+        <code>2</code> to set the channel.</li>
+    <li>Added support of codes to change the background color. These commands
+        are only used in text mode, and they are documented in the
+        <a href="CC_CODES.HTML">Codes</a> page.</li>
+    <li>I've added support for eXtended Data Service (XDS) and Interactive
+        TeleVision (ITV) commands, both of which are transmitted via Line
+        21/284. I've documented both of these in great detail
+        <a href="CC_XDS.HTML">here</a> and <a href="CC_ITV.HTML">here</a>, and
+        also added appropriate sample files to the distribution. I'm fairly
+        sure that both of these services are only used by broadcast channels
+        and not for DVD's.</li>
+    <li>Changed the invalid character from "<code>*</code>" to "<code>£</code>".
+        This was because ITV uses the "<code>*</code>"
+        character.</li></ul></td></tr>
+    <tr><td><ul><li>The SCC files produced by all of the tools from this date
+        have a tab character between the timecode and the rest of the line.
+        This makes the SCC files produced by SCC Tools 100% compliant with the
+        file format as described in the Scenarist documentation. To be
+        backwardly-compatable, the tools will still be capable of reading SCC
+        files with spaces between the timecodes and the caption
+        data.</li></ul></td></tr>
+  <tr><td>1.0</td><td>April 13, 2002</td><td><ul>
+    <li>Debut of version 1.0 of CCD format</li></ul></td></tr>
+</table>
+
+<p><a href="SCC_TOOLS.HTML">Return</a> to SCC Tools Documentation.</p>
+</body>
+</html>

@@ -1,0 +1,1260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<html>
+<head>
+<title>SCC Tools Documentation</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css">
+<!--
+  H2 {text-align: center;}
+  TD {vertical-align: top;}
+  .centered { text-align: center; }
+-->
+</style>
+</head>
+<body>
+<h2>SCC Tools Download</h2>
+<p>The Scenarist Closed Caption Tools package is available for download <a
+href="http://www.geocities.com/mcpoodle43/SCC_TOOLS/SCC_TOOLS.ZIP">here</a>. 
+The latest version is 3.5 (May 5, 2005), which affects three tools:
+CCADJ can now <a href="#CCADJ">scale</a> timecodes with the new <code>-m</code>
+argument; CCASDI fixed a lot of bugs, including a mistake in filler byte
+handling pointed out to me by correspondent Ji-Liang Song; and RAW2SCC will now
+handle multi-channel raw files better.  For details, see the complete
+<a href="VERSIONS.HTML">version history</a>.</p>
+<p></p>
+<hr />
+<p></p>
+<h2>SCC Tools Documentation</H2>
+<p>The SCC Tools package consists of ten command-line tools (and one General
+Parser module) designed to assist in the task of extracting, manipulating, and
+inserting the additional data included in Line 21 of NTSC video: closed
+captions, MSNTV links, V-Chip ratings, and a variety of lesser-used types of
+information.</p>
+<p>The following files should have been included in this distribution:</p>
+<ul><li>CCADJ.EXE: Command-line utility to adjust timestamps on SCC and Closed 
+Caption Disassembly files.</li>
+<li>CCASDI.EXE: Command-line utility to convert between SCC and Closed Caption 
+Disassembly formats.  Also converts SCC to any of six subtitle formats.</li>
+<li>RAW2SCC.EXE: Command-line utility to convert raw closed caption data to 
+SCC format.</li>
+<li>SCC_RIP.EXE: Command-line utility to extract raw and SCC closed caption
+data from MPEG files (supplanted by CCExtract below).</li>
+<li>DVR2SCC.EXE: Command-line utility to extract raw and SCC closed caption
+data from DVR-MS files.</li>
+<li>SCC2RAW.EXE: Command-line utility to convert SCC format to raw broadcast
+format.</li>
+<li>SUBRIP2SCC.EXE: Command-line utility to convert Subrip subtitles to SCC
+format.</li>
+<li>VOBSUB2SCC.EXE: Command-line utility to convert raw VobSub-created data to
+SCC format.</li>
+<li>PAS2SCC.EXE: Command-line utility to convert CCWriter (DOS) closed files
+to SCC format.</li>
+<li>CC_MUX.EXE: Command-line utility to incorporate closed captions into MPEG
+files.</li>
+<li>DOCS\SCC_TOOLS.HTML: Documentation for SCC Tools (this file).</li>
+<li>General Parser\projects\MPEG\video\CCExtract.gp: General Parser module file
+to rip raw closed caption data from MPEG files.</li>
+<li>General Parser\projects\MPEG\video\CCExtract_VES.gp: Another General Parser
+module file, for use on demuxed Video Elementary Stream files when CCExtract.gp
+doesn't work.</li>
+<li>General Parser\source\MPEG\CCExtract.bdl: General Parser source file to rip
+raw closed caption data from MPEG files.</li>
+<li>SAMPLES\*.*: Sample Closed Caption files, in various formats.</li>
+<li>SOURCE\*.PL: Perl source for SCC Tools.</li>
+</ul>
+<p>For an explanation of Line 21 Closed Captions and how they are encoded,
+click <a href="SCC_FORMAT.HTML">here</a>.  For high-end DVD authoring
+(Sonic Scenarist, Apple DVDStudio Pro, and the discontinued Spruce DVDMaestro),
+closed captions are entered as files in the SCC format (for Scenarist Closed
+Caption).  Since this format is not readable by humans, I have included tools
+to convert SCC format to CCD (Closed Caption Disassembly) format and back.
+The CCD Format is documented <a href="#ccd">here</a> (including
+additional pages on <a href="CC_CHARS.HTML">characters</a>, 
+<a href="CC_CODES.HTML">Closed Caption codes</a>,
+<a href="CC_XDS.HTML">eXtended Data Service codes</a> and
+<a href="CC_ITV.HTML">Interactive TeleVision codes</a> in Closed Caption
+Disassembly format).</p>
+
+<h3>Topics:</h3>
+<ul>
+<p><b><u>Extracting Line 21 Data</u></b></p>
+<li><a href="#capture_analog">Capturing Raw Closed Caption Data from an
+Analog Source</a></li>
+<li><a href="#VCD">Getting Raw Closed Caption Data from a VCD</a></li>
+<li><a href="#raw2scc">Converting Raw Closed Caption Data to SCC Format: 
+RAW2SCC</a></li>
+<li><a href="#capture_DVD">Ripping SCC Captions from a DVD: VobSub and
+VOBSUB2SCC</a></li>
+<li><a href="#CCExtract">Extracting SCC Captions from MPEG files:
+General Parser and CCExtract</a></li>
+<li><a href="#dvr2scc">Extracting SCC Captions from DVR-MS files:
+DVR2SCC</a></li>
+<li><a href="#subrip2scc">Converting Subtitles into Closed Captions:
+SUBRIP2SCC</a></li>
+<li><a href="#pas2scc">Converting from other Closed Caption formats to SCC
+format: PAS2SCC</a></li>
+<p><b><u>Manipulating Line 21 Data</u></b></p>
+<li><a href="#ccasdi">Converting SCC to a Readable Format: CCASDI</a></li>
+<li><a href="#ccd">The Closed Caption Disassembly Format</a> (including 
+additional pages on <a href="CC_CHARS.HTML">characters</a>, 
+<a href="CC_CODES.HTML">Closed Caption codes</a>,
+<a href="CC_XDS.HTML">eXtended Data Service codes</a> and
+<a href="CC_ITV.HTML">Interactive TeleVision codes</a> in Closed Caption
+Disassembly format)</li>
+<li><a href="#ccadj">Adjusting Timecodes: CCADJ</a></li>
+<p><b><u>Inserting Line 21 Data</u></b></p>
+<li><a href="#cc_mux">Inserting captions into MPEG files: CC_MUX</a></li>
+<li><a href="#scc2raw">Converting SCC Format to Raw Format:
+SCC2RAW</a></li>
+</ul>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="capture_analog"><b><u>Capturing Raw Closed Caption Data from an
+Analog Source</b></u></a></p>
+<p>To obtain closed captions, you can either write them from scratch in <a
+href="#ccd">Closed Caption Disassembly Format</a>, convert them from <a
+href="#subrip2scc">subtitles</a> or other <a href="#pas2scc">other closed
+caption formats</a>, rip them from a <a href="#capture_DVD">DVD</a> or <a
+href="#CCExtract">MPEG</a> or <a href="#dvr2scc">DVR-MS</a> file, <a
+href="#VCD">grab them</a> from a VCD, or capture them with a TV capture card
+from an analog source.  The last of these methods is the most involved, so it
+will be covered first.</p>
+<p>To capture closed captions from a VCR, a laserdisc player, TV, or a settop
+DVD player, you will need a TV capture card.  For the purposes of closed
+caption capture, the cheaper the card, the better, since the high-end cards
+usually throw away the Line 21 signal to improve performance.  Any card
+with a WDM (Windows Driver Model) driver should work (see <a
+href="http://btwincap.sourceforge.net/">this site</a> for a generic WDM driver
+for cards that use the Brooktree chip--if the box makes a big deal about
+"watching TV on your PC", then it probably uses a Brooktree chip). 
+Unfortunately, the ATI-TV Wonder USB edition drivers are not WDM (and the main
+chip is not a Brooktree), so you cannot use this potentially-useful device. The
+most common card that does work is the ATI-TV Wonder PCI, available for less
+than $ 100.  However, this card will not work on a Windows 2000 or Windows XP
+machine if your primary video card was not manufactured by ATI (NVidia cards in
+particular refuse to work with the ATI-TV Wonder in these two operating
+systems).  Personally, I performed my research using an old computer with
+Windows 98 and the ATI-TV Wonder PCI to capture closed captions, then
+transferred the caption files to my main computer via floppy disk.</p>
+<p>To capture the Line 21 data, you will be using GraphEdit, a tool that comes
+with the DirectX Software Development Kit, to put together a program for
+dumping closed captions to a file.  You can download GraphEdit by itself
+from <a href="http://www.doom9.org">Doom 9</a>, or from <a
+href="http://www.microsoft.com/directx/">Microsoft</a> as part of the DirectX
+SDK.  The SDK (at 215+ MB a rather-large download) is probably worth loading
+for only two reasons: it already includes DirectX (in case you need to
+upgrade), and its help file is useful for figuring out what the different
+DirectShow filters do (in the Contents tab, look under DirectX - DirectShow -
+DirectShow Reference - DirectShow Filters).  On the other hand, the Doom 9
+version includes the Dump filter, which you will need in the below
+procedure.<p>
+<p>The simplest way to set up your graph is to open GraphEdit and your TV
+watching program at the same time, get the second program up and working, then
+switch to GraphEdit and select "Connect to Remote Graph" from the File menu.
+This should give you all the interconnected parts needed to watch TV, and from
+here it you should be able to find the VBI pin on one of the filters
+(pins are represented in GraphEdit as bumps on the boxes, which are the
+filters).</p>
+<p>Assuming this procedure worked and you found a VBI pin, select Insert Filters
+from the Graph menu.  Under WDM Streaming Tee/Splitter Devices, insert the
+"Tee/Sink-to-Sink Converter" filter.  Under WDM Streaming VBI Codecs, insert the
+"CC Decoder" filter.  Under DirectShow Filters, insert the "Dump" filter (this
+will prompt you for a filename to dump to, so use "cc.bin").</p>
+<p>You will see all of these filters on your graph, probably on top of each
+other.  Spread them out, then connect them in sequence by dragging from an
+output pin (bump on right side) of one filter to an input pin (bump on left
+side) of another.  Your goal is something like <a href="tvcapture_cc.gif"
+target="_blank">this</a> (just pay attention to the VBI pin and the filters
+I've named--the rest doesn't apply as well; also, the blue box is the Dump
+filter, although that's not very obvious).  One tweak you should be able to
+apply is selecting which line and field to capture (the default of Line 21
+Field 1 for closed captions, Line 21 Field 2 for XDS, or other lines and fields
+to get something completely different)--right-clicking on the "CC" output pin
+of the CC Decoder filter should give you this option (I no longer have my
+Windows 98 computer with the ATI-TV Wonder PCI, so I have no way of confirming
+this anymore).</p>
+<p>To start capturing captions, press the play button in GraphEdit.  A preview
+window may or may not appear, and the captions probably won't be visible
+(unless you follow the steps below in the detailed procedure), so you'll have
+to trust that everything is working.  Click the stop button in GraphEdit when
+you're done (don't close the preview window before you do this).  Check to
+make sure the file created has something in it (it will be in binary format, so
+you won't be able to read it).  If everything has worked up to this point,
+proceed to <a href="#raw2scc">convert</a> the file to SCC format.</p>
+
+<p>Assuming that "Connect to Remote Graph" didn't work, the following procedure
+describes what to do in more detail (although if "Connect to Remote Graph"
+<i>didn't</i> work, that might mean that the capture card doesn't use the
+DirectShow architecture, which would mean there is no way to hijack it to
+capture closed captions--maybe you should return the card while you can).</p>
+<ol><li>From Control Panel, double-click on the DirectX applet to find out 
+what version you have installed (if there's no applet in Control Panel, find 
+and run dxdiag.exe, probably located in the System32 subdirectory of your 
+C:\Windows or C:\WINNT directory).  If you don't have version 7 or higher of 
+DirectX, download the latest version from 
+<a href="http://www.microsoft.com/directx/">Microsoft's web page</a>.</li>
+<li>Start GraphEdit.  Under the Graph menu, select Insert Filters, then insert 
+all of the following:</li>
+<ul><li>Under WDM Streaming TV Tuner Devices, select the TVTuner filter (it 
+will be specific to your TV capture card, for instance "ATI TVTuner").  You 
+only need this filter if you need to tune to a specific channel.  If you use 
+RCA or S-Video cables to connect to the TV Capture card, don't add this 
+filter.</li>
+<li>Under WDM Streaming Crossbar Devices, select any filters you find--there 
+should be one or two.  For the ATI-TV Wonder PCI, the two are "ATI Crossbar" 
+and "ATIBt829 Crossbar" ("Bt829" refers to the Brooktree 829 chip).</li>
+<li>Under WDM Streaming Capture Devices, select the filter specific to your TV 
+capture card.  The filter for the ATI-TV Wonder PCI is "AtiBt829 Capture".</li>
+<li>Under WDM Streaming Tee/Splitter Devices, select the "Tee/Sink-to-Sink 
+Converter".</li>
+<li>Under DirectShow Filters, select the "VBI Surface Allocator".  For 
+Windows XP, select the "Video Port Manager" filter instead.</li>
+<li>Under WDM Streaming VBI Codecs, select the "CC Decoder".</li>
+<li>Under DirectShow Filters, select the "Line 21 Decoder".  If you're working 
+in Windows XP, use the "Line 21 Decoder 2" instead.</li>
+<li>Under DirectShow Filters, select the "Dump" filter.  This is the filter
+that will output the raw closed caption file, and when you select this filter,
+you will be prompted to provide a path and name of the file to create ("cc.bin"
+is a good generic name).  Note: The File Writer filter, although it appears to
+do the exact same thing as the Dump filter, cannot be made to connect to the
+other filters.  The Dump filter was added when you ran the batch file that came
+with Doom 9's version of Graph Edit.  If you ran this file and still don't have
+the Dump filter, edit the batch file in Notepad, adding the line "<code>set
+path=%path%;.</code>" at the top, then run it again.</li>
+<li>Under DirectShow Filters, select the "Overlay Mixer" (do not add this 
+filter for Windows XP).</li>
+<li>Under DirectShow Filters, select the "Video Mixing Renderer" for 
+Windows XP or the "Video Renderer" for other operating systems.  Then click 
+the Close button to return to GraphEdit.  Note: At least one Windows XP user
+has reported that the "Video Mixing Renderer" was mistakenly named "Video
+Renderer", sitting right next to the non-functional "Video Renderer" filter
+from pre-Windows XP.</li>
+</ul>
+<li>To create an application, you will now connect the filters (the boxes in 
+GraphEdit) to each other to pass data down the line.  To connect two boxes, 
+position the pointer in an output pin (one of the bumps on the right-hand side 
+of a box) and drag to an input pin (a left-hand bump on another box).  If the 
+two filters cannot be connected, you will get a cryptic error message--try 
+closing and re-opening GraphEditor and if this and a reboot doesn't work, then 
+it's possible the card just doesn't want to do what you want.  To configure a 
+filter, right-click it and select "Filter Properties".  Finally, to delete a 
+filter, click on it to select it, then press the Delete key.  Look 
+<a href="tvcapture_cc.gif" target="_blank">here</a> for an example of what this 
+should look like when finished (using a ATI-TV Wonder PCI card in a Windows 98 
+system).</li>
+<ol type="a"><li>If you are using the tuner, connect the Analog Video output of 
+the TVTuner filter to the Video Tuner In of the first crossbar filter (if you 
+have only one crossbar filter, it's the first one; otherwise, the one that 
+doesn't have a Video Decoder Out output is the first one).  Configure the 
+filter to select your broadcast standard (NTSC-M in North America) and the 
+channel you wish to capture from.</li>
+<li>If there are two crossbar filters, connect them based on how your video 
+signal is going into the card: Video Tuner Out to Video Tuner In, Video SVideo 
+Out to Video SVideo In, or Video Composite Out to Video Composite In.  
+Configure both crossbar filters to select the video source.</li>
+<li>Connect the Video Decoder Out of the second (or only) crossbar filter to 
+the Analog Video In of the capture filter.</li>
+<li>If the capture filter has a Preview output pin, connect it to Input0 of 
+the Overlay Mixer (for non-Windows XP environments) or Input0 of the Video 
+Mixing Renderer (for Windows XP).  Otherwise, make the same connection with 
+the Capture output pin of the capture filter.</li>
+<li>If the capture filter has a VPVBI output pin, connect it to the VBI Notify 
+input pin of the VBI Surface Allocator filter (for non-Windows XP systems) or 
+the same pin on the Video Port Manager filter.  If the capture filter does not 
+have this pin, then this filter is not needed, and can be deleted.  In case 
+you are wondering, the purpose of this dead-end filter is to allocate memory 
+on the video card to use the VBI output pin.</li>
+<li>Connect the VBI output pin of the Capture filter to the Communication 
+Transform input pin of the Tee/Sink-to-Sink Converter filter.  If you don't 
+have a VBI output pin, but do have a HWCC output pin, then you don't need the 
+Tee/Sink-to-Sink Converter filter.  If you don't have either of these pins, then 
+the driver for your TV capture card does not support Closed Caption display or 
+capture.  Either find another driver (see 
+<a href="http://btwincap.sourceforge.net/">here</a>) or return the card and 
+get a different one.</li>
+<li>If you used the Tee/Sink-to-Sink Converter filter, connect its output pin 
+to the VBI input pin of the CC Decoder filter.  If you didn't use this filter 
+and the capture filter has a HWCC output pin, connect this pin to the HWCC
+input pin of the CC Decoder filter.</li>
+<li>Connect the CC output pin of the CC Decoder filter to the XForm In pin of 
+either the Line 21 Decoder filter (for non-Windows XP) or the Line 21 
+Decoder 2 filter (for Windows XP).  Note that a second CC output pin will 
+appear on the CC Decoder filter when you do this.</li>
+<li>Connect this second CC output pin to the input pin of the Dump 
+filter (the name of this filter will be "cc.bin" or whatever else you called
+your capture file).  By default, this will save Line 21 Field 1 data, which
+includes channels CC1 and CC2 (primary and secondary closed captions), T1
+(text) and T2 (ITV).  By right-clicking on the CC output pin, you can change
+the data source to be Line 21 Field 2 (also known as Line 284)--this will
+change the output to only contain CC3 (XDS).</li>
+<li>For non-Windows XP systems, connect the XForm Out pin of the Line 21 
+Decoder filter to the Input2 pin of the Overlay Mixer filter (which you used 
+back in step d).  For Windows XP, connect the XForm Out pin of the Line 21 
+Decoder 2 filter to the Input2 pin of the Video Mixing Renderer filter.</li>
+<li>For non-Windows XP systems, connect the XForm Out pin of the Overlay Mixer 
+filter to the Input of the Video Renderer.  Windows XP users don't need to do 
+anything for this step.</li>
+</ol>
+<li>Save the resulting graph.</li>
+<li>To capture closed captions, set up your video source, then click on the 
+play button in the toolbar of GraphEdit.  A small preview window should open 
+showing the video with closed captions overlayed.  There will be no sound and 
+the video may be in black and white, but as long as closed captions are being 
+displayed, they will also be captured.  The filter graph will only display
+channel CC1 (for Field 1) or CC3 (for Field 2), but despite this you are
+actually capturing everything transmitted on whichever Line 21 field you
+selected to capture.</li>
+<li>Monitor the preview window until all of the captions you are interested in 
+have been displayed, then click the stop button in the toolbar of GraphEdit to 
+stop recording.  DO NOT close the preview window before stopping GraphEdit, as 
+that will crash the computer (you should close the window once you have 
+stopped GraphEdit, though).</li>
+<li>Take a look at the file you have created, to make sure that it is not an 
+empty file.  The contents of the file are in binary, so they should look like 
+gibberish, with a few letters here and there.</li>
+<li>You can now proceed to <a href="#raw2scc">convert</a> this file to SCC
+format.</li>
+</ol>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="VCD"><b><u>Getting Raw Closed Caption Data from a
+VCD</b></u></a></p>
+<p>Closed Captions for VCDs are not completely documented anywhere on the
+Internet, largely because the format has been abandoned for commercial purposes
+in North America (I presume they are documented in the White Book
+specifications, but not only is this $200, but any potential buyers are required
+to sign a non-disclosure agreement that would defeat the purpose of buying them
+in the first place).  The only VCDs that are being made today lack closed
+captions.</p>
+<p>The vast majority of the often poorly-formatted specifications for VCDs
+and SVCDs found on the 'net derive from the Philips PDF <a
+href="http://www.licensing.philips.com/information/cd/video/documents575.html">Super
+Video Compact Disc, a Technical Explanation</a>.  This document states two ways
+that closed captions are stored on a VCD: as the file EXT\CAPTnn.DAT, and in the
+form of user data embedded in the MPEG file.</p>
+<p>There should be one CAPTnn.DAT file for each track of the VCD (so the closed
+captions for the AVSEQ02.DAT file are stored in CAPT02.DAT).  The format of this
+file is spelled out in a document on the <a
+href="http://www.icdia.org/docs_sw/vcd_on_cdi_41.pdf">CD-I</a> website.  This
+page reveals that CAPTnn.DAT format is not the same as the EIA-608 format used
+for broadcast, videotapes and DVDs.  It also shows that the file is
+specifically designed for CD-I players, and therefore will not be used by VCD
+or DVD players.</p>
+<p>I know much less about the user data method.  Looking at the source code
+for the <a href="http://www.vcdimager.org/pub/vcdimager/">VCDImager</a> tool
+(starting with version 0.7.4), I can see that the user data header (0x000001b2)
+is followed by 0x11, but no details are given of the further structure.  This
+rules out the DVD closed caption structure, which uses 0x43, and also the
+SCTE 20 2001 structure (0x03).</p>
+<p>I have been looking for old commercial VCDs on e-bay, in order to
+reverse-engineer the format.  So far I have a Swedish version of <i>Ghost</i>
+that verifies the CAPTnn.DAT format but lacks user data captions.  If anyone
+can help me in this area, I'd really appreciate it (go to the bottom of this
+document to get my e-mail address).  On the other hand, it's a good bet that
+no DVD player in existence (either software or hardware) would be capable of
+playing VCD user data closed captions, as it is likely their developers had the
+same incomplete documentation as I do.</p>
+
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="raw2scc"><b><u>Converting Raw Closed Caption Data to SCC Format: 
+RAW2SCC</b></u></a></p>
+<p>Once you have captured raw closed caption data, you can either convert it to
+subtitles (using the CCParser program available at <a
+href="http://www.doom9.org">Doom9</a>), or you can use the RAW2SCC tool to
+convert it into the SCC format used by many high-end DVD authoring programs to
+store closed captions. (CCParser by the way requires the raw captions to be in
+DVD-format, so you will have to use RAW2SCC followed by <a
+href="#SCC2RAW">SCC2RAW</a> <b><code>-d</code></b> to convert broadcast-format
+into DVD-format.)  To use RAW2SCC, run it from the command prompt with the name
+of the raw file to convert.  Optionally, add a second argument with the name of
+the SCC file to create if you don't want it to be the name of the input file
+with the extension changed to .scc.</p>
+<p>Here is a sample SCC file to show how the format works:</p>
+<p></p>
+
+<table border=1><tr><td><pre>
+Scenarist_SCC V1.0
+
+01:02:53:14	94ae 94ae 9420 9420 947a 947a 97a2 97a2 a820 68ef f26e 2068 ef6e 6be9 6e67 2029 942c 942c 942f 942f
+
+01:02:55:14	942c 942c
+
+01:03:27:29	94ae 94ae 9420 9420 94f2 94f2 c845 d92c 2054 c845 5245 ae80 942c 942c 8080 8080 942f 942f
+
+</pre></td></tr></table>
+
+<p>A file represents the data in either Field 1 or Field 2 of Line 21, but not
+both (the Field 1 file always has an extension of <code>.SCC</code>; the Field 2
+file is supposed to have the extension <code>.SC2</code>, but it is usually
+<code>.SCC</code> as well).  It is possible to determine the field by examining
+the contents (for example, if you see <code>94ae</code> or <code>1cae</code>,
+then it's a Field 1 file, but if you see <code>15ae</code>, <code>9dae</code> or
+anything starting with <code>01</code>, then it's a Field 2 file), but as the
+example shows, it isn't easy.</p>
+<p>The file is double-spaced, with blank lines between each line of data.  The
+first line consists of the header "Scenarist_SCC V1.0" (version 1.0 is as high
+as this format ever got).</p>
+<p>The third and following alternate lines consist of a timecode (which can
+use either the non-dropframe or dropframe formats, see below), followed by a 
+tab, followed by space-delimited data.  Usually, each line is a separate
+caption.</p>
+<p>The timecode is in SMPTE format, or hours:minutes:seconds:frames.  Since
+Line 21 Closed Captions is an NTSC format, there are 29.97 frames per
+second.  NTSC timecodes can be displayed in one of two slightly-different
+formats.  In non-dropframe time base, frame counts are translated straight into
+SMPTE.  This is the usual format for NTSC content that has no contact with a
+broadcast environment.  For a broadcast setting, timecodes are easier to work
+with if you start with 30 frames per second and then subtract 3 % to get 29.97.
+This is called dropframe time base, and is accomplished by skipping the first
+two frames at the beginning of every minute for nine out of every ten minutes.
+Dropframe timecodes are distinguished from non-dropframe timecodes by changing
+the last colon into a semicolon (<code>00:01:00;04</code> instead of
+<code>00:01:00:04</code>).  Note that the difference between non-dropframe and
+dropframe is purely in how timecodes are displayed; underneath, 29.97 frames
+are still passing every second.  RAW2SCC uses non-dropframe time base by
+default. [Thanks to Dan Wilson for making this all clear to me.]</p>
+<p>The data is made up of pairs of hexadecimal numbers.  Each pair can either
+represent a command (for positioning and other special effects), or a pair of 
+characters.  One pair is transmitted with each frame of video.</p>
+<p>Getting back to the RAW2SCC tool, you can use any of the following optional
+arguments with it (place them between the command and the name of the input
+file):</p>
+<p></p>
+<dl><dt><code>-1</code>, <code>-2</code>, or <code>-12</code></dt><dd>Selects
+  which field to extract from the input file (<code>-12</code> means to extract
+  both of them and output to two SCC files, with "_1" added to the name of the
+  Field 1 file and "_2" added to the name of the Field 2 file).
+  <code>-1</code> is the default.  Note that none of these options apply if the
+  input file is in broadcast format, as that format only supports a single
+  field's data.</dd>
+<dt><code>-oHH:MM:SS:FF</code></dt><dd>Adds offset to all timecodes.  
+  HH:MM:SS:FF is the timecode to offset by, in SMPTE format.  If you're
+  setting the timebase to dropframe, you should use dropframe timecode format
+  (<code>HH:MM:SS;FF</code>).</dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the number of frames per second (NFPS).
+  The program allows a range of 12 to 60 (use 25 for PAL video).  Be sure to
+  use the same framerate and timebase (see the next argument) for the video
+  and the accompanying captions.  The default value is 29.97, which represents
+  non-dropframe NTSC video.</dd>
+<dt><code>-td</code></dt><dd>Sets the NTSC timebase.  Possible values are
+  <code>n</code> for non-dropframe or <code>d</code> for dropframe.  The
+  default is <code>n</code>.  This flag will automatically set NFPS to 29.97,
+  so don't mix the <code>-f</code> and <code>-t</code> arguments in the same
+  command line.</dd>
+<dt><code>-lN</code></dt><dd>Sets the mid-line null count limit.  Closed
+  captions as they are usually broadcast often have null codes
+  (<code>8080</code>) transmitted sporadically in order to get the timing right.
+  RAW2SCC will split a line if it detects 2 or more null codes in a row.  If
+  you're trying to get your SCC files to have one entire caption per line, use
+  <code>-l</code> to increase the number of null codes allowed in the middle of
+  a line before the line is split, for example <code>-l8</code> to increase the
+  limit to 8.</dd>
+</dl>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="capture_DVD"><b><u>Ripping SCC Captions from a DVD: VobSub and
+VOBSUB2SCC</b></u></a></p>
+<p>Until recently, the only way you could get closed caption data out of a DVD
+was to build a filter graph similar to the one described for
+<a href="#capture_analog">analog capture</a>, and then play the whole DVD out
+in real time.  For these DVD's where the new procedure doesn't work, you can
+try the old method by following the instructions
+<a href="DVD_FILTER.HTML">here</a>.  With the tool <a 
+href="#CCExtract">CCExtract</a>, you can extract the captions from the ripped
+MPEG-2 files (you can also choose which field to extract, unlike VobSub, which
+only extracts Field 1).  The following process is an alternative to try in
+case that doesn't work.</p>
+<p>Starting with version 2.19, Gabest's
+<a href="http://vobsub.edensrising.com">VobSub</a> tool (which is designed for
+the two purposes of burning subtitles into video files or displaying them on
+top of video by use of an included filter) is capable of ripping Closed
+Captions from a DVD and converting them to the popular Subrip subtitle format.
+As a byproduct of this process, a temporary file is created that can be
+converted straight to an SCC file by using the tool VOBSUB2SCC.  Gabest has
+recently developed a <a
+href="http://sourceforge.net/projects/guliverkli/">VobSub Ripper Wizard</a>
+tool that makes this process even easier:</p>
+<ol><li>Rip the necessary files from the DVD to the hard drive (there are
+numerous tools and guides for doing this available at
+<a href="http://www.doom9.org">Doom9</a>).  All you need are VOB and IFO files
+for the VTS with the most files (usually VTS_01_?.VOB and VTS_01_0.IFO), plus
+VIDEO_TS.IFO and VIDEO_TS.VOB.</li>
+<li>Launch the VobSub Ripper Wizard.  Click the Load IFO button and browse to
+the IFO file you copied. Then click the Save To button and select the directory
+to store the captions in, then click Next.</li>
+<li>You will now see a dialog screen to select which streams you wish to
+process.  By default, everything will be selected.  If you don't want the DVD's
+subtitles, unselect everything.  A checkbox controls whether the closed
+captions will be extracted.  If it is unchecked when the dialog first appears,
+this probably means that the tool cannot find any captions.  I have a DVD
+(Warner Brothers <i>Superman: The Movie</i>) that suffers from this problem
+(despite definitely having closed captions), and I find that the <a
+href="DVD_FILTER.HTML">GraphEdit</a> method doesn't work on it, either. 
+Perhaps some DVDs store their closed captions in a different way than
+most.</li>
+<li>Click on the Next button to start the extract process.  The speed of this
+depends on the speed of your DVD drive: I was able to get a 90 minute movie on
+my Pioneer DVR-103 in about 20 minutes.  If you include any subtitle streams in
+the processing list, the extract will take longer, but you will be able to
+extract those subtitles using the SubResync tool included in the VobSub
+downloads linked above.  If you want the SubResync OCR process to be automated,
+download <a href="http://ccambien.free.fr/wocar25.zip">this</a>, install it,
+copy the files dlltwain.dll, english.wdc and ocrdll.dll into VobSub's
+directory, re-launch SubResync, click Open, browse for the .idx file created in
+Step 3, click Save As, select the format you want, check the "Use ocrdll.dll
+checkbox", enter your filename, and click Save to start the process.</li>
+<li>If you go to the directory you selected in Step 3, you will
+see the following files (assuming that you ripped VTS_01):</li>
+<table border="0" cellpadding="5">
+  <tr><td><code>VTS_01_0.idx</code></td><td>Not needed (used by
+    VobSub).</td></tr>
+  <tr><td><code>VTS_01_0.sub</code></td><td>Not needed (used by
+    VobSub).</td></tr>
+  <tr><td><code>VTS_01_0.cc.raw</code></td><td>This is the file that we
+    will convert to into SCC format.</td></tr>
+  <tr><td><code>VTS_01_0.cc.srt</code></td><td>This is the Subrip file
+    created from the captions.  If you were after subtitles and had no interest
+    in SCC files, you'd stop here.</td></tr>
+  <tr><td><code>VTS_01_0.cc.unicode.srt</code></td><td>The Unicode-encoded
+    version of <code>VTS_01_0.cc.srt</code>.  The Closed Caption
+    character set contains several unusual characters not usually encountered
+    in subtitles, with the musical note character the most popular.  These
+    special characters cannot be stored in an ordinary ANSI text file and must
+    use Unicode formatting.  Unfortunately, the Subrip program and virtually
+    every other program that uses subtitles can't open Unicode-formatted files.
+    Therefore this file, while much more accurate than
+    <code>VTS_01_0.cc.srt</code>, is virtually useless.</td></tr>
+</table>
+<li>Bring up a command prompt, navigate to the directory with the .cc.raw
+suffix, and run VOBSUB2SCC.EXE with the .cc.raw file's name as the only
+argument.  The tool will create two files: one with a .bin extension for the
+raw Line 21 Closed Caption data, and another with an .scc extension for the
+SCC-formatted data.</li></ol>
+
+<p>Since VOBSUB2SCC is creating two files, it does not accept output file names
+as parameters.  This means that the name of the file to be converted must end
+with ".cc.raw" (or ".sub.cc.raw", the output of the previous VobSub program). 
+The following optional arguments can also be used with VOBSUB2SCC:</p>
+<p></p>
+<dl><dt><code>-oHH:MM:SS:FF</code></dt><dd>Adds offset to all timecodes.
+  HH:MM:SS:FF is the timecode to offset by, in SMPTE format.  If you're
+  setting the timebase to dropframe, you should use dropframe timecode format
+  (<code>HH:MM:SS;FF</code>).</dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the number of frames per second (NFPS).
+  The program allows a range of 12 to 60 (use 25 for PAL video).  Be sure to
+  use the same framerate and timebase (see the next argument) for the video
+  and the accompanying captions.</dd>
+<dt><code>-td</code></dt><dd>Sets the NTSC timebase.  Possible values are
+  <code>n</code> for non-dropframe or <code>d</code> for dropframe.  The
+  default is <code>n</code>.  This flag will automatically set NFPS to 29.97,
+  so don't mix the <code>-f</code> and <code>-t</code> arguments in the same
+  command line.</dd>
+<dt><code>-lN</code></dt><dd>Sets the mid-line null count limit for parsing the
+  SCC file.  See <a href="#raw2scc">RAW2SCC</a> for an explanation.</dd></dl>
+<p>For details of the formatting of the SCC file created by this process, see
+the <a href="#raw2scc">RAW2SCC</a> section above.</p>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="CCExtract"><b><u>Extracting Closed Captions from MPEG Files:
+General Parser and ccExtract</b></u></a></p>
+<p>Captions are stored within MPEG-2 video and system files.  The specific
+manner they are stored in varies based on the source of the file.  MPEG-2 files
+ripped from DVDs use one format, and each of the different manufacturers of
+DVB (Digital Video Broadcast) recorders use a different format.</p>
+<p>The General Parser tool (written by Takaaki Oka) is designed to quickly
+search through an MPEG file to output any customized data you might be
+interested in.  The download for SCC_TOOLS includes two files to add to General
+Parser to allow it to extract closed captions in the raw format from MPEG files
+with a variety of different sources.  So far, here is the list of sources
+supported:</p>
+<ol><li>DVD</li>
+<li>"DVD": Hauppage WinTV PVR-250 and other MPEG-2 recording cards (note first
+that this card uses a defective version of the true DVD format and, second,
+that the card does not add captions to the files it captures by default--see
+<a href="http://www.cask-of-amontillado.com/pvr_reg.html">here</a> for how
+to turn this feature on)</li>
+<li>"DVD": Panasonic DVR-E50H and other standalone DVD recorders that use the
+DVD-VR format.  A number of DVD recorders offer the use of DVD-VR as an
+editable alternative to the DVD-Video format used by commercial DVDs (DVD-VR
+uses a DVD_RTAV folder instead of VIDEO_TS, and .VRO files instead of .VOB
+files).  These machines record DVD-Video closed captions in DVD format, and
+DVD-VR captions in the same DVD format variant used by the PVR-250.  Authoring
+tools such as TMPGEnc DVD Author can convert DVD-VR format, but lose the
+captions.</li>
+<li>DVB: Dish Network</li>
+<li>DVB: ReplayTV 4000 series</li>
+<li>DVB: ReplayTV 5000 series</li>
+<li>ATSC: Pinnacle MediaCenter (and hopefully ATSC-format files generated by
+  any other means)</li>
+<li>DSS-SD</li>
+</ol>
+<p>To install General Parser, download it from <a
+href="http://www.geocities.com/mcpoodle43/SCC_TOOLS/GeneralParser.zip">here</a>
+and unzip to a directory (such as C:\Program Files), then create a shortcut to
+General Parser\bin\gp.exe.  Open SCC_TOOLS.ZIP, put CCExtract.gp and
+CCExtract_VES.gp in General Parser\projects\MPEG\video, and put CCExtract.bdl in
+General Parser\source\MPEG.</p>
+<p>Here is the procedure to extract closed captions from an MPEG (or .VRO)
+file:</p>
+<ol><li>Launch General Parser.</li>
+<li>From the File menu, Open Project and select General
+Parser\projects\MPEG\video\CCExtract.gp.</li>
+<li>After the project compiles, select Open Bitstream from the File menu and
+select the MPEG file you wish to work with.  The program will probably work with
+both system and elementary video files, but if you are having problems with a
+system file, try demuxing it and using CCExtract_VES.gp for the project file
+instead of CCExtract.gp (for elementary files and .VRO files, change "Files of
+type" to all files in order to see them).</li>
+<li>At the bottom of the screen you will see a box with the number 10000000,
+which is the number of bytes in the MPEG file to process.  Unless you only
+want the beginning of the file to be processed, insert three 0's in there
+(bringing it up to about 10 GB).  You can permanently set this scope size in
+the Options dialog (located under the Tools menu).</li>
+<li>From the File menu, select Restart and Save Output As.  This will prompt
+you for the name of the raw caption file to create (something like
+"caption.bin" is good).</li>
+<li>After a warning screen, you will see a dialog box asking which Field you
+wish to extract.  If it's incorrect, double-click on the line and change the
+number (1 for captions, 2 for XDS).</li>
+<li>CCExtract.gp will have another dialog box at this point.  Accept the
+default values by clicking OK.</li>
+<li>Click Accept to extract the captions.  The progress will be shown by a bar
+at the bottom of the screen.</li>
+<li>At this point you can extract the other field (Step 5) or load another MPEG
+to work with (Step 3).</li>
+<li>Use <a href="#raw2scc">RAW2SCC</a> to convert the raw caption file into
+SCC format.</li></ol>
+<p>If you are having problems trying to process large files, try increasing the
+numbers in the Pipeline and Virtual Machine tabs of the Options Dialog.</p>
+<p>If you have a file from a source other than those listed at the top of this
+section, try to use CCExtract on it.  If it works, let me know which source it
+was so I can add it to the list.  If it doesn't work, you can help me to add
+the new source to this tool by the following:</p>
+<ol><li>Download the diagnostic tool <a
+href="http://www.geocities.com/mcpoodle43/SCC_TOOLS/dvbdump.exe">DVBDUMP</a>.
+</li>
+<li>Run the file with the name of your file as the argument.  The program
+will produce a <code>.txt</code> file.</li>
+<li>E-mail the <code>.txt</code> file to me with an explanation of the source
+you are using (see the bottom of this page for the address).</li>
+<li>The tool is designed to only process 100 rows of output, so the file
+produced will not be too big.  If it produces an overly-small file, try using
+the argument <code>-d1000</code> between <code>dvbdump</code> and the input
+file name to produce a 1000-row output.</li></ol>
+<p>Before Jeff Davies alerted me to the existence of General Parser, I had my
+own tool, SCC_RIP, which had to be one of the slowest programs on the planet.
+However, I imagine the day might come where nothing else works, so here's how
+to use this tool:</p>
+<p>Run SCC_RIP it with the name of the MPEG-2 file as the argument.  The
+program will (eventually) output two files with the same base name as the
+MPEG-2 file: a raw file (extension <code>.bin</code>) and an <code>.scc</code>
+file.  The following optional arguments can also be used with SCC_RIP:</p>
+<dl><dt><code>-d</code></dt><dd>Outputs the raw file in DVD format instead of
+  broadcast format.  Use this option if you want to use the CCParser program to
+  convert the captions to SubRip subtitles (download CCParser from <a
+  href="www.doom9.org">Doom9</a>).</dd>
+<dt><code>-1</code>, <code>-2</code>, or <code>-12</code></dt><dd>Selects
+  which field to extract from the input file--<code>-1</code> is the default.
+  Option <code>-12</code> will extract both fields; how many output files this
+  produces depends on the raw format: broadcast format can only hold one field,
+  so there will be four output files (input_1.bin, input_2.bin, input_1.scc and
+  input_2.scc), while DVD format can hold both fields, so there will only be
+  three output files (input.bin, input_1.scc and input_2.scc).</dd>
+<dt><code>-oHH:MM:SS:FF</code></dt><dd>Adds offset to all timecodes.
+  HH:MM:SS:FF is the timecode to offset by, in SMPTE format.  If you're
+  setting the timebase to dropframe, you should use dropframe timecode format
+  (<code>HH:MM:SS;FF</code>).</dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the number of frames per second (NFPS).
+  The program allows a range of 12 to 60 (use 25 for PAL video).  Be sure to
+  use the same framerate and timebase (see the next argument) for the video
+  and the accompanying captions.</dd>
+<dt><code>-td</code></dt><dd>Sets the NTSC timebase.  Possible values are
+  <code>n</code> for non-dropframe or <code>d</code> for dropframe.  The
+  default is <code>n</code>.  This flag will automatically set NFPS to 29.97,
+  so don't mix the <code>-f</code> and <code>-t</code> arguments in the same
+  command line.</dd></dl>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="dvr2scc"><b><u>Extracting Closed Captions from DVR-MS Files:
+DVR2SCC</b></u></a></p>
+<p>Windows XP Media Center PCs record video in a proprietory format
+with the extension .dvr-ms.  Tools have been developed to convert this format
+into MPEG, but in the process the closed captions which are included in the
+format are lost.  The DVR2SCC tool will extract the captions from a Media
+Center file, both in raw format (.bin extension) and in SCC format.
+To use the tool, run it from a command prompt with the .dvr-ms file as the
+argument.  Since there are two output files, DVR2SCC will not accept output
+filenames as parameters.  The following optional arguments can also be
+used:</p>
+<p></p>
+<dl><dt><code>-d</code></dt><dd>Outputs the raw file in DVD format instead of
+  broadcast format.  Use this option if you want to use the CCParser program to
+  convert the captions to SubRip subtitles (download CCParser from <a
+  href="www.doom9.org">Doom9</a>).</dd>
+<dt><code>-oHH:MM:SS:FF</code></dt><dd>Adds offset to all timecodes.
+  HH:MM:SS:FF is the timecode to offset by, in SMPTE format.  If you're
+  setting the timebase to dropframe, you should use dropframe timecode format
+  (<code>HH:MM:SS;FF</code>).</dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the number of frames per second (NFPS).
+  The program allows a range of 12 to 60 (use 25 for PAL video).  Be sure to
+  use the same framerate and timebase (see the next argument) for the video
+  and the accompanying captions.</dd>
+<dt><code>-td</code></dt><dd>Sets the NTSC timebase.  Possible values are
+  <code>n</code> for non-dropframe or <code>d</code> for dropframe.  The
+  default is <code>n</code>.  This flag will automatically set NFPS to 29.97,
+  so don't mix the <code>-f</code> and <code>-t</code> arguments in the same
+  command line.</dd></dl>
+<p>For details of the formatting of the SCC file created by this process, see
+the <a href="#raw2scc">RAW2SCC</a> section above.</p>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="subrip2scc"><b><u>Converting Subtitles into Closed Captions:
+SUBRIP2SCC</b></u></a></p>
+<p>Occationally it happens that you have your hands on a set of subtitles but
+no closed captions.  If you still wish to use captions, you can use the
+SUBRIP2SCC tool to convert subtitles in Subrip format to SCC format (Subrip
+format is the native subtitle format produced by Zuggy and Brain's
+<a href="http://zuggy.wz.cz/">SubRip</a> DVD subtitle ripper).  Realize
+that the output from SUBRIP2SCC still needs to be massaged before it can be
+used (by using <a href="#ccasdi">CCASDI</a> to convert to CCD format and then
+editing).  In particular:</p>
+<ul><li>Subtitles (particularly fansubs) tend to have very-long lines, while
+captions are limited to four lines of up to 32 characters each.  SUBRIP2SCC
+will re-format lines to not go over these limits and will tell you which
+subtitles were so long they had to be truncated to fit.  So expect the line
+breaks to be in the worst possible places.</li>
+<li>Closed Captions are potentially displayed much more slowly than subtitles.
+Closed Captions have to be built up in a buffer before they can be
+displayed, and this process takes time, around 10 characters per second.  If
+a subtitle is timed to appear too soon after a previous one, there will be
+trouble converting the times over to the captions.  SUBRIP2SCC's response to
+this problem is to move the start time forward as necessary to prevent overlap
+between captions.  As a result, these captions will appear late and may 
+be replaced by the next (on-time) caption before the viewer has had a chance to
+read it.  SUBRIP2SCC will tell you which Subrip lines it had to modify.  If
+you want to see how much the times were changed, run
+<a href="#ccasdi">CCASDI</a> on the SCC file with the <code>-a</code> argument
+to adjust the CCD times to match the Subrip times.  The only rows that should
+be off by more than half a second will be the ones SUBRIP2SCC told you it
+had to adjust.</li>
+<li>Subtitles can include images, while closed captions can include some odd
+characters like the Eighth Note and the Service Mark.  At least for the moment,
+SUBRIP2SCC is not capable of processing Unicode-formatted files, which would
+be able to support the odd characters if they happened to be found in Subrip
+files.  On the other hand, Subrip subtitles tend to use the "<code>*</code>"
+character to represent the Eighth Note, and SUBRIP2SCC will automatically
+convert all asterisks to musical notes (as the asterisk is a mostly-unsupported
+character for captions).</li>
+<li>Bold formatting (indicated in SubRip by surrounding the line with
+<code>&lt;b&gt;</code> and <code>&lt;/b&gt;</code> tags) will be dropped,
+because closed captions are only in bold text.  However, italics
+(<code>&lt;i&gt;&lt;/i&gt;</code>) and underline
+(<code>&lt;u&gt;&lt;/u&gt;</code>) are converted correctly.</li>
+<li>As of version 1.15 of SubRip, the subrip format can now encode character
+colors in HTML color format
+(<code>&lt;font color="#rrggbb"&gt;&lt;/font&gt;</code>), with over sixteen
+million different colors possible.  Closed Captions only support eight
+different colors (white, black, red, green, blue, cyan, magenta and yellow), so
+SubRip colors are converted to the nearest Closed Caption match.</li>
+<li>Subtitles typically don't include stage directions like sounds, which
+captions do.</li>
+<li>Subrip subtitles almost never include positioning information, so 
+SUBRIP2SCC simply centers every line, putting "dialog" at the bottom of the
+screen and "stage directions" at the top (as far as SUBRIP2SCC is concerned,
+if a line begins with "[" or "(", it's a stage direction; if not, it's
+dialog).</li>
+<li>Subtitles look like subtitles, not closed captions.  If you want your
+converted captions to look like broadcast-style captions, refer to the
+<a href="SCC_FORMAT.HTML#style">Closed Caption Style Guide</a>.</li></ul>
+
+<p>SUBRIP2SCC accepts the name of a Subrip file (suffix .srt) as its
+required argument and optionally accepts another argument of the output file
+(assumed to be the input file with an .scc suffix if left out).  The input file
+must end with a blank line, or SUBRIP2SCC will drop the last subtitle.  The
+following additional arguments (placed between "SUBRIP2SCC" and the input file
+name) are all optional:</p>
+
+<p></p>
+<dl><dt><code>-2</code></dt><dd>Outputs the captions for channel CC2 instead of
+the default CC1.  Useful only if you wanted to build an SCC file with two
+different closed caption streams.</dd>
+<dt><code>-u</code></dt><dd>Follows the Closed Caption style guide by
+converting all dialog to uppercase.</dd>
+<dt><code>-k</code></dt><dd>Turns <i>off</i> the default conversion of 
+"<code>*</code>" characters to eighth note characters.  Since the asterisk
+is an extended character in closed closed captions (and therefore unreliably
+supported by software DVD players and other display devices), and because
+Subrip files cannot include Unicode characters like the eighth note, I'd
+recommend using asterisks <i>only</i> to represent musical notes.</dd>
+<dt><code>-oHH:MM:SS,MIL</code></dt><dd>Applies an offset to every timecode.
+HH:MM:SS,MIL is the amount of the offset in Subrip's format of hours, minutes,
+seconds, and milliseconds.  A negative value like <code>-o-00:01:00,000</code>
+is allowed.</code></dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the number of frames per second (NFPS),
+  used when converting SubRip timecodes to the SMPTE timecodes used by SCC.
+  The program allows a range of 12 to 60 (use 25 for PAL video).  Be sure to
+  use the same framerate and timebase (see the next argument) for the video
+  and the accompanying captions.</dd>
+<dt><code>-td</code></dt><dd>Sets the NTSC timebase for timecode conversion.
+  Possible values are <code>n</code> for non-dropframe or <code>d</code> for
+  dropframe.  The default is <code>n</code>.  This flag will automatically set
+  NFPS to 29.97, so don't mix the <code>-f</code> and <code>-t</code> arguments
+  in the same command line.</dd></dl>
+<p>NOTE: There are dozens of subtitle formats out there that can be converted
+to Subrip format for use with this tool.  If you are looking for a good 
+converter for the common Sub-Station Alpha (SSA) format, I'd recommend
+Radek Strugalski's <a
+href="http://www.man.poznan.pl/%7Eradeks/english/subcreator.html">SubCreator</a>.
+This is also a fine free tool for creating subtitles from scratch and timing
+against a video file.</p>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="pas2scc"><b><u>Converting Between Closed Caption Formats: 
+PAS2SCC</b></u></a></p>
+<p>Although SCC is the accepted standard for storing closed captions, it is not
+the only such format in existence--every commercial captioning product out there
+uses their own format, although most of these tools will include the ability to
+export to SCC format.  As I am presented with examples of these formats, I will
+develop tools to perform these conversions, for the use of those with
+odd-format captions but lacking the tools that created them.</p>
+<p>The first such format I have received was created by the DOS version of
+CCWriter, with the extension <code>.pas</code>.  The corresponding conversion
+tool is PAS2SCC.  To use it, run from the command line with the name of the
+.pas file as the argument.  The output will be in .scc format.</p>
+<p>Here is an example of what CCWriter (DOS) format looks like:</p>
+<table align="center" width="80%" border="1">
+<tr><td><pre>;THE SINGING RIVER: RHYTHMS OF NATURE
+;File:    PART1.PAS
+;created: 10/31/03
+;transc. by: EVC
+;captioned by: SRC
+;air date: 11/13/03
+;length: 58:55
+
+,mbc
+\THE SINGING RIVER\
+CLOSED CAPTIONED
++ 00:01:15F00   00:01:23F08
+
+(\soft music and
+\birds singing\)
++ 00:01:40F18   00:01:43F27
+
+,mbc
+THE RIVER IS LIKE
+AN ARTERY OF LIFE
++ 00:01:44F27   00:01:50F29</pre></td></tr>
+</table>
+<p>PAS2SCC will also accept the following optional arguments:</p>
+<dl><dt><code>-2</code></dt><dd>Output the captions in Channel 2 instead of
+  Channel 1.</dd>
+<dt><code>-ohh:mm:ssFff</code></dt><dd>Applies an offset to every timecode.
+  hh:mm:ssFff is the amount of the offset in CCWriter's
+  format of hours, minutes, seconds, and frames (with <code>F</code> separating
+  seconds and frames).  A negative value like <code>-o-00:01:00F00</code> is
+  allowed.</code></dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the number of frames per second (NFPS).
+  The program allows a range of 12 to 60 (use 25 for PAL video).  Be sure to
+  use the same framerate and timebase (see the next argument) for the video
+  and the accompanying captions.</dd>
+<dt><code>-td</code></dt><dd>Sets the NTSC timebase for timecode conversion.
+  Possible values are <code>n</code> for non-dropframe or <code>d</code> for
+  dropframe.  The default is <code>n</code>.  This flag will automatically set
+  NFPS to 29.97, so don't mix the <code>-f</code> and <code>-t</code> arguments
+  in the same command line.</dd></dl>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="ccasdi"><b><u>Converting SCC to a Readable Format: 
+CCASDI</b></u></a></p>
+<p>Closed captions are frequently different from the actual dialog spoken. Part
+of this is due to the relatively low bandwidth (less than ten words per second,
+closer to ten characters per second when you consider all of the commands that
+are sent before and after each caption), but in addition, a number of
+typographical errors tend to sneak in. There are a number of tools for editing
+closed captions and outputting SCC files, but none of these are free (the least
+expensive is Jorge Morones' <a href="http://www.jorgemorones.com/sst/">Stream
+SubText</a>).  What is needed is a free alternative, a way to turn SCC files
+into a human-readable format and back, so SCC files can be created and edited.
+The tool for this job is CCASDI, the <i>C</i>losed <i>C</i>aption
+<i>AS</i>sembler and <i>DI</i>sassembler), and the human-readable format it uses
+is CCD, for Closed Caption Disassembly (this format is described in the <a
+href="#ccd">next</a> section).  To use CCASDI, run it from the command prompt
+with the name of the file to convert (and optionally, the name of the file to
+create).  The program will automatically detect the type of the file (SCC or
+CCD) and will output a file of the opposite type.</p>
+<p>The following optional arguments can be used with CCASDI:
+<dl><dt><code>-a</code><dt><dd>This argument will cause the timecodes to be
+  automatically adjusted: SCC files will have timecodes for the start of the
+  caption, while CCD files will have timecodes for the moment the caption is to
+  be displayed or removed.  Use this option just so the timecodes are easier to
+  understand, as it is easy to mess up the timecodes by using this option and
+  then not remembering to use it again to undo the effect.</dd>
+<dt><code>-s</code></dt><dd>This argument only works when the input is
+  an SCC file.  It acts to convert the file into a subtitle format, adjusting
+  timecodes as it goes (see <code>-a</code> argument above).  Note that if the
+  captions are in the roll-up format (i.e. if they came from a news broadcast or
+  any other live source), then each SCC line must have an entire caption, so
+  you may need to adjust the <code>-l</code> parameter of
+  <a href="#RAW2SCC">RAW2SCC</a> to get this conversion to work.  The default
+  output if you don't provide the output file argument is SubRip format, 
+  changing the input file extension of .scc to .srt.  Underline, italics,
+  and color formatting are converted, but not flash (which no subtitle format
+  supports).  Note that all captions should be in boldface,
+  but I figured that most users would not want <code>&lt;b&gt;&lt;/b&gt;</code>
+  tags around every single subtitle.  By providing an output file argument with
+  one of the following extensions, you can change the format of the subtitles
+  created:
+  <ul><li><b><code>.srt</code></b>: SubRip format (see above)</li>
+  <li><b><code>.sub</code></b>: MicroDVD format (does not support
+    colors)</li>
+  <li><b><code>.smi</code></b>: SAMI format (supports all SubRip
+    formatting)</li>
+  <li><b><code>.psb</code></b>: PowerDivX format (does not support any
+    formatting)</li>
+  <li><b><code>.ssa</code></b>: Sub-Station Alpha format (supports all SubRip
+    formatting)</li>
+  <li><b><code>.ass</code></b>: Advanced Sub-Station format (supports all
+    SubRip formatting)</li>
+  <li><b><code>.txt</code></b>: Adobe Encore format (does not support any
+    formatting)</li></ul>
+  I can implement other conversions upon request.</dd>
+<dt><code>-cCC1</code></dt><dd>Specifies which data stream to convert to
+  subtitles (i.e. it only works with the <code>-s</code> option).  The default
+  is <code>CC1</code>, the first closed caption stream, which is the one used
+  for DVD's, videotapes and almost all broadcast captions.  Other choices are
+  <code>CC2</code>, <code>CC3</code>, <code>CC4</code>, <code>T1</code>, 
+  <code>T2</code>, <code>T3</code> and <code>T4</code> ("<code>T</code>"
+  refers to Text streams, which are very rarely used nowadays).</dd>
+<dt><code>-oHH:MM:SS:FF</code></dt><dd>During the conversion, applies an offset 
+  to every timecode.  HH:MM:SS:FF is amount of the offset as a timecode, in
+  SMPTE format.  For the FF frames value, the non-dropframe time base will be
+  used, unless the <code>-td</code> argument is used (in which case the
+  timecode should be in <code>HH:MM:SS;FF</code> format).</dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the Number of Frames Per Second.  This
+  argument only makes sense if it accompanies the <code>-o</code> argument.
+  NFPS can be between 15 and 60.</dd>
+<dt><code>-td</code><dt><dd>Sets the NTSC timebase to either non-dropframe
+  (<code>n</code>) or dropframe (<code>d</code>).  The default is
+  <code>n</code>.  Using this argument automatically sets Frames Per Second
+  to 29.97.</dd>
+</dl>
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="ccd"><b><u>The Closed Caption Disassembly Format</b></u></a>
+<p>Here is the CCD (Closed Caption Disassembly) version of the sample SCC file
+given in the <a href="#raw2scc">RAW2SCC</a> section above:</p>
+<p></p>
+<table border=1><tr><td><pre>
+SCC_disassembly V1.2
+CHANNEL 1
+
+01:02:53:14	{ENM}{ENM}{RCL}{RCL}{1520}{1520}{TO2}{TO2}( horn honking ){EDM}{EDM}{EOC}{EOC}
+01:02:55:14	{EDM}{EDM}
+01:03:27:29	{ENM}{ENM}{RCL}{RCL}{1504}{1504}HEY, THERE_{EDM}{EDM}{}{}{EOC}{EOC}
+</pre></td></tr></table>
+<p>The first line consists of the header "SCC_disassembly V1.2".  Versions 1.0
+and 1.1 were produced by earlier versions of CCASDI (1.0 and 2.0), and there
+is a limited degree of backward-compatibility if you have an earlier-version
+CCD file to convert to SCC (CCD is an editing format, though, so you should
+use SCC as the more-stable storage format).</p>
+<p>The second line gives the channel to display the captions in.  Line 21
+Closed Captions support Channels 1, 2, 3 and 4, allowing two data streams to be
+transmitted from each of two fields of Line 21 of the television signal (with
+a maximum bitrate of 60 characters per second allocated to each field).  Nobody
+ever uses Channels 2 - 4 for DVD, and most PC DVD players are incapable of
+displaying captions from these channels, but in the broadcast world, Channel 2
+is occasionally used to give the same captions in another language (Channels 3
+and 4 are rarely used for alternate captions).  Note that for
+backward-compatibility reasons, <code>FIELD</code> is also accepted as a
+synonym of <code>CHANNEL</code>.</p>
+<p>The third line is blank.</p>
+<p>The fourth and subsequent lines consist of a timecode, in SMPTE format
+(non-dropframe [<code>HH:MM:SS:FF</code>] or dropframe
+[<code>HH:MM:SS;FF</code>] format), followed a tab, followed by the data.
+Each line usually consists of a single caption.</p>
+<p>The data consists of codes (in curly braces) and characters.  One code or
+two characters can be transmitted each frame.  Codes are always transmitted in
+pairs, to handle problems with bad TV transmissions.  Even for DVD, the codes
+are usually doubled.  Closed caption decoders are designed to ignore the second
+code in an identical pair.</p>
+<p>Line 21 Closed Captions can include screens of Text, eXtended Data Service
+codes, Interactive TeleVision links, or Closed Captions.  Closed Captions in
+turn can be displayed on four different channels and in one of three different
+formats.  Luckily, only one specific combination is ever used in DVD's, 
+videotapes and most programs broadcast on TV: Channel 1 Closed Captions
+in the Pop-On format.  Pop-On Captions have the following format:</p>
+<dl><dt><code>{ENM}{ENM}</code><dd>The Erase Nondisplayed Memory code clears the
+buffer that will be used to compose the caption.  This code may be optional
+if the {EDM} code preceeds the {EOC} code (see below).
+<dt><code>{RCL}{RCL}</code><dd>The Resume Caption Loading code defines the next 
+caption to be of the pop-on type.  All codes and characters that follow are
+written to the off-screen buffer until the {EOC} code is received.
+<dt><code>{####}{####}</code><dd>The PAC (Preamble Address Code) positions the
+cursor on the off-screen buffer.  The first two digits are the row, from 01 to
+15, and the last two digits are the column, from 00 to 28.  You can select any
+row, but the column must be evenly-divisible by 4 (00, 04, 08, 12, etc.).  The
+actual display grid is 16 by 32 characters, as shown in 
+<a href="cc_grid.gif" target="_blank">this</a> illustration.  Optionally, 
+column 00 can be replaced by any of the following:
+<ul><li><code>Wh</code>: This is the same as 00 (white text, no extra 
+formatting).
+<li><code>WhU</code>: White underlined text.
+<li><code>WhI</code>: White italicized text.
+<li><code>WhIU</code>: White italicized underlined text.
+<li><code>Gr</code>: Green text.
+<li><code>GrU</code>: Green underlined text.
+<li><code>Bl</code>: Blue text.
+<li><code>BlU</code>: Blue underlined text.
+<li><code>Cy</code>: Cyan text.
+<li><code>CyU</code>: Cyan underlined text.
+<li><code>R</code>: Red text.
+<li><code>RU</code>: Red underlined text.
+<li><code>Y</code>: Yellow text.
+<li><code>YU</code>: Yellow underlined text.
+<li><code>Ma</code>: Magenta text.
+<li><code>MaU</code>: Magenta underlined text.
+</ul>
+A caption can have multiple different PAC's (each followed by text), to create 
+the effect of multiple people speaking at once.
+<dt><code>{TO#}{TO#}</code><dd>The optional Tab Over code moves the cursor over
+an additional 1, 2, or 3 positions to the right of the PAC, without overwriting
+any characters that may lie between the PAC and the Tab Over position.
+<dt><code>ABCDEFG</code><dd>The characters that make up the text of the caption
+appear at this point.  <a href="cc_charset.gif" target="_blank">Here</a> is an 
+illustration of the closed caption character set.  Since characters are broadcast
+in pairs, the special non-displaying blank code "_" can be used at the end of a 
+character sequence.
+<dt><code>{MRC}{MRC}</code><dd>Interspersed with the characters can be one or
+more Mid-Row Codes:
+<ul><li><code>{Wh}</code>: Change to white text with no extra formatting.
+<li><code>{WhU}</code>: Change to white underlined text.
+<li><code>{Gr}</code>: Change to green text with no extra formatting.
+<li><code>{GrU}</code>: Change to green underlined text.
+<li><code>{Bl}</code>: Change to blue text with no extra formatting.
+<li><code>{BlU}</code>: Change to blue underlined text.
+<li><code>{Cy}</code>: Change to cyan text with no extra formatting.
+<li><code>{CyU}</code>: Change to cyan underlined text.
+<li><code>{R}</code>: Change to red text with no extra formatting.
+<li><code>{RU}</code>: Change to red underlined text.
+<li><code>{Y}</code>: Change to yellow text with no extra formatting.
+<li><code>{YU}</code>: Change to yellow underlined text.
+<li><code>{Ma}</code>: Change to magenta text with no extra formatting.
+<li><code>{MaU}</code>: Change to magenta underlined text.
+<li><code>{Bk}</code>: Change to black text with no extra formatting.
+<li><code>{BkU}</code>: Change to black underlined text.
+<li><code>{I}</code>: Change font style to italics (removing underline and 
+flash).
+<li><code>{IU}</code>: Change font style to italicized underline (removing 
+flash).
+<li><code>{FON}</code>: Change font style to flashing (without affecting 
+italics or underline, if applied).
+</ul>
+Note that each pair of Mid-Row Codes moves the cursor over one space.
+<dt><code>{}{}</code><dd>This is the null code.  Its only purpose is to use up
+frames until the moment the caption is supposed to be displayed.  It can appear
+anywhere in the caption, even between characters.  All of the frames between
+the end of one caption and the beginning of the next (not displayed in SCC and 
+CCD files) are made up of null code pairs.
+<dt><code>{EDM}{EDM}</code><dd>The Erase Displayed Memory code clears the 
+screen of captions.  This code is often used on a line by itself to provide a
+spacer between captions (as shown in the next-to-last line of the sample).
+<dt><code>{EOC}{EOC}</code><dd>The End Of Caption code swaps the screen and the
+buffer, displaying the caption you just created.  Note that the 
+<code>{EDM}{EOC}</code> combination automatically clears the buffer.
+</dl>
+<p><a href="CC_CHARS.HTML">Here</a> is a page describing characters in CCD 
+files in detail, and <a href="CC_CODES.HTML">here</a> is a page describing CCD 
+codes in detail (documenting the text mode and the three different closed
+caption formats for channels T1 - T4, CC1 - CC4).</p>
+<p>For those interested in eXtended Data Service and Interactive TeleVision,
+you can find descriptions of how they are implemented in the CCD format
+<a href="CC_XDS.HTML">here</a> and <a href="CC_ITV.HTML">here</a>.  Note that
+XDS was not correctly implemented when it was first added to CCD format
+version 1.2, and will only work with versions 1.3 (and above).</p>
+<p></p>
+<hr />
+<p></p>
+<p><a name="ccadj"><b><u>Adjusting Timecodes: CCADJ</b></u></a></p>
+<p>There are a variety of reasons why you might want to adjust all of the
+timecodes in an SCC or CCD file by the same amount.  One of the most common is
+the fact that the SCC files created by RAW2SCC arbitrarily assign a timecode of
+00:00:00:00 to the frame when the raw capture started, and this is usually
+not the correct zero-point of the finished video.  The tool for timecode
+adjustment is CCADJ.</p>
+<p>To use CCADJ, run it from the command prompt with three arguments: "-o"
+followed by the timecode adjustment (i.e. -o01:00:00:00 to add an hour or
+-o-00:01:00:00 to subtract a minute), the name of the file to adjust, and the
+name of the adjusted file to create (this is the only tool where the output
+file name is not optional).  If the files are not using the NTSC non-drop
+timebase and framerate, include either the <code>-f</code> or <code>-t</code>
+argument (<code>-f</code> followed by number of frames per second for
+different framerate, or <code>-td</code> to change the NTSC timebase from
+non-dropframe to dropframe).  If you're using dropframe timecode, the
+timecode in the <code>-o</code> argument should be in the proper form
+(<code>HH:MM:SS;FF</code>).</p>
+<p>You can also use CCADJ to speed up or slow down captions: use the
+<code>-m</code> argument with a factor to multiply against all timecodes. For
+example, if you timed your captions against a PAL version of the movie, use
+<code>-m1.199</code> to multiply all timecodes by 119.9%. If for some reason you
+wanted to perform the reverse of the procedure (say to convert NTSC into PAL
+subtitles using CCASDI <code>-s</code>), use <code>-m0.834</code> to multiply
+all timecodes by 83.4 %.</p>
+<p>One possible use of CCADJ is to combine multiple closed caption files
+into a single file.  Use CCADJ for each of the files after the first one to
+move the timecodes into the correct ranges, then cut and paste in a text editor
+to combine the contents of the resulting files.</p>
+<!--
+<p>Another use is the opposite of the above, when splitting a movie into two or
+more VCD's.  In a text editor, copy out segments of the original file
+corresponding to the captions for each VCD into seperate files, then use CCADJ
+on each file to align the timestamps with starts of the second and subsequent
+parts of the movie.  Alternatively, you can use SCC2RAW with the
+<code>-o</code> argument instead of CCADJ (see the next section).</p>
+-->
+
+<p></p>
+<hr />
+<p></p>
+<p><a name="cc_mux"><b><u>Inserting Captions into MPEG Files:
+CC_MUX</b></u></a></p>
+<p>Once you have extracted and manipulated your captions (or created them from
+scratch), you need some way to display them.  If your target format is DVD and
+you own one of the three high-end DVD authoring tools (Sonic Scenarist, the
+discontinued Spruce DVDMaestro or Apple DVDStudioPro), you can supply the
+captions in SCC format and they will automatically be inserted in the final
+product.  If you have some other DVD authoring tool, or if your target is a
+DVB machine, then you need to mux the captions into the MPEG file you're
+working with.  The tool for this job is CC_MUX.</p>
+<p>First, you need to have an MPEG file with any captions removed.  The tool
+ReStream by shh (download from <a href="http://www.doom9.org">Doom 9</a>) can
+show you if the MPEG file still has user data in it and can strip all user data
+from an MPEG file ("user data" is what closed captions are classified as).
+Chances are, if you did any re-encoding of the file (and that includes cutting
+on a non-GOP boundary), that the user data has already been stripped.</p>
+<p>CC_MUX is the most complicated tool in the SCC_TOOLS package (and next to
+SCC_RIP, one of the slowest).  Here are the arguments, which you can also see
+by running CC_MUX by itself in a command prompt:</p>
+<dl><dt><code>-cDVD</code></dt><dd>Format to put the captions in.  Default is
+  <code>DVD</code>, but <code>RTV4</code> and <code>RTV5</code> are also
+  possible, for ReplayTV 4000 and 5000.  Dish Network format is not yet
+  supported because it is so complex (I can just figure out to read it, but it
+  has odd counters and checksums in it that I do not know how to
+  reproduce).</dd>
+<dt><code>-1caption.scc</code></dt><dd>Required argument for Field 1 closed
+  caption input file.  Format can be either SCC or raw caption (extension
+  <code>.bin</code>)--if it's SCC, then temporary raw-format captions will be
+  created ("temporary" in this case meaning that they will be left to clutter
+  your hard drive).</dd>
+<dt><code>-2xds.scc</code></dt><dd>Optional argument for Field 2 XDS input
+  file.  See <code>-1</code> for more details on possible formats.</dd>
+<dt><code>-12dvd.bin</code></dt><dd>This option is provided on the off-chance
+  you have a DVD raw format caption file with both fields in it.</dd>
+<dt><code>-oHH:MM:SS:FF</code></dt><dd>Offset to apply to the caption file(s)
+  relative to the MPEG file.  Format is the usual SMPTE (do I even need to
+  explain SMPTE at this point?) and can be positive or negative.  CC_MUX will
+  attempt to read the start timecode for offset purposes from the MPEG input
+  file, and will only assume it is 00:00:00:00 if such a timecode cannot be
+  found.  Assuming that both caption and MPEG files start from timecode
+  00:00:00:00, a positive offset would mean that the first closed caption
+  packet in the output file would be moved forward from the beginning of the
+  file, while a negative offset would mean that the captions would begin at the
+  start of the output file, but would start somewhere after the start of the
+  caption file(s).</dd>
+<dt><code>-fNFPS</code></dt><dd>Changes the Number of Frames Per Second (NFPS).
+  If not provided, it will be taken from the MPEG file, and if not found there,
+  it will default to 29.97.  NFPS can be between 15 and 60.</dd>
+<dt><code>-td</code><dt><dd>Sets the NTSC timebase to either non-dropframe
+  (<code>n</code>) or dropframe (<code>d</code>).  If not provided, it will be
+  taken from the MPEG file, and if not found there, it will default to
+  <code>n</code>.  Using this argument automatically sets Frames Per Second
+  to 29.97.</dd>
+<dt><code>infile.m2v</code></dt><dd>Required name of MPEG file to insert
+  captions into.  This must be an elementary video file (default extension
+  <code>.m2v</code>).  Program files will probably not work as they depend on
+  constant packet sizes, and adding captions will throw that off.  Demux to
+  elementary video and audio files, use CC_MUX on the video file, and re-mux
+  the resulting video file together with the audio file to get a working
+  program file.</dd>
+<dt><code>outfile.m2v</code></dt><dd>Optional name of the file to create (also
+  an elementary video MPEG file).  If not provided, CC_MUX will take the base
+  name of the MPEG input file and add "_out" to it (i.e.
+  "<code>infile.m2v</code>" will output "<code>infile_out.m2v</code>").</dd>
+</dl>
+<p>Turning back to DVD authoring with something other than a high-end tool,
+after you use CC_MUX to add the captions to the MPEG file, bring the output
+file into the authoring tool and then use the tool to create the DVD files, you
+need to manipulate the VTS_XX_0.IFO file to turn on a flag that tells the DVD
+player that captions are present.  To do this in IfoEdit (a tool you can
+download from <a href="http://www.doom9.org">Doom 9</a>), open the file,
+double-click the Video line in the VTS overview - Title Set (Movie) attributes
+and check one or both boxes under "CC for Line 21":</p>
+<div class="centered">
+<a href="IFOEDIT.HTML" target="_blank">
+<img align="center" src="IfoEdit1.gif" width="384" height="305"
+ alt="Flagging Closed Captions in IfoEdit" /></a>
+</div><p></p>
+<hr />
+<p></p>
+<p><a name="scc2raw"><b><u>Converting SCC Format to Raw Format:
+SCC2RAW</b></u></a></p>
+<p>The main purpose of this tool right now is to convert SCC files into the
+DVD raw format that CCParser requires.  The tool will also convert SCC into
+broadcast raw format.</p>
+<p>To use SCC2RAW, run it from the command prompt with the name of the SCC file
+to convert optionally followed by the name of the binary file to create (by
+default, the output file will have the same name as the SCC file with the
+suffix changed to .bin).  To output in DVD format, include the additional
+argument of "<code>-d</code>".  DVD format can include both fields, so you can
+include the argument "<code>-2</code>" to use Field 2 instead of the default
+Field 1, or "<code>-12</code>" to use both fields.  If you want the output to
+start at some point other than 00:00:00:00 relative to the timestamps in the
+input files, include the argument "<code>-o</code>" followed by the offset (this
+can be negative)--this is one way to deal with the multi-part VCDs after the
+first part (assuming that raw closed caption format works with VCDs, which it
+apparently doesn't).  If the files are not using the NTSC non-drop timebase and
+framerate, include either the <code>-f</code> or <code>-t</code> argument
+(<code>-f</code> followed by number of frames per second for different
+framerate, or <code>-td</code> to change the NTSC timebase from non-dropframe
+to dropframe).</p>
+<!--
+<p>Once you have a caption file in raw format, you need to give it a name to
+match the MPEG file it is to accompany.  For example, the closed caption file
+for AVSEQ01.DAT is CAPT01.DAT, the caption file for AVSEQ02.DAT is CAPT02.DAT,
+and so on.  All caption files are placed in the EXT directory (for VCDEasy, for
+example, you'd add the caption files in the ISO Files screen).  Note that, as
+I've stated <a href="#VCD">above</a>, I have no assurance that this method will
+actually work, as I do not have access to a program or device capable of
+displaying VCD closed captions.</p>
+-->
+
+<p></p>
+<hr />
+<p><a href="mailto:mcpoodle43
+&lt;NO SPAM&gt;
+@yahoo.com">McPoodle</a></p>
+</body>
+</html>

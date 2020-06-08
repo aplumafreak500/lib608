@@ -1,0 +1,1293 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<html>
+<head>
+<title>Closed Caption Disassembly Documentation: Codes</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css" media="screen">
+<!--
+  H3 {align: center;}
+-->
+</style>
+</head>
+<body>
+<h3>Closed Caption Disassembly Documentation: Codes</h3>
+<p>The following table lists all of the codes that are not on the 
+<a href="CC_CHARS.html">characters</a> page.  The last columns of each row
+  specify the hexidecimal equivalents for Channels 1 through 4 in the SCC
+  file.</p>
+<p><b>Note:</b> The special code <code>{??}</code> is used by CCASDI whenever
+  it does not understand a code in SCC format.  The program will refuse to
+  reverse the translation until all <code>{??}</code> codes are replaced with
+  valid codes or characters.</p>
+<p>
+<table width="100%" border="1">
+<tr><th colspan="7">GLOBAL CODES</th></tr>
+<tr><th rowspan="2">CCD Code</th><th rowspan="2">Full Name</th>
+  <th rowspan="2">Meaning</th><th colspan="4">Channel</th></tr>
+<tr><th width="40">1</th><th width="40">2</th>
+  <th width="40">3</th><th width="40">4</th></tr>
+<tr><td><code>{RCL}</code></td><td>Resume Caption Loading</td>
+  <td>Starts a pop-on caption.  All following non-global codes and characters 
+    will be applied to the off-screen buffer until <code>{EOC}</code> is 
+    received.</td>
+  <td>9420</td><td>1c20</td><td>1520</td><td>9d20</td></tr>
+<tr><td><code>{RDC}</code></td><td>Resume Direct Captioning</td>
+  <td>Starts a paint-on caption.  All following codes and characters will be 
+    applied directly to the caption screen.</td>
+  <td>9429</td><td>1c29</td><td>1529</td><td>9d29</td></tr>
+<tr><td><code>{RU2}</code></td><td>Roll-Up Captions--2 Rows</td>
+  <td>Starts a roll-up caption in rows 14 and 15, unless followed by a PAC 
+    and/or TO (which will establish the bottom row).  All following codes and 
+    characters will be applied directly to the caption screen.  This command 
+    also clears the screen and buffer of any pop-on or paint-on captions.</td>
+  <td>9425</td><td>1c25</td><td>1525</td><td>9d25</td></tr>
+<tr><td><code>{RU3}</code></td><td>Roll-Up Captions--3 Rows</td>
+  <td>Starts a roll-up caption in rows 13 through 15, unless followed by a PAC 
+    and/or TO (which will establish the bottom row).  All following codes and 
+    characters will be applied directly to the caption screen.  This command 
+    also clears the screen and buffer of any pop-on or paint-on captions.</td>
+  <td>9426</td><td>1c26</td><td>1526</td><td>9d26</td></tr>
+<tr><td><code>{RU4}</code></td><td>Roll-Up Captions--4 Rows</td>
+  <td>Starts a roll-up caption in rows 12 through 15, unless followed by a PAC 
+    and/or TO (which will establish the bottom row).  All following codes and 
+    characters will be applied directly to the caption screen.  This command 
+    also clears the screen and buffer of any pop-on or paint-on captions.</td>
+  <td>94a7</td><td>1ca7</td><td>15a7</td><td>9da7</td></tr>
+<tr><td><code>{TR}</code></td><td>Text Restart</td><td>Starts a text 
+    message at the upper rightmost position and clears the text screen.  
+    All following codes and characters will be applied directly to the text 
+    screen, which by default has an opaque black background that blocks out the 
+    TV signal behind it.  Positioning from that point is performed via the
+    {BS}, {CR}, and PAC codes.  Note that Text channels are completely separate
+    from the Caption channels--you can have Text and Captions in use
+    simultaneously and switch which one is visible using your TV remote
+    control.  Also, channel T2 is used to transmit
+    <a href="CC_ITV.HTML">Interactive TeleVision</a> links.</td>
+  <td>942a</td><td>1c2a</td><td>152a</td><td>9d2a</td></tr>
+<tr><td><code>{RTD}</code></td><td>Resume Text Display</td><td>Switches
+    to Text Mode to continue a text message begun with <code>{TR}</code>.</td>
+  <td>94ab</td><td>1cab</td><td>15ab</td><td>9dab</td></tr>
+<tr><td><code>{EDM}</code></td><td>Erase Displayed Memory</td><td>Clear 
+    the current screen of any displayed captions or text.</td>
+  <td>942c</td><td>1c2c</td><td>152c</td><td>9d2c</td></tr>
+<tr><td><code>{ENM}</code></td><td>Erase Non-displayed Memory</td>
+  <td>Clear the off-screen buffer (only affects pop-on captions).</td>
+  <td>94ae</td><td>1cae</td><td>15ae</td><td>9dae</td></tr>
+<tr><td><code>{EOC}</code></td><td>End Of Caption</td><td>Swap off-screen 
+    buffer with caption screen.</td>
+  <td>942f</td><td>1c2f</td><td>152f</td><td>9d2f</td></tr>
+</table>
+<table width="100%" border="1">
+<tr><th colspan="4">PREAMBLE ACCESS CODES</th></td>
+<tr><th rowspan="2">CCD Code</th><th rowspan="2">Meaning</th>
+  <th colspan="2">Channels</th></td>
+<tr><th width="85">1 & 3</th><th width="85">2 & 4</th></tr>
+<tr><td><code>{01Wh}</code></td><td>Position cursor at row 01, 
+    column 00, with plain white text.</td><td>9140</td><td>1940</td></tr>
+<tr><td><code>{01WhU}</code></td><td>Position cursor at row 01, 
+    column 00, with white underlined text.</td><td>91c1</td><td>19c1</td></tr>
+<tr><td><code>{01Gr}</code></td><td>Position cursor at row 01, 
+    column 00, with plain green text.</td><td>91c2</td><td>19c2</td></tr>
+<tr><td><code>{01GrU}</code></td><td>Position cursor at row 01, 
+    column 00, with green underlined text.</td><td>9143</td><td>1943</td></tr>
+<tr><td><code>{01Bl}</code></td><td>Position cursor at row 01, 
+    column 00, with plain blue text.</td><td>91c4</td><td>19c4</td></tr>
+<tr><td><code>{01BlU}</code></td><td>Position cursor at row 01, 
+    column 00, with blue underlined text.</td><td>9145</td><td>1945</td></tr>
+<tr><td><code>{01Cy}</code></td><td>Position cursor at row 01, 
+    column 00, with plain cyan text.</td><td>9146</td><td>1946</td></tr>
+<tr><td><code>{01CyU}</code></td><td>Position cursor at row 01, 
+    column 00, with cyan underlined text.</td><td>91c7</td><td>19c7</td></tr>
+<tr><td><code>{01R}</code></td><td>Position cursor at row 01, 
+    column 00, with plain red text.</td><td>91c8</td><td>19c8</td></tr>
+<tr><td><code>{01RU}</code></td><td>Position cursor at row 01, 
+    column 00, with red underlined text.</td><td>9149</td><td>1949</td></tr>
+<tr><td><code>{01Y}</code></td><td>Position cursor at row 01, 
+    column 00, with plain yellow text.</td><td>914a</td><td>194a</td></tr>
+<tr><td><code>{01YU}</code></td><td>Position cursor at row 01, 
+    column 00, with yellow underlined text.</td><td>91cb</td><td>19cb</td></tr>
+<tr><td><code>{01Ma}</code></td><td>Position cursor at row 01, 
+    column 00, with plain magenta text.</td><td>914c</td><td>194c</td></tr>
+<tr><td><code>{01MaU}</code></td><td>Position cursor at row 01, 
+    column 00, with magenta underlined text.</td><td>91cd</td>
+  <td>19cd</td></tr>
+<tr><td><code>{01WhI}</code></td><td>Position cursor at row 01, 
+    column 00, with white italicized text.</td><td>91ce</td><td>19ce</td></tr>
+<tr><td><code>{01WhIU}</code></td><td>Position cursor at row 01, 
+    column 00, with white underlined italicized text.</td><td>914f</td>
+  <td>194f</td></tr>
+<tr><td><code>{0100}</code></td><td>Position cursor at row 01, 
+    column 00, with plain white text.</td><td>91d0</td><td>19d0</td></tr>
+<tr><td><code>{0100U}</code></td><td>Position cursor at row 01, 
+    column 00, with white underlined text.</td><td>9151</td><td>1951</td></tr>
+<tr><td><code>{0104}</code></td><td>Position cursor at row 01, 
+    column 04, with plain white text.</td><td>9152</td><td>1952</td></tr>
+<tr><td><code>{0104U}</code></td><td>Position cursor at row 01, 
+    column 04, with white underlined text.</td><td>91d3</td><td>19d3</td></tr>
+<tr><td><code>{0108}</code></td><td>Position cursor at row 01, 
+    column 08, with plain white text.</td><td>9154</td><td>1954</td></tr>
+<tr><td><code>{0108U}</code></td><td>Position cursor at row 01, 
+    column 08, with white underlined text.</td><td>91d5</td><td>19d5</td></tr>
+<tr><td><code>{0112}</code></td><td>Position cursor at row 01, 
+    column 12, with plain white text.</td><td>91d6</td><td>19d6</td></tr>
+<tr><td><code>{0112U}</code></td><td>Position cursor at row 01, 
+    column 12, with white underlined text.</td><td>9157</td><td>1957</td></tr>
+<tr><td><code>{0116}</code></td><td>Position cursor at row 01, 
+    column 16, with plain white text.</td><td>9158</td><td>1958</td></tr>
+<tr><td><code>{0116U}</code></td><td>Position cursor at row 01, 
+    column 16, with white underlined text.</td><td>91d9</td><td>19d9</td></tr>
+<tr><td><code>{0120}</code></td><td>Position cursor at row 01, 
+    column 20, with plain white text.</td><td>91da</td><td>19da</td></tr>
+<tr><td><code>{0120U}</code></td><td>Position cursor at row 01, 
+    column 20, with white underlined text.</td><td>915b</td><td>195b</td></tr>
+<tr><td><code>{0124}</code></td><td>Position cursor at row 01, 
+    column 24, with plain white text.</td><td>91dc</td><td>19dc</td></tr>
+<tr><td><code>{0124U}</code></td><td>Position cursor at row 01, 
+    column 24, with white underlined text.</td><td>915d</td><td>195d</td></tr>
+<tr><td><code>{0128}</code></td><td>Position cursor at row 01, 
+    column 28, with plain white text.</td><td>915e</td><td>195e</td></tr>
+<tr><td><code>{0128U}</code></td><td>Position cursor at row 01, 
+    column 28, with white underlined text.</td><td>91df</td><td>19df</td></tr>
+<tr><td><code>{02Wh}</code></td><td>Position cursor at row 02, 
+    column 00, with plain white text.</td><td>91e0</td><td>19e0</td></tr>
+<tr><td><code>{02WhU}</code></td><td>Position cursor at row 02, 
+    column 00, with white underlined text.</td><td>9161</td><td>1961</td></tr>
+<tr><td><code>{02Gr}</code></td><td>Position cursor at row 02, 
+    column 00, with plain green text.</td><td>9162</td><td>1962</td></tr>
+<tr><td><code>{02GrU}</code></td><td>Position cursor at row 02, 
+    column 00, with green underlined text.</td><td>91e3</td><td>19e3</td></tr>
+<tr><td><code>{02Bl}</code></td><td>Position cursor at row 02, 
+    column 00, with plain blue text.</td><td>9164</td><td>1964</td></tr>
+<tr><td><code>{02BlU}</code></td><td>Position cursor at row 02, 
+    column 00, with blue underlined text.</td><td>91e5</td><td>19e5</td></tr>
+<tr><td><code>{02Cy}</code></td><td>Position cursor at row 02, 
+    column 00, with plain cyan text.</td><td>91e6</td><td>19e6</td></tr>
+<tr><td><code>{02CyU}</code></td><td>Position cursor at row 02, 
+    column 00, with cyan underlined text.</td><td>9167</td><td>1967</td></tr>
+<tr><td><code>{02R}</code></td><td>Position cursor at row 02, 
+    column 00, with plain red text.</td><td>9168</td><td>1968</td></tr>
+<tr><td><code>{02RU}</code></td><td>Position cursor at row 02, 
+    column 00, with red underlined text.</td><td>91e9</td><td>19e9</td></tr>
+<tr><td><code>{02Y}</code></td><td>Position cursor at row 02, 
+    column 00, with plain yellow text.</td><td>91ea</td><td>19ea</td></tr>
+<tr><td><code>{02YU}</code></td><td>Position cursor at row 02, 
+    column 00, with yellow underlined text.</td><td>916b</td><td>196b</td></tr>
+<tr><td><code>{02Ma}</code></td><td>Position cursor at row 02, 
+    column 00, with plain magenta text.</td><td>91ec</td><td>19ec</td></tr>
+<tr><td><code>{02MaU}</code></td><td>Position cursor at row 02, 
+    column 00, with magenta underlined text.</td><td>916d</td>
+  <td>196d</td></tr>
+<tr><td><code>{02WhI}</code></td><td>Position cursor at row 02, 
+    column 00, with white italicized text.</td><td>916e</td><td>196e</td></tr>
+<tr><td><code>{02WhIU}</code></td><td>Position cursor at row 02, 
+    column 00, with white underlined italicized text.</td><td>91ef</td>
+  <td>19ef</td></tr>
+<tr><td><code>{0200}</code></td><td>Position cursor at row 02, 
+    column 00, with plain white text.</td><td>9170</td><td>1970</td></tr>
+<tr><td><code>{0200U}</code></td><td>Position cursor at row 02, 
+    column 00, with white underlined text.</td><td>91f1</td><td>19f1</td></tr>
+<tr><td><code>{0204}</code></td><td>Position cursor at row 02, 
+    column 04, with plain white text.</td><td>91f2</td><td>19f2</td></tr>
+<tr><td><code>{0204U}</code></td><td>Position cursor at row 02, 
+    column 04, with white underlined text.</td><td>9173</td><td>1973</td></tr>
+<tr><td><code>{0208}</code></td><td>Position cursor at row 02, 
+    column 08, with plain white text.</td><td>91f4</td><td>19f4</td></tr>
+<tr><td><code>{0208U}</code></td><td>Position cursor at row 02, 
+    column 08, with white underlined text.</td><td>9175</td><td>1975</td></tr>
+<tr><td><code>{0212}</code></td><td>Position cursor at row 02, 
+    column 12, with plain white text.</td><td>9176</td><td>1976</td></tr>
+<tr><td><code>{0212U}</code></td><td>Position cursor at row 02, 
+    column 12, with white underlined text.</td><td>91f7</td><td>19f7</td></tr>
+<tr><td><code>{0216}</code></td><td>Position cursor at row 02, 
+    column 16, with plain white text.</td><td>91f8</td><td>19f8</td></tr>
+<tr><td><code>{0216U}</code></td><td>Position cursor at row 02, 
+    column 16, with white underlined text.</td><td>9179</td><td>1979</td></tr>
+<tr><td><code>{0220}</code></td><td>Position cursor at row 02, 
+    column 20, with plain white text.</td><td>917a</td><td>197a</td></tr>
+<tr><td><code>{0220U}</code></td><td>Position cursor at row 02, 
+    column 20, with white underlined text.</td><td>91fb</td><td>19fb</td></tr>
+<tr><td><code>{0224}</code></td><td>Position cursor at row 02, 
+    column 24, with plain white text.</td><td>91fc</td><td>19fc</td></tr>
+<tr><td><code>{0224U}</code></td><td>Position cursor at row 02, 
+    column 24, with white underlined text.</td><td>91fd</td><td>19fd</td></tr>
+<tr><td><code>{0228}</code></td><td>Position cursor at row 02, 
+    column 28, with plain white text.</td><td>91fe</td><td>19fe</td></tr>
+<tr><td><code>{0228U}</code></td><td>Position cursor at row 02, 
+    column 28, with white underlined text.</td><td>917f</td><td>197f</td></tr>
+<tr><td><code>{03Wh}</code></td><td>Position cursor at row 03, 
+    column 00, with plain white text.</td><td>9240</td><td>1a40</td></tr>
+<tr><td><code>{03WhU}</code></td><td>Position cursor at row 03, 
+    column 00, with white underlined text.</td><td>92c1</td><td>1ac1</td></tr>
+<tr><td><code>{03Gr}</code></td><td>Position cursor at row 03, 
+    column 00, with plain green text.</td><td>92c2</td><td>1ac2</td></tr>
+<tr><td><code>{03GrU}</code></td><td>Position cursor at row 03, 
+    column 00, with green underlined text.</td><td>9243</td><td>1a43</td></tr>
+<tr><td><code>{03Bl}</code></td><td>Position cursor at row 03, 
+    column 00, with plain blue text.</td><td>92c4</td><td>1ac4</td></tr>
+<tr><td><code>{03BlU}</code></td><td>Position cursor at row 03, 
+    column 00, with blue underlined text.</td><td>9245</td><td>1a45</td></tr>
+<tr><td><code>{03Cy}</code></td><td>Position cursor at row 03, 
+    column 00, with plain cyan text.</td><td>9246</td><td>1a46</td></tr>
+<tr><td><code>{03CyU}</code></td><td>Position cursor at row 03, 
+    column 00, with cyan underlined text.</td><td>92c7</td><td>1ac7</td></tr>
+<tr><td><code>{03R}</code></td><td>Position cursor at row 03, 
+    column 00, with plain red text.</td><td>92c8</td><td>1ac8</td></tr>
+<tr><td><code>{03RU}</code></td><td>Position cursor at row 03, 
+    column 00, with red underlined text.</td><td>9249</td><td>1a49</td></tr>
+<tr><td><code>{03Y}</code></td><td>Position cursor at row 03, 
+    column 00, with plain yellow text.</td><td>924a</td><td>1a4a</td></tr>
+<tr><td><code>{03YU}</code></td><td>Position cursor at row 03, 
+    column 00, with yellow underlined text.</td><td>92cb</td><td>1acb</td></tr>
+<tr><td><code>{03Ma}</code></td><td>Position cursor at row 03, 
+    column 00, with plain magenta text.</td><td>924c</td><td>1a4c</td></tr>
+<tr><td><code>{03MaU}</code></td><td>Position cursor at row 03, 
+    column 00, with magenta underlined text.</td><td>92cd</td>
+  <td>1acd</td></tr>
+<tr><td><code>{03WhI}</code></td><td>Position cursor at row 03, 
+    column 00, with white italicized text.</td><td>92ce</td><td>1ace</td></tr>
+<tr><td><code>{03WhIU}</code></td><td>Position cursor at row 03, 
+    column 00, with white underlined italicized text.</td><td>924f</td>
+  <td>1a4f</td></tr>
+<tr><td><code>{0300}</code></td><td>Position cursor at row 03, 
+    column 00, with plain white text.</td><td>92d0</td><td>1ad0</td></tr>
+<tr><td><code>{0300U}</code></td><td>Position cursor at row 03, 
+    column 00, with white underlined text.</td><td>9251</td><td>1a51</td></tr>
+<tr><td><code>{0304}</code></td><td>Position cursor at row 03, 
+    column 04, with plain white text.</td><td>9252</td><td>1a52</td></tr>
+<tr><td><code>{0304U}</code></td><td>Position cursor at row 03, 
+    column 04, with white underlined text.</td><td>92d3</td><td>1ad3</td></tr>
+<tr><td><code>{0308}</code></td><td>Position cursor at row 03, 
+    column 08, with plain white text.</td><td>9254</td><td>1a54</td></tr>
+<tr><td><code>{0308U}</code></td><td>Position cursor at row 03, 
+    column 08, with white underlined text.</td><td>92d5</td><td>1ad5</td></tr>
+<tr><td><code>{0312}</code></td><td>Position cursor at row 03, 
+    column 12, with plain white text.</td><td>92d6</td><td>1ad6</td></tr>
+<tr><td><code>{0312U}</code></td><td>Position cursor at row 03, 
+    column 12, with white underlined text.</td><td>9257</td><td>1a57</td></tr>
+<tr><td><code>{0316}</code></td><td>Position cursor at row 03, 
+    column 16, with plain white text.</td><td>9258</td><td>1a58</td></tr>
+<tr><td><code>{0316U}</code></td><td>Position cursor at row 03, 
+    column 16, with white underlined text.</td><td>92d9</td><td>1ad9</td></tr>
+<tr><td><code>{0320}</code></td><td>Position cursor at row 03, 
+    column 20, with plain white text.</td><td>92da</td><td>1ada</td></tr>
+<tr><td><code>{0320U}</code></td><td>Position cursor at row 03, 
+    column 20, with white underlined text.</td><td>925b</td><td>1a5b</td></tr>
+<tr><td><code>{0324}</code></td><td>Position cursor at row 03, 
+    column 24, with plain white text.</td><td>92dc</td><td>1adc</td></tr>
+<tr><td><code>{0324U}</code></td><td>Position cursor at row 03, 
+    column 24, with white underlined text.</td><td>925d</td><td>1a5d</td></tr>
+<tr><td><code>{0328}</code></td><td>Position cursor at row 03, 
+    column 28, with plain white text.</td><td>925e</td><td>1a5e</td></tr>
+<tr><td><code>{0328U}</code></td><td>Position cursor at row 03, 
+    column 28, with white underlined text.</td><td>92df</td><td>1adf</td></tr>
+<tr><td><code>{04Wh}</code></td><td>Position cursor at row 04, 
+    column 00, with plain white text.</td><td>92e0</td><td>1ae0</td></tr>
+<tr><td><code>{04WhU}</code></td><td>Position cursor at row 04, 
+    column 00, with white underlined text.</td><td>9261</td><td>1a61</td></tr>
+<tr><td><code>{04Gr}</code></td><td>Position cursor at row 04, 
+  column 00, with plain green text.</td><td>92462</td><td>1a62</td></tr>
+<tr><td><code>{04GrU}</code></td><td>Position cursor at row 04, 
+    column 00, with green underlined text.</td><td>92e3</td><td>1ae3</td></tr>
+<tr><td><code>{04Bl}</code></td><td>Position cursor at row 04, 
+    column 00, with plain blue text.</td><td>9264</td><td>1a64</td></tr>
+<tr><td><code>{04BlU}</code></td><td>Position cursor at row 04, 
+    column 00, with blue underlined text.</td><td>92e5</td><td>1ae5</td></tr>
+<tr><td><code>{04Cy}</code></td><td>Position cursor at row 04, 
+    column 00, with plain cyan text.</td><td>92e6</td><td>1ae6</td></tr>
+<tr><td><code>{04CyU}</code></td><td>Position cursor at row 04, 
+    column 00, with cyan underlined text.</td><td>9267</td><td>1a67</td></tr>
+<tr><td><code>{04R}</code></td><td>Position cursor at row 04, 
+    column 00, with plain red text.</td><td>9268</td><td>1a68</td></tr>
+<tr><td><code>{04RU}</code></td><td>Position cursor at row 04, 
+    column 00, with red underlined text.</td><td>92e9</td><td>1ae9</td></tr>
+<tr><td><code>{04Y}</code></td><td>Position cursor at row 04, 
+    column 00, with plain yellow text.</td><td>92ea</td><td>1aea</td></tr>
+<tr><td><code>{04YU}</code></td><td>Position cursor at row 04, 
+    column 00, with yellow underlined text.</td><td>926b</td><td>1a6b</td></tr>
+<tr><td><code>{04Ma}</code></td><td>Position cursor at row 04, 
+    column 00, with plain magenta text.</td><td>92ec</td><td>1aec</td></tr>
+<tr><td><code>{04MaU}</code></td><td>Position cursor at row 04, 
+    column 00, with magenta underlined text.</td><td>926d</td>
+  <td>1a6d</td></tr>
+<tr><td><code>{04WhI}</code></td><td>Position cursor at row 04, 
+    column 00, with white italicized text.</td><td>926e</td><td>1a6e</td></tr>
+<tr><td><code>{04WhIU}</code></td><td>Position cursor at row 04, 
+    column 00, with white underlined italicized text.</td><td>92ef</td>
+  <td>1aef</td></tr>
+<tr><td><code>{0400}</code></td><td>Position cursor at row 04, 
+    column 00, with plain white text.</td><td>9270</td><td>1a70</td></tr>
+<tr><td><code>{0400U}</code></td><td>Position cursor at row 04, 
+    column 00, with white underlined text.</td><td>92f1</td><td>1af1</td></tr>
+<tr><td><code>{0404}</code></td><td>Position cursor at row 04, 
+    column 04, with plain white text.</td><td>92f2</td><td>1af2</td></tr>
+<tr><td><code>{0404U}</code></td><td>Position cursor at row 04, 
+    column 04, with white underlined text.</td><td>9273</td><td>1a73</td></tr>
+<tr><td><code>{0408}</code></td><td>Position cursor at row 04, 
+    column 08, with plain white text.</td><td>92f4</td><td>1af4</td></tr>
+<tr><td><code>{0408U}</code></td><td>Position cursor at row 04, 
+    column 08, with white underlined text.</td><td>9275</td><td>1a75</td></tr>
+<tr><td><code>{0412}</code></td><td>Position cursor at row 04, 
+    column 12, with plain white text.</td><td>9276</td><td>1a76</td></tr>
+<tr><td><code>{0412U}</code></td><td>Position cursor at row 04, 
+    column 12, with white underlined text.</td><td>92f7</td><td>1af7</td></tr>
+<tr><td><code>{0416}</code></td><td>Position cursor at row 04, 
+    column 16, with plain white text.</td><td>92f8</td><td>1af8</td></tr>
+<tr><td><code>{0416U}</code></td><td>Position cursor at row 04, 
+    column 16, with white underlined text.</td><td>9279</td><td>1a79</td></tr>
+<tr><td><code>{0420}</code></td><td>Position cursor at row 04, 
+    column 20, with plain white text.</td><td>927a</td><td>1a7a</td></tr>
+<tr><td><code>{0420U}</code></td><td>Position cursor at row 04, 
+    column 20, with white underlined text.</td><td>92fb</td><td>1afb</td></tr>
+<tr><td><code>{0424}</code></td><td>Position cursor at row 04, 
+    column 24, with plain white text.</td><td>92fc</td><td>1afc</td></tr>
+<tr><td><code>{0424U}</code></td><td>Position cursor at row 04, 
+    column 24, with white underlined text.</td><td>92fd</td><td>1afd</td></tr>
+<tr><td><code>{0428}</code></td><td>Position cursor at row 04, 
+    column 28, with plain white text.</td><td>92fe</td><td>1afe</td></tr>
+<tr><td><code>{0428U}</code></td><td>Position cursor at row 04, 
+    column 28, with white underlined text.</td><td>927f</td><td>1a7f</td></tr>
+<tr><td><code>{05Wh}</code></td><td>Position cursor at row 05, 
+    column 00, with plain white text.</td><td>1540</td><td>9d40</td></tr>
+<tr><td><code>{05WhU}</code></td><td>Position cursor at row 05, 
+    column 00, with white underlined text.</td><td>15c1</td><td>9dc1</td></tr>
+<tr><td><code>{05Gr}</code></td><td>Position cursor at row 05, 
+    column 00, with plain green text.</td><td>15c2</td><td>9dc2</td></tr>
+<tr><td><code>{05GrU}</code></td><td>Position cursor at row 05, 
+    column 00, with green underlined text.</td><td>1543</td><td>9d43</td></tr>
+<tr><td><code>{05Bl}</code></td><td>Position cursor at row 05, 
+    column 00, with plain blue text.</td><td>15c4</td><td>9dc4</td></tr>
+<tr><td><code>{05BlU}</code></td><td>Position cursor at row 05, 
+    column 00, with blue underlined text.</td><td>1545</td><td>9d45</td></tr>
+<tr><td><code>{05Cy}</code></td><td>Position cursor at row 05, 
+    column 00, with plain cyan text.</td><td>1546</td><td>9d46</td></tr>
+<tr><td><code>{05CyU}</code></td><td>Position cursor at row 05, 
+    column 00, with cyan underlined text.</td><td>15c7</td><td>9dc7</td></tr>
+<tr><td><code>{05R}</code></td><td>Position cursor at row 05, 
+    column 00, with plain red text.</td><td>15c8</td><td>9dc8</td></tr>
+<tr><td><code>{05RU}</code></td><td>Position cursor at row 05, 
+    column 00, with red underlined text.</td><td>1549</td><td>9d49</td></tr>
+<tr><td><code>{05Y}</code></td><td>Position cursor at row 05, 
+    column 00, with plain yellow text.</td><td>154a</td><td>9d4a</td></tr>
+<tr><td><code>{05YU}</code></td><td>Position cursor at row 05, 
+    column 00, with yellow underlined text.</td><td>15cb</td><td>9dcb</td></tr>
+<tr><td><code>{05Ma}</code></td><td>Position cursor at row 05, 
+    column 00, with plain magenta text.</td><td>154c</td><td>9d4c</td></tr>
+<tr><td><code>{05MaU}</code></td><td>Position cursor at row 05, 
+    column 00, with magenta underlined text.</td><td>15cd</td>
+  <td>9dcd</td></tr>
+<tr><td><code>{05WhI}</code></td><td>Position cursor at row 05, 
+    column 00, with white italicized text.</td><td>15ce</td><td>9dce</td></tr>
+<tr><td><code>{05WhIU}</code></td><td>Position cursor at row 05, 
+    column 00, with white underlined italicized text.</td><td>154f</td>
+  <td>9d4f</td></tr>
+<tr><td><code>{0500}</code></td><td>Position cursor at row 05, 
+    column 00, with plain white text.</td><td>15d0</td><td>9dd0</td></tr>
+<tr><td><code>{0500U}</code></td><td>Position cursor at row 05, 
+    column 00, with white underlined text.</td><td>1551</td><td>9d51</td></tr>
+<tr><td><code>{0504}</code></td><td>Position cursor at row 05, 
+    column 04, with plain white text.</td><td>1552</td><td>9d52</td></tr>
+<tr><td><code>{0504U}</code></td><td>Position cursor at row 05, 
+    column 04, with white underlined text.</td><td>15d3</td><td>9dd3</td></tr>
+<tr><td><code>{0508}</code></td><td>Position cursor at row 05, 
+    column 08, with plain white text.</td><td>1554</td><td>9d54</td></tr>
+<tr><td><code>{0508U}</code></td><td>Position cursor at row 05, 
+    column 08, with white underlined text.</td><td>15d5</td><td>9dd5</td></tr>
+<tr><td><code>{0512}</code></td><td>Position cursor at row 05, 
+    column 12, with plain white text.</td><td>15d6</td><td>9dd6</td></tr>
+<tr><td><code>{0512U}</code></td><td>Position cursor at row 05, 
+    column 12, with white underlined text.</td><td>1557</td><td>9d57</td></tr>
+<tr><td><code>{0516}</code></td><td>Position cursor at row 05, 
+    column 16, with plain white text.</td><td>1558</td><td>9d58</td></tr>
+<tr><td><code>{0516U}</code></td><td>Position cursor at row 05, 
+    column 16, with white underlined text.</td><td>15d9</td><td>9dd9</td></tr>
+<tr><td><code>{0520}</code></td><td>Position cursor at row 05, 
+    column 20, with plain white text.</td><td>15da</td><td>9dda</td></tr>
+<tr><td><code>{0520U}</code></td><td>Position cursor at row 05, 
+    column 20, with white underlined text.</td><td>155b</td><td>9d5b</td></tr>
+<tr><td><code>{0524}</code></td><td>Position cursor at row 05, 
+    column 24, with plain white text.</td><td>15dc</td><td>9ddc</td></tr>
+<tr><td><code>{0524U}</code></td><td>Position cursor at row 05, 
+    column 24, with white underlined text.</td><td>155d</td><td>9d5d</td></tr>
+<tr><td><code>{0528}</code></td><td>Position cursor at row 05, 
+    column 28, with plain white text.</td><td>155e</td><td>9d5e</td></tr>
+<tr><td><code>{0528U}</code></td><td>Position cursor at row 05, 
+    column 28, with white underlined text.</td><td>15df</td><td>9ddf</td></tr>
+<tr><td><code>{06Wh}</code></td><td>Position cursor at row 06, 
+    column 00, with plain white text.</td><td>15e0</td><td>9de0</td></tr>
+<tr><td><code>{06WhU}</code></td><td>Position cursor at row 06, 
+    column 00, with white underlined text.</td><td>1561</td><td>9d61</td></tr>
+<tr><td><code>{06Gr}</code></td><td>Position cursor at row 06, 
+    column 00, with plain green text.</td><td>15462</td><td>9d62</td></tr>
+<tr><td><code>{06GrU}</code></td><td>Position cursor at row 06, 
+    column 00, with green underlined text.</td><td>15e3</td><td>9de3</td></tr>
+<tr><td><code>{06Bl}</code></td><td>Position cursor at row 06, 
+    column 00, with plain blue text.</td><td>1564</td><td>9d64</td></tr>
+<tr><td><code>{06BlU}</code></td><td>Position cursor at row 06, 
+    column 00, with blue underlined text.</td><td>15e5</td><td>9de5</td></tr>
+<tr><td><code>{06Cy}</code></td><td>Position cursor at row 06, 
+    column 00, with plain cyan text.</td><td>15e6</td><td>9de6</td></tr>
+<tr><td><code>{06CyU}</code></td><td>Position cursor at row 06, 
+    column 00, with cyan underlined text.</td><td>1567</td><td>9d67</td></tr>
+<tr><td><code>{06R}</code></td><td>Position cursor at row 06, 
+    column 00, with plain red text.</td><td>1568</td><td>9d68</td></tr>
+<tr><td><code>{06RU}</code></td><td>Position cursor at row 06, 
+    column 00, with red underlined text.</td><td>15e9</td><td>9de9</td></tr>
+<tr><td><code>{06Y}</code></td><td>Position cursor at row 06, 
+    column 00, with plain yellow text.</td><td>15ea</td><td>9dea</td></tr>
+<tr><td><code>{06YU}</code></td><td>Position cursor at row 06, 
+    column 00, with yellow underlined text.</td><td>156b</td><td>9d6b</td></tr>
+<tr><td><code>{06Ma}</code></td><td>Position cursor at row 06, 
+    column 00, with plain magenta text.</td><td>15ec</td><td>9dec</td></tr>
+<tr><td><code>{06MaU}</code></td><td>Position cursor at row 06, 
+    column 00, with magenta underlined text.</td><td>156d</td>
+  <td>9d6d</td></tr>
+<tr><td><code>{06WhI}</code></td><td>Position cursor at row 06, 
+    column 00, with white italicized text.</td><td>156e</td><td>9d6e</td></tr>
+<tr><td><code>{06WhIU}</code></td><td>Position cursor at row 06, 
+    column 00, with white underlined italicized text.</td><td>15ef</td>
+  <td>9def</td></tr>
+<tr><td><code>{0600}</code></td><td>Position cursor at row 06, 
+    column 00, with plain white text.</td><td>1570</td><td>9d70</td></tr>
+<tr><td><code>{0600U}</code></td><td>Position cursor at row 06, 
+    column 00, with white underlined text.</td><td>15f1</td><td>9df1</td></tr>
+<tr><td><code>{0604}</code></td><td>Position cursor at row 06, 
+    column 04, with plain white text.</td><td>15f2</td><td>9df2</td></tr>
+<tr><td><code>{0604U}</code></td><td>Position cursor at row 06, 
+    column 04, with white underlined text.</td><td>1573</td><td>9d73</td></tr>
+<tr><td><code>{0608}</code></td><td>Position cursor at row 06, 
+    column 08, with plain white text.</td><td>15f4</td><td>9df4</td></tr>
+<tr><td><code>{0608U}</code></td><td>Position cursor at row 06, 
+    column 08, with white underlined text.</td><td>1575</td><td>9d75</td></tr>
+<tr><td><code>{0612}</code></td><td>Position cursor at row 06, 
+    column 12, with plain white text.</td><td>1576</td><td>9d76</td></tr>
+<tr><td><code>{0612U}</code></td><td>Position cursor at row 06, 
+    column 12, with white underlined text.</td><td>15f7</td><td>9df7</td></tr>
+<tr><td><code>{0616}</code></td><td>Position cursor at row 06, 
+    column 16, with plain white text.</td><td>15f8</td><td>9df8</td></tr>
+<tr><td><code>{0616U}</code></td><td>Position cursor at row 06, 
+    column 16, with white underlined text.</td><td>1579</td><td>9d79</td></tr>
+<tr><td><code>{0620}</code></td><td>Position cursor at row 06, 
+    column 20, with plain white text.</td><td>157a</td><td>9d7a</td></tr>
+<tr><td><code>{0620U}</code></td><td>Position cursor at row 06, 
+    column 20, with white underlined text.</td><td>15fb</td><td>9dfb</td></tr>
+<tr><td><code>{0624}</code></td><td>Position cursor at row 06, 
+    column 24, with plain white text.</td><td>15fc</td><td>9dfc</td></tr>
+<tr><td><code>{0624U}</code></td><td>Position cursor at row 06, 
+    column 24, with white underlined text.</td><td>15fd</td><td>9dfd</td></tr>
+<tr><td><code>{0628}</code></td><td>Position cursor at row 06, 
+    column 28, with plain white text.</td><td>15fe</td><td>9dfe</td></tr>
+<tr><td><code>{0628U}</code></td><td>Position cursor at row 06, 
+    column 28, with white underlined text.</td><td>157f</td><td>9d7f</td></tr>
+<tr><td><code>{07Wh}</code></td><td>Position cursor at row 07, 
+    column 00, with plain white text.</td><td>1640</td><td>9e40</td></tr>
+<tr><td><code>{07WhU}</code></td><td>Position cursor at row 07, 
+    column 00, with white underlined text.</td><td>16c1</td><td>9ec1</td></tr>
+<tr><td><code>{07Gr}</code></td><td>Position cursor at row 07, 
+    column 00, with plain green text.</td><td>16c2</td><td>9ec2</td></tr>
+<tr><td><code>{07GrU}</code></td><td>Position cursor at row 07, 
+    column 00, with green underlined text.</td><td>1643</td><td>9e43</td></tr>
+<tr><td><code>{07Bl}</code></td><td>Position cursor at row 07, 
+    column 00, with plain blue text.</td><td>16c4</td><td>9ec4</td></tr>
+<tr><td><code>{07BlU}</code></td><td>Position cursor at row 07, 
+    column 00, with blue underlined text.</td><td>1645</td><td>9e45</td></tr>
+<tr><td><code>{07Cy}</code></td><td>Position cursor at row 07, 
+    column 00, with plain cyan text.</td><td>1646</td><td>9e46</td></tr>
+<tr><td><code>{07CyU}</code></td><td>Position cursor at row 07, 
+    column 00, with cyan underlined text.</td><td>16c7</td><td>9ec7</td></tr>
+<tr><td><code>{07R}</code></td><td>Position cursor at row 07, 
+    column 00, with plain red text.</td><td>16c8</td><td>9ec8</td></tr>
+<tr><td><code>{07RU}</code></td><td>Position cursor at row 07, 
+    column 00, with red underlined text.</td><td>1649</td><td>9e49</td></tr>
+<tr><td><code>{07Y}</code></td><td>Position cursor at row 07, 
+    column 00, with plain yellow text.</td><td>164a</td><td>9e4a</td></tr>
+<tr><td><code>{07YU}</code></td><td>Position cursor at row 07, 
+    column 00, with yellow underlined text.</td><td>16cb</td><td>9ecb</td></tr>
+<tr><td><code>{07Ma}</code></td><td>Position cursor at row 07, 
+    column 00, with plain magenta text.</td><td>164c</td><td>9e4c</td></tr>
+<tr><td><code>{07MaU}</code></td><td>Position cursor at row 07, 
+    column 00, with magenta underlined text.</td><td>16cd</td><td>9ecd</td></tr>
+<tr><td><code>{07WhI}</code></td><td>Position cursor at row 07, 
+    column 00, with white italicized text.</td><td>16ce</td><td>9ece</td></tr>
+<tr><td><code>{07WhIU}</code></td><td>Position cursor at row 07, 
+    column 00, with white underlined italicized text.</td><td>164f</td>
+  <td>9e4f</td></tr>
+<tr><td><code>{0700}</code></td><td>Position cursor at row 07, 
+    column 00, with plain white text.</td><td>16d0</td><td>9ed0</td></tr>
+<tr><td><code>{0700U}</code></td><td>Position cursor at row 07, 
+    column 00, with white underlined text.</td><td>1651</td><td>9e51</td></tr>
+<tr><td><code>{0704}</code></td><td>Position cursor at row 07, 
+    column 04, with plain white text.</td><td>1652</td><td>9e52</td></tr>
+<tr><td><code>{0704U}</code></td><td>Position cursor at row 07, 
+    column 04, with white underlined text.</td><td>16d3</td><td>9ed3</td></tr>
+<tr><td><code>{0708}</code></td><td>Position cursor at row 07, 
+    column 08, with plain white text.</td><td>1654</td><td>9e54</td></tr>
+<tr><td><code>{0708U}</code></td><td>Position cursor at row 07, 
+    column 08, with white underlined text.</td><td>16d5</td><td>9ed5</td></tr>
+<tr><td><code>{0712}</code></td><td>Position cursor at row 07, 
+    column 12, with plain white text.</td><td>16d6</td><td>9ed6</td></tr>
+<tr><td><code>{0712U}</code></td><td>Position cursor at row 07, 
+    column 12, with white underlined text.</td><td>1657</td><td>9e57</td></tr>
+<tr><td><code>{0716}</code></td><td>Position cursor at row 07, 
+    column 16, with plain white text.</td><td>1658</td><td>9e58</td></tr>
+<tr><td><code>{0716U}</code></td><td>Position cursor at row 07, 
+    column 16, with white underlined text.</td><td>16d9</td><td>9ed9</td></tr>
+<tr><td><code>{0720}</code></td><td>Position cursor at row 07, 
+    column 20, with plain white text.</td><td>16da</td><td>9eda</td></tr>
+<tr><td><code>{0720U}</code></td><td>Position cursor at row 07, 
+    column 20, with white underlined text.</td><td>165b</td><td>9e5b</td></tr>
+<tr><td><code>{0724}</code></td><td>Position cursor at row 07, 
+    column 24, with plain white text.</td><td>16dc</td><td>9edc</td></tr>
+<tr><td><code>{0724U}</code></td><td>Position cursor at row 07, 
+    column 24, with white underlined text.</td><td>165d</td><td>9e5d</td></tr>
+<tr><td><code>{0728}</code></td><td>Position cursor at row 07, 
+    column 28, with plain white text.</td><td>165e</td><td>9e5e</td></tr>
+<tr><td><code>{0728U}</code></td><td>Position cursor at row 07, 
+    column 28, with white underlined text.</td><td>16df</td><td>9edf</td></tr>
+<tr><td><code>{08Wh}</code></td><td>Position cursor at row 08, 
+    column 00, with plain white text.</td><td>16e0</td><td>9ee0</td></tr>
+<tr><td><code>{08WhU}</code></td><td>Position cursor at row 08, 
+    column 00, with white underlined text.</td><td>1661</td><td>9e61</td></tr>
+<tr><td><code>{08Gr}</code></td><td>Position cursor at row 08, 
+    column 00, with plain green text.</td><td>16462</td><td>9e62</td></tr>
+<tr><td><code>{08GrU}</code></td><td>Position cursor at row 08, 
+    column 00, with green underlined text.</td><td>16e3</td><td>9ee3</td></tr>
+<tr><td><code>{08Bl}</code></td><td>Position cursor at row 08, 
+    column 00, with plain blue text.</td><td>1664</td><td>9e64</td></tr>
+<tr><td><code>{08BlU}</code></td><td>Position cursor at row 08, 
+    column 00, with blue underlined text.</td><td>16e5</td><td>9ee5</td></tr>
+<tr><td><code>{08Cy}</code></td><td>Position cursor at row 08, 
+    column 00, with plain cyan text.</td><td>16e6</td><td>9ee6</td></tr>
+<tr><td><code>{08CyU}</code></td><td>Position cursor at row 08, 
+    column 00, with cyan underlined text.</td><td>1667</td><td>9e67</td></tr>
+<tr><td><code>{08R}</code></td><td>Position cursor at row 08, 
+    column 00, with plain red text.</td><td>1668</td><td>9e68</td></tr>
+<tr><td><code>{08RU}</code></td><td>Position cursor at row 08, 
+    column 00, with red underlined text.</td><td>16e9</td><td>9ee9</td></tr>
+<tr><td><code>{08Y}</code></td><td>Position cursor at row 08, 
+    column 00, with plain yellow text.</td><td>16ea</td><td>9eea</td></tr>
+<tr><td><code>{08YU}</code></td><td>Position cursor at row 08, 
+    column 00, with yellow underlined text.</td><td>166b</td><td>9e6b</td></tr>
+<tr><td><code>{08Ma}</code></td><td>Position cursor at row 08, 
+    column 00, with plain magenta text.</td><td>16ec</td><td>9eec</td></tr>
+<tr><td><code>{08MaU}</code></td><td>Position cursor at row 08, 
+    column 00, with magenta underlined text.</td><td>166d</td><td>9e6d</td></tr>
+<tr><td><code>{08WhI}</code></td><td>Position cursor at row 08, 
+    column 00, with white italicized text.</td><td>166e</td><td>9e6e</td></tr>
+<tr><td><code>{08WhIU}</code></td><td>Position cursor at row 08, 
+    column 00, with white underlined italicized text.</td><td>16ef</td>
+  <td>9eef</td></tr>
+<tr><td><code>{0800}</code></td><td>Position cursor at row 08, 
+    column 00, with plain white text.</td><td>1670</td><td>9e70</td></tr>
+<tr><td><code>{0800U}</code></td><td>Position cursor at row 08, 
+    column 00, with white underlined text.</td><td>16f1</td><td>9ef1</td></tr>
+<tr><td><code>{0804}</code></td><td>Position cursor at row 08, 
+    column 04, with plain white text.</td><td>16f2</td><td>9ef2</td></tr>
+<tr><td><code>{0804U}</code></td><td>Position cursor at row 08, 
+    column 04, with white underlined text.</td><td>1673</td><td>9e73</td></tr>
+<tr><td><code>{0808}</code></td><td>Position cursor at row 08, 
+    column 08, with plain white text.</td><td>16f4</td><td>9ef4</td></tr>
+<tr><td><code>{0808U}</code></td><td>Position cursor at row 08, 
+    column 08, with white underlined text.</td><td>1675</td><td>9e75</td></tr>
+<tr><td><code>{0812}</code></td><td>Position cursor at row 08, 
+    column 12, with plain white text.</td><td>1676</td><td>9e76</td></tr>
+<tr><td><code>{0812U}</code></td><td>Position cursor at row 08, 
+    column 12, with white underlined text.</td><td>16f7</td><td>9ef7</td></tr>
+<tr><td><code>{0816}</code></td><td>Position cursor at row 08, 
+    column 16, with plain white text.</td><td>16f8</td><td>9ef8</td></tr>
+<tr><td><code>{0816U}</code></td><td>Position cursor at row 08, 
+    column 16, with white underlined text.</td><td>1679</td><td>9e79</td></tr>
+<tr><td><code>{0820}</code></td><td>Position cursor at row 08, 
+    column 20, with plain white text.</td><td>167a</td><td>9e7a</td></tr>
+<tr><td><code>{0820U}</code></td><td>Position cursor at row 08, 
+    column 20, with white underlined text.</td><td>16fb</td><td>9efb</td></tr>
+<tr><td><code>{0824}</code></td><td>Position cursor at row 08, 
+    column 24, with plain white text.</td><td>16fc</td><td>9efc</td></tr>
+<tr><td><code>{0824U}</code></td><td>Position cursor at row 08, 
+    column 24, with white underlined text.</td><td>16fd</td><td>9efd</td></tr>
+<tr><td><code>{0828}</code></td><td>Position cursor at row 08, 
+    column 28, with plain white text.</td><td>16fe</td><td>9efe</td></tr>
+<tr><td><code>{0828U}</code></td><td>Position cursor at row 08, 
+    column 28, with white underlined text.</td><td>167f</td><td>9e7f</td></tr>
+<tr><td><code>{09Wh}</code></td><td>Position cursor at row 09, 
+    column 00, with plain white text.</td><td>9740</td><td>1f40</td></tr>
+<tr><td><code>{09WhU}</code></td><td>Position cursor at row 09, 
+    column 00, with white underlined text.</td><td>97c1</td><td>1fc1</td></tr>
+<tr><td><code>{09Gr}</code></td><td>Position cursor at row 09, 
+    column 00, with plain green text.</td><td>97c2</td><td>1fc2</td></tr>
+<tr><td><code>{09GrU}</code></td><td>Position cursor at row 09, 
+    column 00, with green underlined text.</td><td>9743</td><td>1f43</td></tr>
+<tr><td><code>{09Bl}</code></td><td>Position cursor at row 09, 
+    column 00, with plain blue text.</td><td>97c4</td><td>1fc4</td></tr>
+<tr><td><code>{09BlU}</code></td><td>Position cursor at row 09, 
+    column 00, with blue underlined text.</td><td>9745</td><td>1f45</td></tr>
+<tr><td><code>{09Cy}</code></td><td>Position cursor at row 09, 
+    column 00, with plain cyan text.</td><td>9746</td><td>1f46</td></tr>
+<tr><td><code>{09CyU}</code></td><td>Position cursor at row 09, 
+    column 00, with cyan underlined text.</td><td>97c7</td><td>1fc7</td></tr>
+<tr><td><code>{09R}</code></td><td>Position cursor at row 09, 
+    column 00, with plain red text.</td><td>97c8</td><td>1fc8</td></tr>
+<tr><td><code>{09RU}</code></td><td>Position cursor at row 09, 
+    column 00, with red underlined text.</td><td>9749</td><td>1f49</td></tr>
+<tr><td><code>{09Y}</code></td><td>Position cursor at row 09, 
+    column 00, with plain yellow text.</td><td>974a</td><td>1f4a</td></tr>
+<tr><td><code>{09YU}</code></td><td>Position cursor at row 09, 
+    column 00, with yellow underlined text.</td><td>97cb</td><td>1fcb</td></tr>
+<tr><td><code>{09Ma}</code></td><td>Position cursor at row 09, 
+    column 00, with plain magenta text.</td><td>974c</td><td>1f4c</td></tr>
+<tr><td><code>{09MaU}</code></td><td>Position cursor at row 09, 
+    column 00, with magenta underlined text.</td><td>97cd</td><td>1fcd</td></tr>
+<tr><td><code>{09WhI}</code></td><td>Position cursor at row 09, 
+    column 00, with white italicized text.</td><td>97ce</td><td>1fce</td></tr>
+<tr><td><code>{09WhIU}</code></td><td>Position cursor at row 09, 
+    column 00, with white underlined italicized text.</td><td>974f</td>
+  <td>1f4f</td></tr>
+<tr><td><code>{0900}</code></td><td>Position cursor at row 09, 
+    column 00, with plain white text.</td><td>97d0</td><td>1fd0</td></tr>
+<tr><td><code>{0900U}</code></td><td>Position cursor at row 09, 
+    column 00, with white underlined text.</td><td>9751</td><td>1f51</td></tr>
+<tr><td><code>{0904}</code></td><td>Position cursor at row 09, 
+    column 04, with plain white text.</td><td>9752</td><td>1f52</td></tr>
+<tr><td><code>{0904U}</code></td><td>Position cursor at row 09, 
+    column 04, with white underlined text.</td><td>97d3</td><td>1fd3</td></tr>
+<tr><td><code>{0908}</code></td><td>Position cursor at row 09, 
+    column 08, with plain white text.</td><td>9754</td><td>1f54</td></tr>
+<tr><td><code>{0908U}</code></td><td>Position cursor at row 09, 
+    column 08, with white underlined text.</td><td>97d5</td><td>1fd5</td></tr>
+<tr><td><code>{0972}</code></td><td>Position cursor at row 09, 
+    column 12, with plain white text.</td><td>97d6</td><td>1fd6</td></tr>
+<tr><td><code>{0972U}</code></td><td>Position cursor at row 09, 
+    column 12, with white underlined text.</td><td>9757</td><td>1f57</td></tr>
+<tr><td><code>{0976}</code></td><td>Position cursor at row 09, 
+    column 16, with plain white text.</td><td>9758</td><td>1f58</td></tr>
+<tr><td><code>{0976U}</code></td><td>Position cursor at row 09, 
+    column 16, with white underlined text.</td><td>97d9</td><td>1fd9</td></tr>
+<tr><td><code>{0920}</code></td><td>Position cursor at row 09, 
+    column 20, with plain white text.</td><td>97da</td><td>1fda</td></tr>
+<tr><td><code>{0920U}</code></td><td>Position cursor at row 09, 
+    column 20, with white underlined text.</td><td>975b</td><td>1f5b</td></tr>
+<tr><td><code>{0924}</code></td><td>Position cursor at row 09, 
+    column 24, with plain white text.</td><td>97dc</td><td>1fdc</td></tr>
+<tr><td><code>{0924U}</code></td><td>Position cursor at row 09, 
+    column 24, with white underlined text.</td><td>975d</td><td>1f5d</td></tr>
+<tr><td><code>{0928}</code></td><td>Position cursor at row 09, 
+    column 28, with plain white text.</td><td>975e</td><td>1f5e</td></tr>
+<tr><td><code>{0928U}</code></td><td>Position cursor at row 09, 
+    column 28, with white underlined text.</td><td>97df</td><td>1fdf</td></tr>
+<tr><td><code>{10Wh}</code></td><td>Position cursor at row 10, 
+    column 00, with plain white text.</td><td>97e0</td><td>1fe0</td></tr>
+<tr><td><code>{10WhU}</code></td><td>Position cursor at row 10, 
+    column 00, with white underlined text.</td><td>9761</td><td>1f61</td></tr>
+<tr><td><code>{10Gr}</code></td><td>Position cursor at row 10, 
+    column 00, with plain green text.</td><td>9762</td><td>1f62</td></tr>
+<tr><td><code>{10GrU}</code></td><td>Position cursor at row 10, 
+    column 00, with green underlined text.</td><td>97e3</td><td>1fe3</td></tr>
+<tr><td><code>{10Bl}</code></td><td>Position cursor at row 10, 
+    column 00, with plain blue text.</td><td>9764</td><td>1f64</td></tr>
+<tr><td><code>{10BlU}</code></td><td>Position cursor at row 10, 
+    column 00, with blue underlined text.</td><td>97e5</td><td>1fe5</td></tr>
+<tr><td><code>{10Cy}</code></td><td>Position cursor at row 10, 
+    column 00, with plain cyan text.</td><td>97e6</td><td>1fe6</td></tr>
+<tr><td><code>{10CyU}</code></td><td>Position cursor at row 10, 
+    column 00, with cyan underlined text.</td><td>9767</td><td>1f67</td></tr>
+<tr><td><code>{10R}</code></td><td>Position cursor at row 10, 
+    column 00, with plain red text.</td><td>9768</td><td>1f68</td></tr>
+<tr><td><code>{10RU}</code></td><td>Position cursor at row 10, 
+    column 00, with red underlined text.</td><td>97e9</td><td>1fe9</td></tr>
+<tr><td><code>{10Y}</code></td><td>Position cursor at row 10, 
+    column 00, with plain yellow text.</td><td>97ea</td><td>1fea</td></tr>
+<tr><td><code>{10YU}</code></td><td>Position cursor at row 10, 
+    column 00, with yellow underlined text.</td><td>976b</td><td>1f6b</td></tr>
+<tr><td><code>{10Ma}</code></td><td>Position cursor at row 10, 
+    column 00, with plain magenta text.</td><td>97ec</td><td>1fec</td></tr>
+<tr><td><code>{10MaU}</code></td><td>Position cursor at row 10, 
+    column 00, with magenta underlined text.</td><td>976d</td><td>1f6d</td></tr>
+<tr><td><code>{10WhI}</code></td><td>Position cursor at row 10, 
+    column 00, with white italicized text.</td><td>976e</td><td>1f6e</td></tr>
+<tr><td><code>{10WhIU}</code></td><td>Position cursor at row 10, 
+    column 00, with white underlined italicized text.</td><td>97ef</td>
+  <td>1fef</td></tr>
+<tr><td><code>{1000}</code></td><td>Position cursor at row 10, 
+    column 00, with plain white text.</td><td>9770</td><td>1f70</td></tr>
+<tr><td><code>{1000U}</code></td><td>Position cursor at row 10, 
+    column 00, with white underlined text.</td><td>97f1</td><td>1ff1</td></tr>
+<tr><td><code>{1004}</code></td><td>Position cursor at row 10, 
+    column 04, with plain white text.</td><td>97f2</td><td>1ff2</td></tr>
+<tr><td><code>{1004U}</code></td><td>Position cursor at row 10, 
+    column 04, with white underlined text.</td><td>9773</td><td>1f73</td></tr>
+<tr><td><code>{1008}</code></td><td>Position cursor at row 10, 
+    column 08, with plain white text.</td><td>97f4</td><td>1ff4</td></tr>
+<tr><td><code>{1008U}</code></td><td>Position cursor at row 10, 
+    column 08, with white underlined text.</td><td>9775</td><td>1f75</td></tr>
+<tr><td><code>{1012}</code></td><td>Position cursor at row 10, 
+    column 12, with plain white text.</td><td>9776</td><td>1f76</td></tr>
+<tr><td><code>{1012U}</code></td><td>Position cursor at row 10, 
+    column 12, with white underlined text.</td><td>97f7</td><td>1ff7</td></tr>
+<tr><td><code>{1016}</code></td><td>Position cursor at row 10, 
+    column 16, with plain white text.</td><td>97f8</td><td>1ff8</td></tr>
+<tr><td><code>{1016U}</code></td><td>Position cursor at row 10, 
+    column 16, with white underlined text.</td><td>9779</td><td>1f79</td></tr>
+<tr><td><code>{1020}</code></td><td>Position cursor at row 10, 
+    column 20, with plain white text.</td><td>977a</td><td>1f7a</td></tr>
+<tr><td><code>{1020U}</code></td><td>Position cursor at row 10, 
+    column 20, with white underlined text.</td><td>97fb</td><td>1ffb</td></tr>
+<tr><td><code>{1024}</code></td><td>Position cursor at row 10, 
+    column 24, with plain white text.</td><td>97fc</td><td>1ffc</td></tr>
+<tr><td><code>{1024U}</code></td><td>Position cursor at row 10, 
+    column 24, with white underlined text.</td><td>97fd</td><td>1ffd</td></tr>
+<tr><td><code>{1028}</code></td><td>Position cursor at row 10, 
+    column 28, with plain white text.</td><td>97fe</td><td>1ffe</td></tr>
+<tr><td><code>{1028U}</code></td><td>Position cursor at row 10, 
+    column 28, with white underlined text.</td><td>977f</td><td>1f7f</td></tr>
+<tr><td><code>{11Wh}</code></td><td>Position cursor at row 11, 
+    column 00, with plain white text.</td><td>1040</td><td>9840</td></tr>
+<tr><td><code>{11WhU}</code></td><td>Position cursor at row 11, 
+    column 00, with white underlined text.</td><td>10c1</td><td>98c1</td></tr>
+<tr><td><code>{11Gr}</code></td><td>Position cursor at row 11, 
+    column 00, with plain green text.</td><td>10c2</td><td>98c2</td></tr>
+<tr><td><code>{11GrU}</code></td><td>Position cursor at row 11, 
+    column 00, with green underlined text.</td><td>1043</td><td>9843</td></tr>
+<tr><td><code>{11Bl}</code></td><td>Position cursor at row 11, 
+    column 00, with plain blue text.</td><td>10c4</td><td>98c4</td></tr>
+<tr><td><code>{11BlU}</code></td><td>Position cursor at row 11, 
+    column 00, with blue underlined text.</td><td>1045</td><td>9845</td></tr>
+<tr><td><code>{11Cy}</code></td><td>Position cursor at row 11, 
+    column 00, with plain cyan text.</td><td>1046</td><td>9846</td></tr>
+<tr><td><code>{11CyU}</code></td><td>Position cursor at row 11, 
+    column 00, with cyan underlined text.</td><td>10c7</td><td>98c7</td></tr>
+<tr><td><code>{11R}</code></td><td>Position cursor at row 11, 
+    column 00, with plain red text.</td><td>10c8</td><td>98c8</td></tr>
+<tr><td><code>{11RU}</code></td><td>Position cursor at row 11, 
+    column 00, with red underlined text.</td><td>1049</td><td>9849</td></tr>
+<tr><td><code>{11Y}</code></td><td>Position cursor at row 11, 
+    column 00, with plain yellow text.</td><td>104a</td><td>984a</td></tr>
+<tr><td><code>{11YU}</code></td><td>Position cursor at row 11, 
+    column 00, with yellow underlined text.</td><td>10cb</td><td>98cb</td></tr>
+<tr><td><code>{11Ma}</code></td><td>Position cursor at row 11, 
+    column 00, with plain magenta text.</td><td>104c</td><td>984c</td></tr>
+<tr><td><code>{11MaU}</code></td><td>Position cursor at row 11, 
+    column 00, with magenta underlined text.</td><td>10cd</td><td>98cd</td></tr>
+<tr><td><code>{11WhI}</code></td><td>Position cursor at row 11, 
+    column 00, with white italicized text.</td><td>10ce</td><td>98ce</td></tr>
+<tr><td><code>{11WhIU}</code></td><td>Position cursor at row 11, 
+    column 00, with white underlined italicized text.</td><td>104f</td>
+  <td>984f</td></tr>
+<tr><td><code>{1100}</code></td><td>Position cursor at row 11, 
+    column 00, with plain white text.</td><td>10d0</td><td>98d0</td></tr>
+<tr><td><code>{1100U}</code></td><td>Position cursor at row 11, 
+    column 00, with white underlined text.</td><td>1051</td><td>9851</td></tr>
+<tr><td><code>{1104}</code></td><td>Position cursor at row 11, 
+    column 04, with plain white text.</td><td>1052</td><td>9852</td></tr>
+<tr><td><code>{1104U}</code></td><td>Position cursor at row 11, 
+    column 04, with white underlined text.</td><td>10d3</td><td>98d3</td></tr>
+<tr><td><code>{1108}</code></td><td>Position cursor at row 11, 
+    column 08, with plain white text.</td><td>1054</td><td>9854</td></tr>
+<tr><td><code>{1108U}</code></td><td>Position cursor at row 11, 
+    column 08, with white underlined text.</td><td>10d5</td><td>98d5</td></tr>
+<tr><td><code>{1112}</code></td><td>Position cursor at row 11, 
+    column 12, with plain white text.</td><td>10d6</td><td>98d6</td></tr>
+<tr><td><code>{1112U}</code></td><td>Position cursor at row 11, 
+    column 12, with white underlined text.</td><td>1057</td><td>9857</td></tr>
+<tr><td><code>{1116}</code></td><td>Position cursor at row 11, 
+    column 16, with plain white text.</td><td>1058</td><td>9858</td></tr>
+<tr><td><code>{1116U}</code></td><td>Position cursor at row 11, 
+    column 16, with white underlined text.</td><td>10d9</td><td>98d9</td></tr>
+<tr><td><code>{1120}</code></td><td>Position cursor at row 11, 
+    column 20, with plain white text.</td><td>10da</td><td>98da</td></tr>
+<tr><td><code>{1120U}</code></td><td>Position cursor at row 11, 
+    column 20, with white underlined text.</td><td>105b</td><td>985b</td></tr>
+<tr><td><code>{1124}</code></td><td>Position cursor at row 11, 
+    column 24, with plain white text.</td><td>10dc</td><td>98dc</td></tr>
+<tr><td><code>{1124U}</code></td><td>Position cursor at row 11, 
+    column 24, with white underlined text.</td><td>105d</td><td>985d</td></tr>
+<tr><td><code>{1128}</code></td><td>Position cursor at row 11, 
+    column 28, with plain white text.</td><td>105e</td><td>985e</td></tr>
+<tr><td><code>{1128U}</code></td><td>Position cursor at row 11, 
+    column 28, with white underlined text.</td><td>10df</td><td>98df</td></tr>
+<tr><td><code>{12Wh}</code></td><td>Position cursor at row 12, 
+    column 00, with plain white text.</td><td>1340</td><td>9b40</td></tr>
+<tr><td><code>{12WhU}</code></td><td>Position cursor at row 12, 
+    column 00, with white underlined text.</td><td>13c1</td><td>9bc1</td></tr>
+<tr><td><code>{12Gr}</code></td><td>Position cursor at row 12, 
+    column 00, with plain green text.</td><td>13c2</td><td>9bc2</td></tr>
+<tr><td><code>{12GrU}</code></td><td>Position cursor at row 12, 
+    column 00, with green underlined text.</td><td>1343</td><td>9b43</td></tr>
+<tr><td><code>{12Bl}</code></td><td>Position cursor at row 12, 
+    column 00, with plain blue text.</td><td>13c4</td><td>9bc4</td></tr>
+<tr><td><code>{12BlU}</code></td><td>Position cursor at row 12, 
+    column 00, with blue underlined text.</td><td>1345</td><td>9b45</td></tr>
+<tr><td><code>{12Cy}</code></td><td>Position cursor at row 12, 
+    column 00, with plain cyan text.</td><td>1346</td><td>9b46</td></tr>
+<tr><td><code>{12CyU}</code></td><td>Position cursor at row 12, 
+    column 00, with cyan underlined text.</td><td>13c7</td><td>9bc7</td></tr>
+<tr><td><code>{12R}</code></td><td>Position cursor at row 12, 
+    column 00, with plain red text.</td><td>13c8</td><td>9bc8</td></tr>
+<tr><td><code>{12RU}</code></td><td>Position cursor at row 12, 
+    column 00, with red underlined text.</td><td>1349</td><td>9b49</td></tr>
+<tr><td><code>{12Y}</code></td><td>Position cursor at row 12, 
+    column 00, with plain yellow text.</td><td>134a</td><td>9b4a</td></tr>
+<tr><td><code>{12YU}</code></td><td>Position cursor at row 12, 
+    column 00, with yellow underlined text.</td><td>13cb</td><td>9bcb</td></tr>
+<tr><td><code>{12Ma}</code></td><td>Position cursor at row 12, 
+    column 00, with plain magenta text.</td><td>134c</td><td>9b4c</td></tr>
+<tr><td><code>{12MaU}</code></td><td>Position cursor at row 12, 
+    column 00, with magenta underlined text.</td><td>13cd</td><td>9bcd</td></tr>
+<tr><td><code>{12WhI}</code></td><td>Position cursor at row 12, 
+    column 00, with white italicized text.</td><td>13ce</td><td>9bce</td></tr>
+<tr><td><code>{12WhIU}</code></td><td>Position cursor at row 12, 
+    column 00, with white underlined italicized text.</td><td>134f</td>
+  <td>9b4f</td></tr>
+<tr><td><code>{1200}</code></td><td>Position cursor at row 12, 
+    column 00, with plain white text.</td><td>13d0</td><td>9bd0</td></tr>
+<tr><td><code>{1200U}</code></td><td>Position cursor at row 12, 
+    column 00, with white underlined text.</td><td>1351</td><td>9b51</td></tr>
+<tr><td><code>{1204}</code></td><td>Position cursor at row 12, 
+    column 04, with plain white text.</td><td>1352</td><td>9b52</td></tr>
+<tr><td><code>{1204U}</code></td><td>Position cursor at row 12, 
+    column 04, with white underlined text.</td><td>13d3</td><td>9bd3</td></tr>
+<tr><td><code>{1208}</code></td><td>Position cursor at row 12, 
+    column 08, with plain white text.</td><td>1354</td><td>9b54</td></tr>
+<tr><td><code>{1208U}</code></td><td>Position cursor at row 12, 
+    column 08, with white underlined text.</td><td>13d5</td><td>9bd5</td></tr>
+<tr><td><code>{1212}</code></td><td>Position cursor at row 12, 
+    column 12, with plain white text.</td><td>13d6</td><td>9bd6</td></tr>
+<tr><td><code>{1212U}</code></td><td>Position cursor at row 12, 
+    column 12, with white underlined text.</td><td>1357</td><td>9b57</td></tr>
+<tr><td><code>{1216}</code></td><td>Position cursor at row 12, 
+    column 16, with plain white text.</td><td>1358</td><td>9b58</td></tr>
+<tr><td><code>{1216U}</code></td><td>Position cursor at row 12, 
+    column 16, with white underlined text.</td><td>13d9</td><td>9bd9</td></tr>
+<tr><td><code>{1220}</code></td><td>Position cursor at row 12, 
+    column 20, with plain white text.</td><td>13da</td><td>9bda</td></tr>
+<tr><td><code>{1220U}</code></td><td>Position cursor at row 12, 
+    column 20, with white underlined text.</td><td>135b</td><td>9b5b</td></tr>
+<tr><td><code>{1224}</code></td><td>Position cursor at row 12, 
+    column 24, with plain white text.</td><td>13dc</td><td>9bdc</td></tr>
+<tr><td><code>{1224U}</code></td><td>Position cursor at row 12, 
+    column 24, with white underlined text.</td><td>135d</td><td>9b5d</td></tr>
+<tr><td><code>{1228}</code></td><td>Position cursor at row 12, 
+    column 28, with plain white text.</td><td>135e</td><td>9b5e</td></tr>
+<tr><td><code>{1228U}</code></td><td>Position cursor at row 12, 
+    column 28, with white underlined text.</td><td>13df</td><td>9bdf</td></tr>
+<tr><td><code>{13Wh}</code></td><td>Position cursor at row 13, 
+    column 00, with plain white text.</td><td>13e0</td><td>9be0</td></tr>
+<tr><td><code>{13WhU}</code></td><td>Position cursor at row 13, 
+    column 00, with white underlined text.</td><td>1361</td><td>9b61</td></tr>
+<tr><td><code>{13Gr}</code></td><td>Position cursor at row 13, 
+    column 00, with plain green text.</td><td>13462</td><td>9b62</td></tr>
+<tr><td><code>{13GrU}</code></td><td>Position cursor at row 13, 
+    column 00, with green underlined text.</td><td>13e3</td><td>9be3</td></tr>
+<tr><td><code>{13Bl}</code></td><td>Position cursor at row 13, 
+    column 00, with plain blue text.</td><td>1364</td><td>9b64</td></tr>
+<tr><td><code>{13BlU}</code></td><td>Position cursor at row 13, 
+    column 00, with blue underlined text.</td><td>13e5</td><td>9be5</td></tr>
+<tr><td><code>{13Cy}</code></td><td>Position cursor at row 13, 
+    column 00, with plain cyan text.</td><td>13e6</td><td>9be6</td></tr>
+<tr><td><code>{13CyU}</code></td><td>Position cursor at row 13, 
+    column 00, with cyan underlined text.</td><td>1367</td><td>9b67</td></tr>
+<tr><td><code>{13R}</code></td><td>Position cursor at row 13, 
+    column 00, with plain red text.</td><td>1368</td><td>9b68</td></tr>
+<tr><td><code>{13RU}</code></td><td>Position cursor at row 13, 
+    column 00, with red underlined text.</td><td>13e9</td><td>9be9</td></tr>
+<tr><td><code>{13Y}</code></td><td>Position cursor at row 13, 
+    column 00, with plain yellow text.</td><td>13ea</td><td>9bea</td></tr>
+<tr><td><code>{13YU}</code></td><td>Position cursor at row 13, 
+    column 00, with yellow underlined text.</td><td>136b</td><td>9b6b</td></tr>
+<tr><td><code>{13Ma}</code></td><td>Position cursor at row 13, 
+    column 00, with plain magenta text.</td><td>13ec</td><td>9bec</td></tr>
+<tr><td><code>{13MaU}</code></td><td>Position cursor at row 13, 
+    column 00, with magenta underlined text.</td><td>136d</td><td>9b6d</td></tr>
+<tr><td><code>{13WhI}</code></td><td>Position cursor at row 13, 
+    column 00, with white italicized text.</td><td>136e</td><td>9b6e</td></tr>
+<tr><td><code>{13WhIU}</code></td><td>Position cursor at row 13, 
+    column 00, with white underlined italicized text.</td><td>13ef</td>
+  <td>9bef</td></tr>
+<tr><td><code>{1300}</code></td><td>Position cursor at row 13, 
+    column 00, with plain white text.</td><td>1370</td><td>9b70</td></tr>
+<tr><td><code>{1300U}</code></td><td>Position cursor at row 13, 
+    column 00, with white underlined text.</td><td>13f1</td><td>9bf1</td></tr>
+<tr><td><code>{1304}</code></td><td>Position cursor at row 13, 
+    column 04, with plain white text.</td><td>13f2</td><td>9bf2</td></tr>
+<tr><td><code>{1304U}</code></td><td>Position cursor at row 13, 
+    column 04, with white underlined text.</td><td>1373</td><td>9b73</td></tr>
+<tr><td><code>{1308}</code></td><td>Position cursor at row 13, 
+    column 08, with plain white text.</td><td>13f4</td><td>9bf4</td></tr>
+<tr><td><code>{1308U}</code></td><td>Position cursor at row 13, 
+    column 08, with white underlined text.</td><td>1375</td><td>9b75</td></tr>
+<tr><td><code>{1312}</code></td><td>Position cursor at row 13, 
+    column 12, with plain white text.</td><td>1376</td><td>9b76</td></tr>
+<tr><td><code>{1312U}</code></td><td>Position cursor at row 13, 
+    column 12, with white underlined text.</td><td>13f7</td><td>9bf7</td></tr>
+<tr><td><code>{1316}</code></td><td>Position cursor at row 13, 
+    column 16, with plain white text.</td><td>13f8</td><td>9bf8</td></tr>
+<tr><td><code>{1316U}</code></td><td>Position cursor at row 13, 
+    column 16, with white underlined text.</td><td>1379</td><td>9b79</td></tr>
+<tr><td><code>{1320}</code></td><td>Position cursor at row 13, 
+    column 20, with plain white text.</td><td>137a</td><td>9b7a</td></tr>
+<tr><td><code>{1320U}</code></td><td>Position cursor at row 13, 
+    column 20, with white underlined text.</td><td>13fb</td><td>9bfb</td></tr>
+<tr><td><code>{1324}</code></td><td>Position cursor at row 13, 
+    column 24, with plain white text.</td><td>13fc</td><td>9bfc</td></tr>
+<tr><td><code>{1324U}</code></td><td>Position cursor at row 13, 
+    column 24, with white underlined text.</td><td>13fd</td><td>9bfd</td></tr>
+<tr><td><code>{1328}</code></td><td>Position cursor at row 13, 
+    column 28, with plain white text.</td><td>13fe</td><td>9bfe</td></tr>
+<tr><td><code>{1328U}</code></td><td>Position cursor at row 13, 
+    column 28, with white underlined text.</td><td>137f</td><td>9b7f</td></tr>
+<tr><td><code>{14Wh}</code></td><td>Position cursor at row 14, 
+    column 00, with plain white text.</td><td>9440</td><td>1c40</td></tr>
+<tr><td><code>{14WhU}</code></td><td>Position cursor at row 14, 
+    column 00, with white underlined text.</td><td>94c1</td><td>1cc1</td></tr>
+<tr><td><code>{14Gr}</code></td><td>Position cursor at row 14, 
+    column 00, with plain green text.</td><td>94c2</td><td>1cc2</td></tr>
+<tr><td><code>{14GrU}</code></td><td>Position cursor at row 14, 
+    column 00, with green underlined text.</td><td>9443</td><td>1c43</td></tr>
+<tr><td><code>{14Bl}</code></td><td>Position cursor at row 14, 
+    column 00, with plain blue text.</td><td>94c4</td><td>1cc4</td></tr>
+<tr><td><code>{14BlU}</code></td><td>Position cursor at row 14, 
+    column 00, with blue underlined text.</td><td>9445</td><td>1c45</td></tr>
+<tr><td><code>{14Cy}</code></td><td>Position cursor at row 14, 
+    column 00, with plain cyan text.</td><td>9446</td><td>1c46</td></tr>
+<tr><td><code>{14CyU}</code></td><td>Position cursor at row 14, 
+    column 00, with cyan underlined text.</td><td>94c7</td><td>1cc7</td></tr>
+<tr><td><code>{14R}</code></td><td>Position cursor at row 14, 
+    column 00, with plain red text.</td><td>94c8</td><td>1cc8</td></tr>
+<tr><td><code>{14RU}</code></td><td>Position cursor at row 14, 
+    column 00, with red underlined text.</td><td>9449</td><td>1c49</td></tr>
+<tr><td><code>{14Y}</code></td><td>Position cursor at row 14, 
+    column 00, with plain yellow text.</td><td>944a</td><td>1c4a</td></tr>
+<tr><td><code>{14YU}</code></td><td>Position cursor at row 14, 
+    column 00, with yellow underlined text.</td><td>94cb</td><td>1ccb</td></tr>
+<tr><td><code>{14Ma}</code></td><td>Position cursor at row 14, 
+    column 00, with plain magenta text.</td><td>944c</td><td>1c4c</td></tr>
+<tr><td><code>{14MaU}</code></td><td>Position cursor at row 14, 
+    column 00, with magenta underlined text.</td><td>94cd</td><td>1ccd</td></tr>
+<tr><td><code>{14WhI}</code></td><td>Position cursor at row 14, 
+    column 00, with white italicized text.</td><td>94ce</td><td>1cce</td></tr>
+<tr><td><code>{14WhIU}</code></td><td>Position cursor at row 14, 
+    column 00, with white underlined italicized text.</td><td>944f</td>
+  <td>1c4f</td></tr>
+<tr><td><code>{1400}</code></td><td>Position cursor at row 14, 
+    column 00, with plain white text.</td><td>94d0</td><td>1cd0</td></tr>
+<tr><td><code>{1400U}</code></td><td>Position cursor at row 14, 
+    column 00, with white underlined text.</td><td>9451</td><td>1c51</td></tr>
+<tr><td><code>{1404}</code></td><td>Position cursor at row 14, 
+    column 04, with plain white text.</td><td>9452</td><td>1c52</td></tr>
+<tr><td><code>{1404U}</code></td><td>Position cursor at row 14, 
+    column 04, with white underlined text.</td><td>94d3</td><td>1cd3</td></tr>
+<tr><td><code>{1408}</code></td><td>Position cursor at row 14, 
+    column 08, with plain white text.</td><td>9454</td><td>1c54</td></tr>
+<tr><td><code>{1408U}</code></td><td>Position cursor at row 14, 
+    column 08, with white underlined text.</td><td>94d5</td><td>1cd5</td></tr>
+<tr><td><code>{1412}</code></td><td>Position cursor at row 14, 
+    column 12, with plain white text.</td><td>94d6</td><td>1cd6</td></tr>
+<tr><td><code>{1412U}</code></td><td>Position cursor at row 14, 
+    column 12, with white underlined text.</td><td>9457</td><td>1c57</td></tr>
+<tr><td><code>{1416}</code></td><td>Position cursor at row 14, 
+    column 16, with plain white text.</td><td>9458</td><td>1c58</td></tr>
+<tr><td><code>{1416U}</code></td><td>Position cursor at row 14, 
+    column 16, with white underlined text.</td><td>94d9</td><td>1cd9</td></tr>
+<tr><td><code>{1420}</code></td><td>Position cursor at row 14, 
+    column 20, with plain white text.</td><td>94da</td><td>1cda</td></tr>
+<tr><td><code>{1420U}</code></td><td>Position cursor at row 14, 
+    column 20, with white underlined text.</td><td>945b</td><td>1c5b</td></tr>
+<tr><td><code>{1424}</code></td><td>Position cursor at row 14, 
+    column 24, with plain white text.</td><td>94dc</td><td>1cdc</td></tr>
+<tr><td><code>{1424U}</code></td><td>Position cursor at row 14, 
+    column 24, with white underlined text.</td><td>945d</td><td>1c5d</td></tr>
+<tr><td><code>{1428}</code></td><td>Position cursor at row 14, 
+    column 28, with plain white text.</td><td>945e</td><td>1c5e</td></tr>
+<tr><td><code>{1428U}</code></td><td>Position cursor at row 14, 
+    column 28, with white underlined text.</td><td>94df</td><td>1cdf</td></tr>
+<tr><td><code>{15Wh}</code></td><td>Position cursor at row 15, 
+    column 00, with plain white text.</td><td>94e0</td><td>1ce0</td></tr>
+<tr><td><code>{15WhU}</code></td><td>Position cursor at row 15, 
+    column 00, with white underlined text.</td><td>9461</td><td>1c61</td></tr>
+<tr><td><code>{15Gr}</code></td><td>Position cursor at row 15, 
+    column 00, with plain green text.</td><td>9462</td><td>1c62</td></tr>
+<tr><td><code>{15GrU}</code></td><td>Position cursor at row 15, 
+    column 00, with green underlined text.</td><td>94e3</td><td>1ce3</td></tr>
+<tr><td><code>{15Bl}</code></td><td>Position cursor at row 15, 
+    column 00, with plain blue text.</td><td>9464</td><td>1c64</td></tr>
+<tr><td><code>{15BlU}</code></td><td>Position cursor at row 15, 
+    column 00, with blue underlined text.</td><td>94e5</td><td>1ce5</td></tr>
+<tr><td><code>{15Cy}</code></td><td>Position cursor at row 15, 
+    column 00, with plain cyan text.</td><td>94e6</td><td>1ce6</td></tr>
+<tr><td><code>{15CyU}</code></td><td>Position cursor at row 15, 
+    column 00, with cyan underlined text.</td><td>9467</td><td>1c67</td></tr>
+<tr><td><code>{15R}</code></td><td>Position cursor at row 15, 
+    column 00, with plain red text.</td><td>9468</td><td>1c68</td></tr>
+<tr><td><code>{15RU}</code></td><td>Position cursor at row 15, 
+    column 00, with red underlined text.</td><td>94e9</td><td>1ce9</td></tr>
+<tr><td><code>{15Y}</code></td><td>Position cursor at row 15, 
+    column 00, with plain yellow text.</td><td>94ea</td><td>1cea</td></tr>
+<tr><td><code>{15YU}</code></td><td>Position cursor at row 15, 
+    column 00, with yellow underlined text.</td><td>946b</td><td>1c6b</td></tr>
+<tr><td><code>{15Ma}</code></td><td>Position cursor at row 15, 
+    column 00, with plain magenta text.</td><td>94ec</td><td>1cec</td></tr>
+<tr><td><code>{15MaU}</code></td><td>Position cursor at row 15, 
+    column 00, with magenta underlined text.</td><td>946d</td><td>1c6d</td></tr>
+<tr><td><code>{15WhI}</code></td><td>Position cursor at row 15, 
+    column 00, with white italicized text.</td><td>946e</td><td>1c6e</td></tr>
+<tr><td><code>{15WhIU}</code></td><td>Position cursor at row 15, 
+    column 00, with white underlined italicized text.</td><td>94ef</td>
+  <td>1cef</td></tr>
+<tr><td><code>{1500}</code></td><td>Position cursor at row 15, 
+    column 00, with plain white text.</td><td>9470</td><td>1c70</td></tr>
+<tr><td><code>{1500U}</code></td><td>Position cursor at row 15, 
+    column 00, with white underlined text.</td><td>94f1</td><td>1cf1</td></tr>
+<tr><td><code>{1504}</code></td><td>Position cursor at row 15, 
+    column 04, with plain white text.</td><td>94f2</td><td>1cf2</td></tr>
+<tr><td><code>{1504U}</code></td><td>Position cursor at row 15, 
+    column 04, with white underlined text.</td><td>9473</td><td>1c73</td></tr>
+<tr><td><code>{1508}</code></td><td>Position cursor at row 15, 
+    column 08, with plain white text.</td><td>94f4</td><td>1cf4</td></tr>
+<tr><td><code>{1508U}</code></td><td>Position cursor at row 15, 
+    column 08, with white underlined text.</td><td>9475</td><td>1c75</td></tr>
+<tr><td><code>{1512}</code></td><td>Position cursor at row 15, 
+    column 12, with plain white text.</td><td>9476</td><td>1c76</td></tr>
+<tr><td><code>{1512U}</code></td><td>Position cursor at row 15, 
+    column 12, with white underlined text.</td><td>94f7</td><td>1cf7</td></tr>
+<tr><td><code>{1516}</code></td><td>Position cursor at row 15, 
+    column 16, with plain white text.</td><td>94f8</td><td>1cf8</td></tr>
+<tr><td><code>{1516U}</code></td><td>Position cursor at row 15, 
+    column 16, with white underlined text.</td><td>9479</td><td>1c79</td></tr>
+<tr><td><code>{1520}</code></td><td>Position cursor at row 15, 
+    column 20, with plain white text.</td><td>947a</td><td>1c7a</td></tr>
+<tr><td><code>{1520U}</code></td><td>Position cursor at row 15, 
+    column 20, with white underlined text.</td><td>94fb</td><td>1cfb</td></tr>
+<tr><td><code>{1524}</code></td><td>Position cursor at row 15, 
+    column 24, with plain white text.</td><td>94fc</td><td>1cfc</td></tr>
+<tr><td><code>{1524U}</code></td><td>Position cursor at row 15, 
+    column 24, with white underlined text.</td><td>94fd</td><td>1cfd</td></tr>
+<tr><td><code>{1528}</code></td><td>Position cursor at row 15, 
+    column 28, with plain white text.</td><td>94fe</td><td>1cfe</td></tr>
+<tr><td><code>{1528U}</code></td><td>Position cursor at row 15, 
+    column 28, with white underlined text.</td><td>947f</td><td>1c7f
+</table>
+<table width="100%" border="1">
+<tr><th colspan="7">OTHER POSITIONING CODES</th></tr>
+<tr><th rowspan="2">CCD Code</th><th rowspan="2">Full Name</th>
+  <th rowspan="2">Meaning</th><th colspan="4">Channel</th></tr>
+<tr><th width="40">1</th><th width="40">2</th>
+  <th width="40">3</th><th width="40">4</th></tr>
+<tr><td><code>{TO1}</code></td><td>Tab Offset 1 column</td><td>Skip 1 
+    column over.</td>
+  <td>97a1</td><td>1fa1</td><td>97a1</td><td>1fa1</td></tr>
+<tr><td><code>{TO2}</code></td><td>Tab Offset 2 columns</td><td>Skip 2 
+    columns over.</td>
+  <td>97a2</td><td>1fa2</td><td>97a2</td><td>1fa2</td></tr>
+<tr><td><code>{TO3}</code></td><td>Tab Offset 3 columns</td><td>Skip 3 
+    columns over.</td>
+  <td>9723</td><td>1f23</td><td>9723</td><td>1f23</td></tr>
+<tr><td><code>{BS}</code></td><td>BackSpace</td><td>Move cursor back one 
+    position and delete that character.  Typically used only by roll-up 
+    captions and text mode.</td>
+  <td>94a1</td><td>1ca1</td><td>15a1</td><td>9da1</td></tr>
+<tr><td><code>{DER}</code></td><td>Delete to End of Row</td><td>Delete 
+    current character and all that follow it on the row.</td>
+  <td>94a4</td><td>1ca4</td><td>15a4</td><td>9da4</td></tr>
+<tr><td><code>{CR}</code></td><td>Carriage Return</td><td>For roll-up
+    caption, move cursor to bottom-left position of caption and move all lines
+    up (deleting top row once it scrolls above window).  For Text mode, 
+    move down to first column of next row (scrolling everything up if this is
+    the bottom row).  Does nothing in paint-on or pop-on captions.</td>
+  <td>94ad</td><td>1cad</td><td>15ad</td><td>9dad</td></tr>
+</table>
+<table width="100%" border="1">
+<tr><th colspan="5">BACKGROUND COLOR CODES</th></tr>
+<tr><td colspan="5"><b>NOTE:</b> These codes are not implemented by all
+  closed-caption decoders.  They are used to change the background color in
+  Text mode on a character-by-character basis.  Once applied, the background
+  will be applied to the rest of the row (it can also be changed mid-row).
+  Putting a character in any rows after a background color is set will set the
+  background color for that row.  Since these codes are optional, they must be
+  preceded with the space character (20h), which will be deleted when the code
+  is applied.</td></tr>
+<tr><th rowspan="2">CCD Code</th><th rowspan="2">Full Name</th>
+  <th rowspan="2">Meaning</th><th colspan="2">Channels</th></tr>
+<tr><th width="85">1 & 3</th><th width="85">2 & 4</th></td>
+<tr><td><code>{BWh}</code></td><td>Background White</td><td>Change background
+    color to opaque white.</td><td>1020</td><td>9820</td></tr>
+<tr><td><code>{BWhS}</code></td><td>Background Semi-Transparent White</td>
+    <td>Change background color to semi-transparent white.</td><td>10a1</td>
+    <td>98a1</td></tr>
+<tr><td><code>{BGr}</code></td><td>Background Green</td><td>Change background
+    color to opaque green.</td><td>10a2</td><td>98a2</td></tr>
+<tr><td><code>{BGrS}</code></td><td>Background Semi-Transparent Green</td>
+    <td>Change background color to semi-transparent green.</td><td>1023</td>
+    <td>9823</td></tr>
+<tr><td><code>{BBl}</code></td><td>Background Blue</td><td>Change background
+    color to opaque blue.</td><td>10a4</td><td>98a4</td></tr>
+<tr><td><code>{BBlS}</code></td><td>Background Semi-Transparent Blue</td>
+    <td>Change background color to semi-transparent blue.</td><td>1025</td>
+    <td>9825</td></tr>
+<tr><td><code>{BCy}</code></td><td>Background Cyan</td><td>Change background
+    color to opaque cyan.</td><td>1026</td><td>9826</td></tr>
+<tr><td><code>{BCyS}</code></td><td>Background Semi-Transparent Cyan</td>
+    <td>Change background color to semi-transparent cyan.</td><td>10a7</td>
+    <td>98a7</td></tr>
+<tr><td><code>{BR}</code></td><td>Background Red</td><td>Change background
+    color to opaque red.</td><td>10a8</td><td>98a8</td></tr>
+<tr><td><code>{BRS}</code></td><td>Background Semi-Transparent Red</td>
+    <td>Change background color to semi-transparent red.</td><td>1029</td>
+    <td>9829</td></tr>
+<tr><td><code>{BY}</code></td><td>Background Yellow</td><td>Change background
+    color to opaque yellow.</td><td>102a</td><td>982a</td></tr>
+<tr><td><code>{BYS}</code></td><td>Background Semi-Transparent Yellow</td>
+    <td>Change background color to semi-transparent yellow.</td><td>10ab</td>
+    <td>98ab</td></tr>
+<tr><td><code>{BMa}</code></td><td>Background Magenta</td><td>Change background
+    color to opaque magenta.</td><td>102c</td><td>982c</td></tr>
+<tr><td><code>{BMaS}</code></td><td>Background Semi-Transparent Magenta</td>
+    <td>Change background color to semi-transparent magenta.</td><td>10ad</td>
+    <td>98ad</td></tr>
+<tr><td><code>{BBk}</code></td><td>Background Black</td><td>Change background
+    color to opaque black.</td><td>10ae</td><td>98ae</td></tr>
+<tr><td><code>{BBkS}</code></td><td>Background Semi-Transparent Black</td>
+    <td>Change background color to semi-transparent black.</td><td>102f</td>
+    <td>982f</td></tr>
+<tr><td><code>{BT}</code></td><td>Background Transparent</td><td>Change
+    background to be transparent.</td><td>97ad</td><td>1fad</td></tr>
+</table>
+<table width="100%" border="1">
+<tr><th colspan="4">CLOSED GROUP CODES</td></tr>
+<tr><td colspan="4"><b>NOTE:</b> These codes are only implemented in non-U.S.
+  closed caption decoders.  They are used to change the character set.  These
+  decoders do not follow the odd parity rule, so all of the code values given
+  on this page will have to be adjusted so each byte is between 00h and 79h.
+  For that reason, they are not supported by CCD.</td></tr>
+<tr><th rowspan="2">Full Name</th><th rowspan="2">Meaning</th>
+  <th colspan="2">Channels</th></tr>
+<tr><th width="85">1 & 3</th><th width="85">2 & 4</th></tr>
+<tr><td>Standard Character Set</td><td>Interpret
+    all following characters using the <a href="iso_8859-1_charset.gif"
+    target="_blank">ISO 8859-1 character set</a> (the standard character set
+    for web pages) in normal size (each character occupies one square on the
+    <a href="cc_grid.gif" target="_blank">coordinate grid</a>).</td>
+  <td>97a4</td><td>1fa4</td></tr>
+<tr><td>Double-Size Character Set</td><td>Interpret
+    all following characters using <a href="iso_8859-1_charset.gif"
+    target="_blank">ISO 8859-1 character set</a> in double size
+    (each character occupies four squares on the <a href="cc_grid.gif"
+    target="_blank">coordinate grid</a>, meaning that characters can overlap
+    if you're not careful).</td>
+  <td>9725</td><td>1f25</td></tr>
+<tr><td>First Private Character Set</td>
+    <td>Interpret all following characters using first of two custom character
+    sets defined by the display device.</td>
+  <td>9726</td><td>1f26</td></tr>
+<tr><td>Second Private Character Set</td>
+    <td>Interpret all following characters using second of two custom character
+    sets defined by the display device.</td>
+  <td>97a7</td><td>1fa7</td></tr>
+<tr><td>People's Republic of China Character
+    Set</td><td>Interpret all following characters two at a time using the
+    character set defined in standard GB 2312-80 (the Bopomofo and parts of the
+    CJK Unified Ideographs sections of Unicode).  For example, the character
+    pair ÐÂ (d0c2, code number 4834) is displayed as <img src="char65b0.gif"
+    width="15" height="15" alt="Cantonese syllable SAN1" /> (Unicode U65B0--if
+    you set your browser's character encoding to Chinese Simplified (GB2312),
+    you should see the same character twice).</td>
+  <td>97a8</td><td>1fa8</td></tr>
+<tr><td>Korean Standard Character Set</td>
+    <td>Interpret all following characters two at a time using the character
+    set defined in standard KSC 5601-1987 (the Hangul, Hangul Compatibility
+    Jamo, and parts of the CJK Unified Ideographs sections of Unicode).  For
+    example, the character pair ¤è (a4e8, code number 2468) is
+    displayed as <img src="char3178.gif" width="10" height="13"
+    alt="Hangul letter KAPYEOUNPIEUP"/> (Unicode U3178--if you set your
+    browser's character encoding to Korean (UHC), you should see the same
+    character twice).</td>
+  <td>9729</td><td>1f29</td></tr>
+<tr><td>First Registered Character Set</td><td>I
+    believe this causes the interpretation of all following characters using
+    a set character set (perhaps something like the Symbol font), but I lack
+    the details.</td>
+  <td>972a</td><td>1f2a</td></tr>
+</table>
+<table width="100%" border="1">
+<tr><th colspan="7">MID-ROW CODES</th></tr>
+<tr><th rowspan="2">CCD Code</th><th rowspan="2">Full Name</th>
+  <th rowspan="2">Meaning</th><th colspan="4">Channel</th></tr>
+<tr><th width="40">1</th><th width="40">2</th>
+  <th width="40">3</th><th width="40">4</th></tr>
+<tr><td><code>{Wh}</code></td><td>White</td><td>Following text will be 
+    plain white.</td>
+  <td>9120</td><td>1920</td><td>9120</td><td>1920</td></tr>
+<tr><td><code>{WhU}</code></td><td>White Underline</td><td>Following text 
+    will be white underlined.</td>
+  <td>91a1</td><td>19a1</td><td>91a1</td><td>19a1</td></tr>
+<tr><td><code>{Gr}</code></td><td>Green</td><td>Following text will be 
+    plain green.</td>
+  <td>91a2</td><td>19a2</td><td>91a2</td><td>19a2</td></tr>
+<tr><td><code>{GrU}</code></td><td>Green Underline</td><td>Following text 
+    will be green underlined.</td>
+  <td>9123</td><td>1923</td><td>9123</td><td>1923</td></tr>
+<tr><td><code>{Bl}</code></td><td>Blue</td><td>Following text will be 
+    plain blue.</td>
+  <td>91a4</td><td>19a4</td><td>91a4</td><td>19a4</td></tr>
+<tr><td><code>{BlU}</code></td><td>Blue Underline</td><td>Following text 
+    will be blue underlined.</td>
+  <td>9125</td><td>1925</td><td>9125</td><td>1925</td></tr>
+<tr><td><code>{Cy}</code></td><td>Cyan</td><td>Following text will be 
+    plain cyan.</td>
+  <td>9126</td><td>1926</td><td>9126</td><td>1926</td></tr>
+<tr><td><code>{CyU}</code></td><td>Cyan Underline</td><td>Following text 
+    will be cyan underlined.</td>
+  <td>91a7</td><td>19a7</td><td>91a7</td><td>19a7</td></tr>
+<tr><td><code>{R}</code></td><td>Red</td><td>Following text will be plain 
+    red.</td>
+  <td>91a8</td><td>19a8</td><td>91a8</td><td>19a8</td></tr>
+<tr><td><code>{RU}</code></td><td>Red Underline</td><td>Following text 
+    will be red underlined.</td>
+  <td>9129</td><td>1929</td><td>9129</td><td>1929</td></tr>
+<tr><td><code>{Y}</code></td><td>Yellow</td><td>Following text will be 
+    plain yellow.</td>
+  <td>912a</td><td>192a</td><td>912a</td><td>192a</td></tr>
+<tr><td><code>{YU}</code></td><td>Yellow Underline</td><td>Following text 
+    will be yellow underlined.</td>
+  <td>91ab</td><td>19ab</td><td>91ab</td><td>19ab</td></tr>
+<tr><td><code>{Ma}</code></td><td>Magenta</td><td>Following text will be 
+    plain magenta.</td>
+  <td>912c</td><td>192c</td><td>912c</td><td>192c</td></tr>
+<tr><td><code>{MaU}</code></td><td>Magenta Underline</td><td>Following 
+    text will be magenta underlined.</td>
+  <td>91ad</td><td>19ad</td><td>91ad</td><td>19ad</td></tr>
+<tr><td><code>{Bk}</code></td><td>Black</td><td>Following text will be 
+    plain black (can only be used in Text mode, and only if background codes
+    are implemented by decoder).</td>
+  <td>97ae</td><td>1fae</td><td>97ae</td><td>1fae</td></tr>
+<tr><td><code>{BkU}</code></td><td>Black Underline</td><td>Following 
+    text will be black underlined (same restrictions as {Bk}).</td>
+  <td>972f</td><td>1f2f</td><td>972f</td><td>1f2f</td></tr>
+<tr><td><code>{I}</code></td><td>Italics</td><td>Following text will be 
+    italicized.</td>
+  <td>91ae</td><td>19ae</td><td>91ae</td><td>19ae</td></tr>
+<tr><td><code>{IU}</code></td><td>Italics Underline</td><td>Following text 
+    will be italicized and underlined.</td>
+  <td>912f</td><td>192f</td><td>912f</td><td>192f</td></tr>
+<tr><td><code>{FON}</code></td><td>Flash ON</td><td>Following text will be 
+    flashing (any of the other mid-row codes will turn flash off).</td>
+  <td>94a8</td><td>1ca8</td><td>15a8</td><td>9da8</td></tr>
+</table>
+<table width="100%" border="1">
+<tr><th colspan="6">UNUSED CODES</th></tr>
+<tr><th rowspan="2">Former Name</th><th rowspan="2">Meaning</th>
+  <th colspan="4">Channel</th></tr>
+<tr><th width="40">1</th><th width="40">2</th>
+  <th width="40">3</th><th width="40">4</th></tr>
+<tr><td>Alarm Off</td><td>This code is reserved for future use.</td>
+  <td>9423</td><td>1c23</td><td>1523</td><td>9d23</td></tr>
+<tr><td>Alarm On</td><td>This code is reserved for future use.</td>
+  <td>94a2</td><td>1ca2</td><td>15a2</td><td>9da2</td></tr>
+</table>
+</p>
+
+<p><a href="SCC_TOOLS.HTML">Return</a> to SCC Tools Documentation.</p>
+</body>
+</html>
+

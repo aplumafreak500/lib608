@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<html>
+<head>
+<title>Capturing DVD Closed Captions with GraphEdit</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css" media="screen">
+<!--
+  H3 {align: center;}
+  TD {vertical-align: top;}
+-->
+</style>
+</head>
+<body>
+
+<h3>Capturing DVD Closed Captions with GraphEdit</h3>
+<p>This procedure describes how to capture raw closed captions from a DVD
+using the GraphEdit application and the drivers provided by your software DVD
+player.  This method is rather long and cumbersome, so if at all possible,
+you should try the VobSub + VOBSUB2SCC method
+<a href="SCC_TOOLS.HTML#capture_DVD">described</a> on the main SCC Tools
+page.</p>
+<p>First, there are two things you need to be aware of:
+<ul><li>In order to be able to capture closed captions using a software DVD
+player's drivers, that player must be capable of displaying closed captions
+or relaying them to a television set.  Included in this list are PowerDVD,
+Sonic Cineplayer (fka WinDVD), and the Ravisent (Cinemaster) Player.</li>
+<li>In order for GraphEdit to access the DVD VOB files, those files must
+be decrypted.  See <a href="http://www.doom9.org">Doom9</a> for help with
+this.</li></ul>
+
+<p></p>
+<hr />
+<p></p>
+
+<p>Here is the procedure for extracting closed captions from a DVD
+software player:</p>
+<ol><li>From Control Panel, double-click on the DirectX applet to find out 
+what version you have installed (if there's no applet in Control Panel, find 
+and run dxdiag.exe, probably located in the System32 subdirectory of your 
+C:\Windows or C:\WINNT directory).  If you don't have version 7 or higher of 
+DirectX, download the latest version from 
+<a href="http://www.microsoft.com/directx/">Microsoft's web page</a>.</li>
+<li>Download the GraphEdit tool.  This can be found by itself at 
+<a href="http://www.doom9.org">Doom 9</a>, or as part of the DirectX SDK at 
+<a href="http://www.microsoft.com/directx/">Microsoft</a>.  The SDK (at 
+215+ MB a rather-large download) is probably worth loading for only two 
+reasons: it already includes DirectX (in case you need to upgrade), and its 
+help file is useful for figuring out what the different DirectShow filters do 
+(in the Contents tab, look under DirectX - DirectShow - DirectShow Reference - 
+DirectShow Filters).</li>
+<li>Start GraphEdit.  Under the Graph menu, select Insert Filters, then insert 
+all of the following:</li>
+<ul><li>Under DirectShow Filters, select the "File Source (Async.)".  This 
+will open a dialog box--select the decrypted VOB file you wish to extract 
+captions from.</li>
+<li>Under DirectShow Filters, select the "MPEG-2 Splitter".  If you're using 
+Windows XP, select the "MPEG-2 Demultiplexer" instead.</li>
+<li>Under DirectShow Filters, add the DVD video decoder filter for your 
+software DVD player.  The filter name will start with the name of the 
+manufacturer, for example "Cyberlink Video/SP Decoder" for PowerDVD or 
+"InterVideo Video Decoder" for WinDVD.  For the Cinemaster DVD Video Decoder 
+(and perhaps other hardware-driven DVD players), look under the WDM Stream 
+Decompressors category for the "Cinemaster C WDM DVD Driver".</li>
+<li>If you're using hardware decoding, select the "VBI Surface Allocator" 
+under DirectShow Filters.  For Windows XP, select the "Video Port Manager" 
+filter instead.</li>
+<li>Under DirectShow Filters, select the "Infinite Pin Tee Filter".</li>
+<li>Under DirectShow Filters, select the "Line 21 Decoder".  If you're working 
+in Windows XP, use the "Line 21 Decoder 2" instead.</li>
+<li>Under DirectShow Filters, select the "Overlay Mixer" (do not add this 
+filter for Windows XP).</li>
+<li>Under DirectShow Filters, select the "Dump" filter.  This is the filter 
+that will output the raw closed caption file, and when you select this filter, 
+you will be promted to provide a path and name of the file to create ("cc.bin"
+is a good name).  The Dump filter comes with GraphEdit, and if you don't see it 
+listed, then the register.bat file in the directory you put GraphEdit in 
+didn't work.  Open register.bat in Notepad and add the following line at the 
+top: "<code>set path=%path%;.</code>" (be sure to include the period at the 
+end).  Double-click the file, and see if it runs correctly, then close and 
+re-open GraphEdit and try again.</li>
+<li>Under DirectShow Filters, select the "Video Mixing Renderer" for 
+Windows XP or the "Video Renderer" for other operating systems.  Then click 
+the Close button to return to GraphEdit.</li>
+</ul>
+<li>To create an application, you will now connect the filters (the boxes in 
+GraphEdit) to each other to pass data down the line.  To connect two boxes, 
+position the pointer in an output pin (one of the bumps on the right-hand side 
+of a box) and drag to an input pin (a left-hand bump on another box).  If the 
+two filters cannot be connected, you will get a cryptic error message--try 
+closing and re-opening GraphEditor and if this and a reboot doesn't work, then 
+it's possible the driver just doesn't want to do what you want.  To configure 
+a filter, right-click it and select "Filter Properties".  Finally, to delete a 
+filter, click on it to select it, then press the Delete key.  Look
+<a href="dvdcapture_cc.gif" target="_blank">here</a> for an example of what this 
+should look like when finished (using PowerDVD's DVD video decoder filter in a 
+Windows 2000 system).</li>
+<ol type="a"><li>Connect the Output pin of the File Source filter (the one with 
+the name of the VOB file) to the Input pin of the MPEG-2 Splitter filter (for 
+non-Windows XP systems) or the same pin of the MPEG-2 Demultiplexer.  After a 
+few seconds, two output pins should appear on the MPEG-2 Splitter or 
+Demultiplexer: Video and AC3 (or perhaps MPEG-2 Audio).</li>
+<li>Connect the Video out pin of the MPEG-2 Splitter or Multiplexer to the 
+Video In pin of the DVD video decoder filter.</li>
+<li>Connect the Video Out pin of the DVD video decoder filter to Input0 of 
+the Overlay Mixer (for non-Windows XP environments) or Input0 of the Video 
+Mixing Renderer (for Windows XP).</li>
+<li>Look for an output pin on the DVD video decoder filter with a name like 
+"Closed Caption Out" or "CC Info" or "Line 21 Output" or something similar 
+(the name could have a "~" before it, which means that the pin normally 
+requires special handling).  Connect this pin to the Input pin of the Infinite 
+Pin Tee Filter.</li>
+<li>If the dvd video decoder filter has a VPVBI output pin, connect it to the 
+VBI Notify input pin of the VBI Surface Allocator filter (for non-Windows XP 
+systems) or the same pin on the Video Port Manager filter.  If the capture 
+filter does not have this pin, then this filter is not needed, and can be 
+deleted.  In case you are wondering, the purpose of this dead-end filter is to 
+allocate memory on the hardware decoder card to use the Closed Caption output 
+pin.</li>
+<li>Connect the Output1 pin of the Infinite Pin Tee Filter to the XForm In pin 
+of either the Line 21 Decoder filter (for non-Windows XP) or the Line 21 
+Decoder 2 filter (for Windows XP).  Note that an Output2 pin will appear on 
+the Infinite Pin Tee Filter when you do this.</li>
+<li>Connect this Output2 pin to the input pin of the Dump filter (named 
+"cc.bin" or whatever you decided to name your capture file).</li>
+<li>For non-Windows XP systems, connect the XForm Out pin of the Line 21 
+Decoder filter to the Input2 pin of the Overlay Mixer filter (which you used 
+back in step c).  For Windows XP, connect the XForm Out pin of the Line 21 
+Decoder 2 filter with the Input2 pin of the Video Mixing Renderer filter.</li>
+<li>For non-Windows XP systems, connect the XForm Out pin of the Overlay Mixer 
+filter to the Input of the Video Renderer.  Windows XP users don't need to do 
+anything for this step.</li>
+</ol>
+<li>Save the resulting graph.</li>
+<li>To capture closed captions, click on the play button in the toolbar of 
+GraphEdit.  A window should open showing the video with closed captions 
+overlayed.  There will be no sound, but as long as closed captions are being 
+displayed, they will also be captured.</li>
+<li>Monitor the preview window and/or the progress bar located under the 
+toolbar in GraphEdit until all of the captions you are interested in have been 
+displayed (or the file is done playing), then click the stop button in the 
+toolbar of GraphEdit to stop recording.  DO NOT close the preview window 
+before stopping GraphEdit, as that will crash the computer (you should close 
+the window once you have stopped GraphEdit, though).  If you're extracting from
+the entire VOB file, the capture file output will stop as soon as the video 
+stops playing, so you may not need to monitor this step after the first few 
+times.</li>
+<li>Take a look at the file you have created, to make sure that it is not an 
+empty file.  The contents of the file are in binary, so they should look like 
+gibberish, with a few letters here and there.</li>
+<li>To capture from another VOB file, configure the Dump filter to save to a 
+different file, then delete the File Source (Async.) filter--the link between 
+the MPEG-2 Splitter or Demultiplexer and the DVD video decoder filter will 
+disappear at this time.  Re-add the "File Source (Async.)" filter under DirectShow 
+Filters and select the next VOB file, then reconnect this filter to the MPEG-2 
+Splitter/Demultiplexer and the Splitter/Demultiplexer filter to the DVD video 
+decoder filter.  To be honest, I have never been able to get any but the
+first VOB file to work using GraphEdit, so the solution may be to combine
+all VOBs into a single file at the very beginning.</li>
+<li>GraphEdit cannot open a filter if a file it uses is missing, so be sure to
+delete the VOB file from the graph before saving and closing the program.
+This way, you can load the filter and continue from Step 9 above.</li>
+<li>To combine the raw captions files extracted from sequential VOB files, 
+bring up a command prompt, navigate to the directory with the files, and issue 
+the following command: "copy cc1.bin+cc2.bin+cc3.bin cc_all.bin" (changing 
+file names as necessary).</li>
+</ol>
+
+<p><a href="SCC_TOOLS.HTML">Return</a> to SCC Tools Documentation.</p>
+</body>
+</html>

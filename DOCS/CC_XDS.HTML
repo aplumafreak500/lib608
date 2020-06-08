@@ -1,0 +1,1495 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<!--
+  Scanline use by NTSC:
+       1: Start of Field 1
+           Start of Vertical Blanking Interval
+            Start of Syncronization Signal
+       9:   End of Syncronization Signal
+      10:   Start of User Data
+      21:    Closed Captions and ITV
+            End of User Data
+           End of Vertical Blanking Interval
+      22:  Start of Video
+     263:  End of Video
+          End of Field 1
+   263.5: Start of Field 2
+           Start of Vertical Blanking Interval
+            Start of Syncronization Signal
+     272:   End of Syncronization Signal
+     273:   Start of User Data
+     284:    Closed Captions and Extended Data Services
+     285:   End of User Data
+           End of Vertical Blanking Interval
+   285.5:  Start of Video
+     525:  End of Video
+          End of Field 2
+-->
+<html>
+<head>
+<title>Closed Caption Disassembly Documentation: XDS</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css" media="screen">
+<!--
+  H3 {align: center;}
+  TH.centered {align: center;}
+  TD {vertical-align: top;}
+  CODE {font-weight: bold;}
+-->
+</style>
+</head>
+<body>
+<h3 align="center">Closed Caption Disassembly Documentation: XDS</h3>
+<p>Extended Data Service is transmitted on channel CC3 (also known as channel 1
+of Line 284).  Its most common consumer use is to provide the program ratings
+used by the V-chip.</p>
+<p>Each XDS packet consists of a Class (1 byte), a Type (1 byte), and Content
+(up to 32 bytes), followed by 0x40 if necessary to keep the total number of
+bytes even, followed by 0x8f and then a 1-byte checksum (computed so that the
+sum of all of the bytes in the packet is evenly divisible by 0x80, 128 decimal;
+also note that all bytes have the high bit set or cleared in order to have an
+odd number of bits set in each byte, and all non-character data bytes have bit 6
+set as well).  NOTE: CCASDI will compute the checksum when going from CCD to
+SCC, but needs to know that the packet will not be continued, so if you wish to
+take advantage of this, be sure to end the XDS packet with <code>\C</code>.</p>
+<p>XDS is designed to be fit in between other caption data; for that reason,
+XDS packets can be interrupted at any time and later resumed.</p>
+<p>XDS types are grouped into seven classes.  The Current class describes the
+program currently being transmitted.  The Future class has all of the same
+types as the Current class and describes any program to be transmitted in the
+future on the same channel.  The Channel class describes the channel being
+tuned.  The Miscellaneous class is for information that applies to all
+channels.  The Public Service class is used for emergency messages that need
+to supercede all other classes.  The Reserved class currently has no function.
+Finally, the Undefined class is for any custom use the decoder manufacturer
+wishes.</p>
+<p>Here is a list of types by class, followed by their definitions:</p>
+<dl>
+<dt><a href="#CF">CURRENT AND FUTURE CLASSES</a></dt>
+  <dd><a href="#ST">Start Time/Program ID</a></dd>
+  <dd><a href="#PL">Program Length/Time in Show</a></dd>
+  <dd><a href="#PN">Program Name</a> (shows example of packet interruption for 
+    Current Class)</dd>
+  <dd><a href="#PT">Program Types</a> (shows example of packet interruption for
+    Future Class)</dd>
+  <dd><a href="#PR">Program Rating (V-Chip)</a></dd>
+  <dd><a href="#AS">Audio Streams</a></dd>
+  <dd><a href="#CS">Caption Streams</a></dd>
+  <dd><a href="#CG">Copy Generation Management System</a></dd>
+  <dd><a href="#AR">Program Aspect Ratio</a></dd>
+  <dd><a href="#PD">Program Data</a> (an optional combination type)</dd>
+  <dd><a href="#MD">Miscellaneous Data</a> (an optional combination type)</dd>
+  <dd><a href="#Dn">Program Description</a> (actually 8 types, for 8 lines of
+    data)</dd>
+<dt><a href="#H">CHANNEL CLASS</a></dt>
+  <dd><a href="#NN">Network Name</a> (shows example of packet interruption for
+    Channel Class)</dd>
+  <dd><a href="#NC">Network Call Letters</a></dd>
+  <dd><a href="#TD">Channel Tape Delay</a></dd>
+  <dd><a href="#TS">Transmission Signal Identifier</a></dd>
+<dt><a href="#M">MISCELLANEOUS CLASS</a></dt>
+  <dd><a href="#TM">Time of Day</a></dd>
+  <dd><a href="#IC">Impulse Capture ID</a> (used for programming VCRs to record
+    a show)</dd>
+  <dd><a href="#SD">Supplemental Data Location</a></dd>
+  <dd><a href="#TZ">Local Time Zone</a></dd>
+  <dd><a href="#OB">Out of Band Channel</a></dd>
+  <dd><a href="#CP">Channel Map Pointer</a></dd>
+  <dd><a href="#CH">Channel Map Header</a></dd>
+  <dd><a href="#CM">Channel Map</a> (shows example of packet interruption for
+    Miscellaneous Class)</dd>
+<dt><a href="#P">PUBLIC SERVICE CLASS</a></dt>
+  <dd><a href="#WB">National Weather Service Bulletin</a></dd>
+  <dd><a href="#WB">National Weather Service Message</a> (shows example of
+    packet interruption for Public Service Class)</dd>
+<dt><a href="#R">RESERVED CLASS</a></dt>
+<dt><a href="#U">UNDEFINED CLASS</a></dt>
+<dt><a href="#A">ALL CLASSES</a></dt>
+  <dd><a href="#U">Undocumented Type</a></dd>
+</dl>
+
+<hr />
+<p>
+<table width="100%" border="1">
+<tr><th><a name="CF">CURRENT AND FUTURE CLASSES</a></th></tr>
+<tr><td>Start codes for Current and Future classes are 0x01 and 0x83.
+  <br>Continue codes are 0x02 and 0x04.</td></tr>
+</table>
+</p>
+<p>
+<table width="100%" border="1">
+<tr><th colspan="3"><a name="ST">Start Time/Program ID</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:01:00	{XDS Cs ST 18:30D ZTA Dec 06 \C5d}
+           	     |   |  |  || |||  |   |   |
+           	     1   2  3  45 678  9   1   1
+           	                           0   1</pre>
+  <b>SCC:</b><pre>
+00:01:01:00	0101 5ef2 467c 8f5d</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class Start</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Start Time/Program ID Type
+    (byte 2 = 0x01).</td></tr>
+<tr><td>3</td><td>Hour</td><td>Hour in UTC when program starts (UTC is London's 
+    time zone--subtract four hours to get Eastern Time, eight hours to get 
+    Pacific Time), from 00 (Midnight) to 23 (11 PM) (byte 4 + 0x40 + Field 5 
+    below).</td></tr>
+<tr><td>4</td><td>Minute</td><td>Minute program starts (usually 0 or 30), from
+    00 to 59 (byte 3 + 0x40).</td></tr>
+<tr><td>5</td><td>DST</td><td>Currently in <code>D</code>aylight Savings Time,
+    or <code>S</code>tandard Time (add 0x20 to byte 4 if <code>D</code>).  This
+    field is usually ignored by the decoder.</td></tr>
+<tr><td>6</td><td>Zero Seconds</td><td>This is either <code>_</code> for
+    unknown seconds or <code>Z</code> for zero seconds (add 0x20 to byte 6 if
+    <code>Z</code>).</td></tr>
+<tr><td>7</td><td>Tape Delay</td><td>Program is tape delayed (<code>T</code>)
+    or is not (<code>N</code>) for Pacific and Mountain time zones (add 0x10 to
+    byte 6 if <code>T</code>).  See the <a href="#TD">Channel Tape Delay</a>
+    packet for the size of the delay.</td></tr>
+<tr><td>8</td><td>Leap Day</td><td>If this is February 29th, then this is
+    <code>L</code> for Leap Day, otherwise, this is <code>A</code> (add 0x20 to
+    byte 5 if <code>L</code>).  This field is usually ignored by the
+    decoder.</td></tr>
+<tr><td>9</td><td>Month</td><td>Month program starts: <code>Jan</code>uary,
+    <code>Feb</code>ruary, <code>Mar</code>ch, <code>Apr</code>il, 
+    <code>May</code>, <code>Jun</code>e, <code>Jul</code>y, 
+    <code>Aug</code>ust, <code>Sep</code>tember, <code>Oct</code>ober, 
+    <code>Nov</code>ember or <code>Dec</code>ember (byte 6 = 0x41, 0x42, 0x43, 
+    0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a or 0x4b for <code>Jan</code>
+    through <code>Dec</code>, then add in Fields 6 and 7 above).</td></tr>
+<tr><td>10</td><td>Day</td><td>Day of Month, from 1 to 31 (byte 5 + 
+    0x40 + Field 8 above).</td></tr>
+<tr><td>11</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 7 and 8
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="PL">Program Length/Time in Show</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:02:00	{XDS Fs PL 02:30 01:45:30 \C80}
+           	      |  |  |  |  |  |  |   |
+           	      1  2  3  4  5  6  7   8</pre>
+  <b>SCC:</b><pre>
+00:01:02:00	8302 5ec2 6dc1 5e40 8f80</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Program Length/Time in Show Type
+    (byte 2 = 0x02).</td></tr>
+<tr><td>3</td><td>Hours Long</td><td>Hour portion of Program Length, from 00 to
+    63 (byte 4 + 0x40).</td></tr>
+<tr><td>4</td><td>Minutes Long</td><td>Minute portion of Program Length, from 
+    00 to 59 (byte 3 + 0x40).</td></tr>
+<tr><td>5</td><td>Hours Elapsed</td><td>(Optional) Hour portion of Time Elapsed 
+    in Show, from 00 to 63 (byte 6 + 0x40).</td></tr>
+<tr><td>6</td><td>Minutes Elapsed</td><td>(Optional unless Hours Elapsed is 
+    used) Minute portion of Time Elapsed in Show, from 00 to 59 (byte 5 + 
+    0x40).</td></tr>
+<tr><td>7</td><td>Seconds Elapsed</td><td>(Optional even when Hours Elapsed is
+    used) Seconds portion of Time Elapsed in Show, from 00 to 59 (but only
+    updated every 8 seconds) (byte 7 + 0x40).  If this field is used, it must
+    be followed by the filler byte 0x40.</td></tr>
+<tr><td>8</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="PN">Program Name</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+CHANNEL 3
+00:01:03:00	{XDS Cs PN Days of }
+           	      |  |     |
+           	      1  2     3
+00:01:03:05	{EDM}{EDM}
+00:01:03:07	{XDS Cc PN Our Lives \Cae}
+           	      |  |     |       |
+           	      N N+1    3       4</pre>
+  <b>SCC:</b><pre>
+00:01:03:00	0183 c461 7973 20ef e620
+
+00:01:03:05	152c 152c
+
+00:01:03:07	0283 4f75 f220 4ce9 76e5 7340 8fae</pre></td>
+  </tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Program Name Type
+    (byte 2 = 0x83).</td></tr>
+<tr><td>3</td><td>Program Name</td><td>The name of the program (bytes 3 and up, 
+    from 2 to 32 characters, using closed caption
+    <a href="CC_CHARS.HTML">character set</a>).</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="PT">Program Types</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:04:00	{XDS Fs PT Entertainment Drama Repeat Romance Series Soap_Opera \Cc8}
+           	      |  |      |          |      |      |       |        |       |
+           	      1  2      3          3      3      3       3        3       4</pre>
+  <b>SCC:</b><pre>
+00:01:04:00	8304 a1bc 6e70 f275 8fc8</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Program Types Type
+    (byte 2 = 0x04).</td></tr>
+<tr><td>3</td><td>Code</td><td>From 2 to 32 codes describing the program (bytes
+    3 and up, using the following lookup:)
+ <table width="100%"><tr><td>
+ <table border="1">
+ <tr><th>Code</th><th>Program Type</th></tr>
+ <tr><td>0x20</td><td>Education</td></tr>
+ <tr><td>0xa1</td><td>Entertainment</td></tr>
+ <tr><td>0xa2</td><td>Movie</td></tr>
+ <tr><td>0x23</td><td>News</td></tr>
+ <tr><td>0xa4</td><td>Religious</td></tr>
+ <tr><td>0x25</td><td>Sports</td></tr>
+ <tr><td>0x26</td><td>Other</td></tr>
+ <tr><td>0xa7</td><td>Action</td></tr>
+ <tr><td>0xa8</td><td>Advertisement</td></tr>
+ <tr><td>0x29</td><td>Animated</td></tr>
+ <tr><td>0x2a</td><td>Anthology</td></tr>
+ <tr><td>0xab</td><td>Automobile</td></tr>
+ <tr><td>0x2c</td><td>Awards</td></tr>
+ <tr><td>0xad</td><td>Baseball</td></tr>
+ <tr><td>0xae</td><td>Basketball</td></tr>
+ <tr><td>0x2f</td><td>Bulletin</td></tr>
+ <tr><td>0xb0</td><td>Business</td></tr>
+ <tr><td>0x31</td><td>Classical</td></tr>
+ <tr><td>0x32</td><td>College</td></tr>
+ <tr><td>0xb3</td><td>Combat</td></tr>
+ <tr><td>0x34</td><td>Comedy</td></tr>
+ <tr><td>0xb5</td><td>Commentary</td></tr>
+ <tr><td>0xb6</td><td>Concert</td></tr>
+ <tr><td>0x37</td><td>Consumer</td></tr>
+ <tr><td>0x38</td><td>Contemporary</td></tr>
+ <tr><td>0xb9</td><td>Crime</td></tr>
+ <tr><td>0xba</td><td>Dance</td></tr>
+ <tr><td>0x3b</td><td>Documentary</td></tr>
+ <tr><td>0xbc</td><td>Drama</td></tr>
+ <tr><td>0x3d</td><td>Elementary</td></tr>
+ <tr><td>0x3e</td><td>Erotica</td></tr>
+ <tr><td>0xbf</td><td>Exercise</td></tr>
+ <tr><td>0x40</td><td>Fantasy</td></tr>
+ <tr><td>0xc1</td><td>Farm</td></tr>
+ <tr><td>0xc2</td><td>Fashion</td></tr>
+ <tr><td>0x43</td><td>Fiction</td></tr>
+ <tr><td>0xc4</td><td>Food</td></tr>
+ <tr><td>0x45</td><td>Football</td></tr>
+ <tr><td>0x46</td><td>Foreign</td></tr>
+ <tr><td>0xc7</td><td>Fund-Raiser</td></tr>
+ <tr><td>0xc8</td><td>Game/Quiz</td></tr>
+ <tr><td>0x49</td><td>Garden</td></tr>
+ <tr><td>0x4a</td><td>Golf</td></tr>
+ <tr><td>0xcb</td><td>Government</td></tr>
+ <tr><td>0x4c</td><td>Health</td></tr>
+ <tr><td>0xcd</td><td>High_School</td></tr>
+ <tr><td>0xce</td><td>History</td></tr>
+ <tr><td>0x4f</td><td>Hobby</td></tr>
+ </table></td><td>
+ <table border="1">
+ <tr><th>Code</th><th>Program Type</th></tr>
+ <tr><td>0xd0</td><td>Hockey</td></tr>
+ <tr><td>0x51</td><td>Home</td></tr>
+ <tr><td>0x52</td><td>Horror</td></tr>
+ <tr><td>0xd3</td><td>Information</td></tr>
+ <tr><td>0x54</td><td>Instruction</td></tr>
+ <tr><td>0xd5</td><td>International</td></tr>
+ <tr><td>0xd6</td><td>Interview</td></tr>
+ <tr><td>0x57</td><td>Language</td></tr>
+ <tr><td>0x58</td><td>Legal</td></tr>
+ <tr><td>0xd9</td><td>Live</td></tr>
+ <tr><td>0xda</td><td>Local</td></tr>
+ <tr><td>0x5b</td><td>Math</td></tr>
+ <tr><td>0xdc</td><td>Medical</td></tr>
+ <tr><td>0x5d</td><td>Meeting</td></tr>
+ <tr><td>0x5e</td><td>Military</td></tr>
+ <tr><td>0xdf</td><td>Mini-Series</td></tr>
+ <tr><td>0xe0</td><td>Music</td></tr>
+ <tr><td>0x61</td><td>Mystery</td></tr>
+ <tr><td>0x62</td><td>National</td></tr>
+ <tr><td>0xe3</td><td>Nature</td></tr>
+ <tr><td>0x64</td><td>Police</td></tr>
+ <tr><td>0xe5</td><td>Politics</td></tr>
+ <tr><td>0xe6</td><td>Premiere</td></tr>
+ <tr><td>0x67</td><td>Pre-Recorded</td></tr>
+ <tr><td>0x68</td><td>Product</td></tr>
+ <tr><td>0xe9</td><td>Professional</td></tr>
+ <tr><td>0xea</td><td>Public</td></tr>
+ <tr><td>0x6b</td><td>Racing</td></tr>
+ <tr><td>0xec</td><td>Reading</td></tr>
+ <tr><td>0x6d</td><td>Repair</td></tr>
+ <tr><td>0x6e</td><td>Repeat</td></tr>
+ <tr><td>0xef</td><td>Review</td></tr>
+ <tr><td>0x70</td><td>Romance</td></tr>
+ <tr><td>0xf1</td><td>Science</td></tr>
+ <tr><td>0xf2</td><td>Series</td></tr>
+ <tr><td>0x73</td><td>Service</td></tr>
+ <tr><td>0xf4</td><td>Shopping</td></tr>
+ <tr><td>0x75</td><td>Soap_Opera</td></tr>
+ <tr><td>0x76</td><td>Special</td></tr>
+ <tr><td>0xf7</td><td>Suspense</td></tr>
+ <tr><td>0xf8</td><td>Talk</td></tr>
+ <tr><td>0x79</td><td>Technical</td></tr>
+ <tr><td>0x7a</td><td>Tennis</td></tr>
+ <tr><td>0xfb</td><td>Travel</td></tr>
+ <tr><td>0x7c</td><td>Variety</td></tr>
+ <tr><td>0xfd</td><td>Video</td></tr>
+ <tr><td>0xfe</td><td>Weather</td></tr>
+ <tr><td>0x7f</td><td>Western</td></tr>
+ </table></td></tr></table>
+</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="PR">Program Rating (V-Chip)</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:05:00	{XDS Cs PR TPG TV-14 DL_V \C16}
+           	      |  |  |    |   ||||   |
+           	      1  2  3    4   5678   9</pre>
+  <b>SCC:</b><pre>
+00:01:05:00	0185 686d 8f16</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Program Rating Type
+    (byte 2 = 0x85).</td></tr>
+<tr><td>3</td><td>System</td><td>The Rating System used: <code>MPAA</code> for
+    Motion Picture Association of America (U.S. movie ratings), 
+    <code>TPG</code> for Television Parental Guidelines (U.S. television 
+    ratings), <code>CE</code> for Canada English, or <code>CF</code> for Canada 
+    Français (add 0x00, 0x08, 0x18, or 0x38 to byte 3 for <code>MPAA</code>, 
+    <code>TPG</code>, <code>CE</code>, or <code>CF</code>).</td></tr>
+<tr><td>4</td><td>Rating</td><td>The actual Rating, explained below:
+ <table border="1">
+ <tr><th class="centered" colspan="4">MPAA Ratings</th></td>
+ <tr><th>Rating</th><th>Explanation</th><th>Byte 3</th><th>Byte 4</th></tr>
+ <tr><td>G</td><td>General Audiences - All ages admitted</td>
+   <td>0x41</td><td>0x40</td></tr>
+ <tr><td>PG</td><td>Parental Guidance Suggested - Some material may not be
+     suitable for children</td>
+   <td>0x42</td><td>0x40</td></tr>
+ <tr><td>PG-13</td><td>Parents Strongly Cautioned - Some material may be 
+     inappropriate for children under 13</td>
+   <td>0x43</td><td>0x40</td></tr>
+ <tr><td>R</td><td>Restricted - Under 17 requires accompanying parent or
+     adult guardian</td>
+   <td>0x44</td><td>0x40</td></tr>
+ <tr><td>NC-17</td><td>No one 17 and under admitted</td>
+   <td>0x45</td><td>0x40</td></tr>
+ <tr><td>X</td><td>No one under 17 admitted (no longer used)</td>
+   <td>0x46</td><td>0x40</td></tr>
+ <tr><td>NR</td><td>Not Rated</td>
+   <td>0x47</td><td>0x40</td></tr>
+ <tr><th class="centered" colspan="4">TPG Ratings</th></td>
+ <tr><th>Rating</th><th>Explanation</th><th>Byte 3</th><th>Byte 4</th></tr>
+ <tr><td>None</td><td>No rating (no content advisory)</td>
+   <td>0x40</td><td>0x40</td></tr>
+ <tr><td>TV-Y</td><td>All Children (no content advisory)</td>
+   <td>0x40</td><td>0x41</td></tr>
+ <tr><td>TV-Y7</td><td>Directed to Older Children (V = Fantasy Violence)</td>
+   <td>0x40</td><td>0x42</td></tr>
+ <tr><td>TV-G</td><td>General Audience (no content advisory)</td>
+   <td>0x40</td><td>0x43</td></tr>
+ <tr><td>TV-PG</td><td>Parental Guidance Suggested (V = moderate Violence,
+     S=some Sexual situations, L=infrequent coarse Language, D=some suggestive
+     Dialog)</td>
+   <td>0x40</td><td>0x44</td></tr>
+ <tr><td>TV-14</td><td>Parents Strongly Cautioned (V = intense Violence,
+     S=intense Sexual situations, L=strong coarse Language, D=intensely 
+     suggestive Dialog)</td>
+   <td>0x40</td><td>0x45</td></tr>
+ <tr><td>TV-MA</td><td>Mature Audience Only (V = graphic Violence,
+     S=explicit Sexual activity, L=crude indecent Language)</td>
+   <td>0x40</td><td>0x46</td></tr>
+ <tr><td>None</td><td>No rating (no content advisory)</td>
+   <td>0x40</td><td>0x47</td></tr>
+ <tr><th class="centered" colspan="4">CE Ratings</th></td>
+ <tr><th>Rating</th><th>Explanation</th><th>Byte 3</th><th>Byte 4</th></tr>
+ <tr><td>E</td><td>Exempt</td>
+   <td>0x40</td><td>0x40</td></tr>
+ <tr><td>C</td><td>Children</td>
+   <td>0x40</td><td>0x41</td></tr>
+ <tr><td>C8+</td><td>Children 8 and older</td>
+   <td>0x40</td><td>0x42</td></tr>
+ <tr><td>G</td><td>General audience</td>
+   <td>0x40</td><td>0x43</td></tr>
+ <tr><td>PG</td><td>Parental Guidance</td>
+   <td>0x40</td><td>0x44</td></tr>
+ <tr><td>14+</td><td>Viewers 14 and older</td>
+   <td>0x40</td><td>0x45</td></tr>
+ <tr><td>18+</td><td>Adult programming</td>
+   <td>0x40</td><td>0x46</td></tr>
+ <tr><th class="centered" colspan="4">CF Ratings</th></td>
+ <tr><th>Rating</th><th>Explanation</th><th>Byte 3</th><th>Byte 4</th></tr>
+ <tr><td>E</td><td>Exemptées</td>
+   <td>0x40</td><td>0x40</td></tr>
+ <tr><td>G</td><td>Général</td>
+   <td>0x40</td><td>0x41</td></tr>
+ <tr><td>8+</td><td>Général - Déconseillé aux jeunes enfants</td>
+   <td>0x40</td><td>0x42</td></tr>
+ <tr><td>13+</td><td>Ne convient pas aux moins de 13 ans</td>
+   <td>0x40</td><td>0x43</td></tr>
+ <tr><td>16+</td><td>Ne convient pas aux moins de 16 ans</td>
+   <td>0x40</td><td>0x44</td></tr>
+ <tr><td>18+</td><td>Réeservée aux adultes</td>
+   <td>0x40</td><td>0x45</td></tr>
+ </table></tr></td>
+<tr><td>5</td><td>Dialog Advisory</td><td>(TPG System only) Warns that program
+    contains sexually-suggestive <code>D</code>ialog (add 0x20 to byte
+    3).</td></tr>
+<tr><td>6</td><td>Language Advisory</td><td>(TPG System only) Warns that 
+    program contains coarse <code>L</code>anguage (i.e. swearing) (add 0x08 to
+    byte 4).</td></tr>
+<tr><td>7</td><td>Sex Advisory</td><td>(TPG System only) Warns that program
+    contains <code>S</code>exual situations (add 0x10 to byte 4).</td></tr>
+<tr><td>8</td><td>Violence Advisory</td><td>(TPG System only) Warns that
+    program contains <code>V</code>iolent content (add 0x20 to byte
+    4).</td></tr>
+<tr><td>9</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 5 and 6
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="AS">Audio Streams</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:06:00	{XDS Fs AS Stereo English DAS Deutsch \C3b}
+           	      |  |    |      |     |     |      |
+           	      1  2    3      4     5     6      7</pre>
+  <b>SCC:</b><pre>
+00:01:06:00	8386 cb62 8f3b</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Audio Streams Type
+    (byte 2 = 0x86).</td></tr>
+<tr><td>3</td><td>Main Type</td><td>Main Audio Type: <code>Unknown</code>, 
+    <code>Mono</code>, <code>Simulated</code> (for Simulated Stereo), 
+    <code>Stereo</code>, <code>Surround</code> (for Surround Stereo), 
+    <code>Data</code> (for Data Service), <code>Other</code> or 
+    <code>None</code> (byte 3 = 0x40 for <code>Unknown</code>, 0x41 for
+    <code>Mono</code>, and so on up to 0x47 for <code>None</code>).</td></tr>
+<tr><td>4</td><td>Main Language</td><td>Language of Main Audio Stream:
+    <code>Unknown</code>, <code>English</code>, <code>Español</code>, 
+    <code>Français</code>, <code>Deutsch</code>, <code>Italiano</code>, 
+    <code>Other</code> or <code>None</code> (add 0x00, 0x08, 0x10, 0x18, 0x20,
+    0x28, 0x30 or 0x38 to byte 3 for <code>Unknown</code> through 
+    <code>None</code>).</td></tr>
+<tr><td>5</td><td>Second Type</td><td>Second Audio Type (NTSC is capable of
+    supporting two simultaneous audio streams, selectable by the TV remote
+    control): <code>Unknown</code>, <code>Mono</code>, <code>DAS</code> 
+    (Descriptive Audio Service for the blind), <code>Non-Program</code> (i.e.
+    unrelated to the video content), <code>FX</code> (for Special Effects), 
+    <code>Data</code> (for Data Service), <code>Other</code> or 
+    <code>None</code> (byte 4 = 0x40 for <code>Unknown</code>, 0x41 for
+    <code>Mono</code>, and so on up to 0x47 for <code>None</code>).</td></tr>
+<tr><td>6</td><td>Second Language</td><td>Language of Second Audio Stream:
+    <code>Unknown</code>, <code>English</code>, <code>Español</code>, 
+    <code>Français</code>, <code>Deutsch</code>, <code>Italiano</code>, 
+    <code>Other</code> or <code>None</code> (add 0x00, 0x08, 0x10, 0x18, 0x20,
+    0x28, 0x30 or 0x38 to byte 4 for <code>Unknown</code> through 
+    <code>None</code>).</td></tr>
+<tr><td>7</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 5 and 6
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="CS">Caption Streams</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:07:00	{XDS Cs CS CC1 English CC2 Español T1 Deutsch T2 Other \Cab}
+           	      |  |  |     |     |     |     |    |     |   |     |
+           	      1  2  3     4     3     4     3    4     3   4     5</pre>
+  <b>SCC:</b><pre>
+00:01:07:00	0107 c852 6143 8fab</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Caption Streams Type
+    (byte 2 = 0x07).</td></tr>
+<tr><td>3</td><td>Stream</td><td>Name of the Stream being described: 
+    <code>CC1</code> through <code>CC4</code> or <code>T1</code> through
+    <code>T4</code> (bytes 3 and up = 0x40, 0x42, 0x44, 0x46 for 
+    <code>CC1</code> through <code>CC4</code> or 0x41, 0x43, 0x45, 0x47 for 
+    <code>T1</code> through <code>T4</code>).  From 2 to 8 streams can be
+    described.</td></tr>
+<tr><td>4</td><td>Stream Language</td><td>Language of the Stream:
+    <code>Unknown</code>, <code>English</code>, <code>Español</code>, 
+    <code>Français</code>, <code>Deutsch</code>, <code>Italiano</code>, 
+    <code>Other</code> or <code>None</code> (add 0x00, 0x08, 0x10, 0x18, 0x20,
+    0x28, 0x30 or 0x38 to byte for <code>Unknown</code> through 
+    <code>None</code>).</td></tr>
+<tr><td>5</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="CG">Copy Generation Management System</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:08:00	{XDS Fs CG A02 \C49}
+           	      |  | |||   |
+           	      1  2 345   6</pre>
+  <b>SCC:</b><pre>
+00:01:08:00	8308 5d40 8f49</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Copy Generation Management System Type
+    (byte 2 = 0x08).</td></tr>
+<tr><td>3</td><td>Analog</td><td>Source: <code>A</code> for Analog or 
+    <code>D</code> for Digital (byte 3 = 0x41 for <code>A</code> or 0x40 for 
+    <code>D</code>).</td></tr>
+<tr><td>4</td><td>SCMS</td><td>Serial Copy-generation Management System: 
+    <code>U</code> to allow signal to be copied unlimited times, <code>0</code> 
+    to instruct digital recording devices to prohibit recording of the signal 
+    (automatically adds Content Scrambling System) or <code>1</code> to allow 
+    signal to be copied with the copy's SCMS set to <code>0</code> (add 0x18 to 
+    byte 3 if <code>0</code> or 0x10 if <code>1</code>).</td></tr>
+<tr><td>5</td><td>Macrovision</td><td>(Always <code>N</code> unless SCMS is 
+    <code>0</code>): <code>N</code> for no pseudo-sync pulse in the Vertical 
+    Blanking Interval, <code>M</code> for pseudo-sync pulse (called Analog 
+    Protection System or Macrovision) with no rapidly-modulated Colorstripe in 
+    the Horizontal Blanking Interval, <code>2</code> for Macrovision plus 
+    2-line Colorstripe or <code>4</code> for Macrovision plus 4-line 
+    Colorstripe (add 0x02 to byte 3 if <code>M</code>, 0x04 if <code>2</code> 
+    or 0x06 if <code>4</code>).</td></tr>
+<tr><td>6</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 5 and 6
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="AR">Program Aspect Ratio</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:09:00	{XDS Cs AR 30 30 A \C2a}
+           	      |  |  |  | |   |
+           	      1  2  3  4 5   6</pre>
+  <b>SCC:</b><pre>
+00:01:09:00	0189 5e5e c140 8f2a</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Aspect Ratio Type
+    (byte 2 = 0x89).</td></tr>
+<tr><td>3</td><td>Top</td><td>Number of Scanlines from top of visible video 
+    area (Line 22) to top of active video area (i.e. after any letterboxing), 
+    from 0 to 63, with common values given below (byte 3 plus 0x40).
+ <table border="1">
+ <tr><th>TV Ratio</th><th>Video Ratio</th><th>Top</th><th>Bottom</th></tr>
+ <tr><td rowspan="3">4:3</td><td>4:3</td><td>0</td><td>0</td></tr>
+                         <tr><td>16:9</td><td>30</td><td>30</td></tr>
+                         <tr><td>2.35:1</td><td>50</td><td>50</td></tr>
+ <tr><td rowspan="3">16:9</td><td>4:3</td><td>0</td><td>0</td></tr>
+                          <tr><td>16:9</td><td>0</td><td>0</td></tr>
+                          <tr><td>2.35:1</td><td>30</td><td>30</td></tr>
+ </table></td></tr>
+<tr><td>4</td><td>Bottom</td><td>Number of Scanlines from bottom of visible
+    video area (Line 263) to bottom of active video area, from 0 to 63; this is
+    usually the same as Top (see table above) (byte 4 plus 0x40).</td></tr>
+<tr><td>5</td><td>Anamorphic</td><td>(Optional) Flag for whether 16:9 video has
+    been squeezed to 4:3 ratio (to be "unsqueezed" by 16:9 television sets)
+    (byte 5 = 0x40 for <code>_</code> or 0xc1 for <code>A</code>).</td></tr>
+<tr><td>6</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="PD">Program Data</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:10:00	{XDS Fs PD Movie Drama Sports Romance}
+           	      |  |   |     |      |      |
+           	      1  2   3     3      3      3
+00:01:10:03	{EDM}{EDM}
+00:01:10:05	{XDS Fc PD Music PG-13 02:30 01:45 Endless Summer \C97}
+           	      |  |   |     |    |  |  |  |        |         |
+           	      N N+1  3     4    5  6  7  8        9        10</pre>
+  <b>SCC:</b><pre>
+00:01:10:00	838c a2bc 2570
+
+00:01:10:03	152c 152c
+
+00:01:10:05	048c e043 e0c2 6dc1 456e 64ec e573 7320 d375 6d6d e5f2 8f97</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Program Data Type
+    (byte 2 = 8c).</td></tr>
+<tr><td>3</td><td>Code</td><td>Exactly 5 codes describing the program (bytes 3
+    through 7, using the lookup from <a href="#PT">Program Types</a>
+    above).</td></tr>
+<tr><td>4</td><td>Rating</td><td>MPAA Rating (byte 8, using the Byte 3 lookup
+    from <a href="#PR">Program Rating</a> above: 0x41 for G, 0x42 for PG,
+    etc).</td></tr>
+<tr><td>5</td><td>Hours Long</td><td>Hour portion of Program Length, from 00 to
+    60 (byte 10 + 0x40).</td></tr>
+<tr><td>6</td><td>Minutes Long</td><td>Minute portion of Program Length, from 
+    00 to 59 (byte 9 + 0x40).</td></tr>
+<tr><td>7</td><td>Hours Elapsed</td><td>(Optional) Hour portion of Time Elapsed 
+    in Show, from 00 to 60 (byte 12 + 0x40).</td></tr>
+<tr><td>8</td><td>Minutes Elapsed</td><td>(Optional unless Hours Elapsed is 
+    used) Minute portion of Time Elapsed in Show, from 00 to 59 (byte 11 + 
+    0x40).</td></tr>
+<tr><td>9</td><td>Program Name</td><td>The name of the program (bytes 13 and
+    up, up to 22 characters, using closed caption
+    <a href="CC_CHARS.HTML">character set</a>).</td></tr>
+<tr><td>10</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="MD">Miscellaneous Data</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:11:00	{XDS Cs MD 18:30 T Dec 06 Mono English DAS Other}
+           	      |  |  |  | |  |   |   |     |     |    |
+           	      1  2  3  4 5  6   7   8     9    10   11
+00:01:11:04	{EDM}{EDM}
+00:01:11:06	{XDS Cc MD CC1 English T1 Other SCIF __ \C38}
+           	      |  |  |     |     |   |     |   |   |
+           	      N N+1 12   13    12  13    14  15  16 </pre>
+  <b>SCC:</b><pre>
+00:01:11:00	010d 5e52 46dc 49f2
+
+00:01:11:04	152c 152c
+
+00:01:11:06	020d c8f1 d343 4946 2020 8f38</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Miscellaneous Data Type
+    (byte 2 = 0d).</td></tr>
+<tr><td>3</td><td>Hour</td><td>Hour in UTC when program starts (UTC is London's 
+    time zone--subtract four hours to get Eastern Time, eight hours to get 
+    Pacific Time), from 00 (Midnight) to 23 (11 PM) (byte 4 + 0x40).</td></tr>
+<tr><td>4</td><td>Minute</td><td>Minute program starts (usually 0 or 30), from
+    00 to 59 (byte 3 + 0x40).</td></tr>
+<tr><td>5</td><td>Delay</td><td>Program is tape delayed (<code>T</code>) or is
+    not (<code>N</code>) for Pacific and Mountain time zones (add 0x10 to byte
+    6 if <code>T</code>).</td></tr>
+<tr><td>6</td><td>Month</td><td>Month program starts: <code>Jan</code>uary,
+    <code>Feb</code>ruary, <code>Mar</code>ch, <code>Apr</code>il, 
+    <code>May</code>, <code>Jun</code>e, <code>Jul</code>y, 
+    <code>Aug</code>ust, <code>Sep</code>tember, <code>Oct</code>ober, 
+    <code>Nov</code>ember or <code>Dec</code>ember (byte 6 = 0x41, 0x42, 0x43, 
+    0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a or 0x4b for <code>Jan</code>
+    through <code>Dec</code>, then add in Field 5 above).</td></tr>
+<tr><td>7</td><td>Day</td><td>Day of Month, from 1 to 31 (byte 5 + 
+    0x40).</td></tr>
+<tr><td>8</td><td>Main Audio Type</td><td>Main Audio Type: <code>Unknown</code>, 
+    <code>Mono</code>, <code>Simulated</code> (for Simulated Stereo), 
+    <code>Stereo</code>, <code>Surround</code> (for Surround Stereo), 
+    <code>Data</code> (for Data Service), <code>Other</code> or 
+    <code>None</code> (byte 7 = 0x40 for <code>Unknown</code>, 0x41 for
+    <code>Mono</code>, and so on up to 0x47 for <code>None</code>).</td></tr>
+<tr><td>9</td><td>Main Audio Language</td><td>Language of Main Audio Stream:
+    <code>Unknown</code>, <code>English</code>, <code>Español</code>, 
+    <code>Français</code>, <code>Deutsch</code>, <code>Italiano</code>, 
+    <code>Other</code> or <code>None</code> (add 0x00, 0x08, 0x10, 0x18, 0x20,
+    0x28, 0x30 or 0x38 to byte 7 for <code>Unknown</code> through 
+    <code>None</code>).</td></tr>
+<tr><td>10</td><td>Second Audio Type</td><td>Second Audio Type (NTSC is capable
+    of supporting two simultaneous audio streams, selectable by the TV remote
+    control): <code>Unknown</code>, <code>Mono</code>, <code>DAS</code> 
+    (Descriptive Audio Service for the blind), <code>Non-Program</code> (i.e.
+    unrelated to the video content), <code>FX</code> (for Special Effects), 
+    <code>Data</code> (for Data Service), <code>Other</code> or 
+    <code>None</code> (byte 8 = 0x40 for <code>Unknown</code>, 0x41 for
+    <code>Mono</code>, and so on up to 0x47 for <code>None</code>).</td></tr>
+<tr><td>11</td><td>Second Audio Language</td><td>Language of Second Audio
+    Stream: <code>Unknown</code>, <code>English</code>, <code>Español</code>, 
+    <code>Français</code>, <code>Deutsch</code>, <code>Italiano</code>, 
+    <code>Other</code> or <code>None</code> (add 0x00, 0x08, 0x10, 0x18, 0x20,
+    0x28, 0x30 or 0x38 to byte 8 for <code>Unknown</code> through 
+    <code>None</code>).</td></tr>
+<tr><td>12</td><td>Caption Stream</td><td>Names of the two streams being
+    described: <code>CC1</code> through <code>CC4</code> or <code>T1</code>
+    through <code>T4</code> (bytes 9 and 10 = 0x40, 0x42, 0x44, 0x46 for 
+    <code>CC1</code> through <code>CC4</code> or 0x41, 0x43, 0x45, 0x47 for 
+    <code>T1</code> through <code>T4</code>).</td></tr>
+<tr><td>13</td><td>Caption Stream Language</td><td>Languages of the streams:
+    <code>Unknown</code>, <code>English</code>, <code>Español</code>, 
+    <code>Français</code>, <code>Deutsch</code>, <code>Italiano</code>, 
+    <code>Other</code> or <code>None</code> (add 0x00, 0x08, 0x10, 0x18, 0x20,
+    0x28, 0x30 or 0x38 to bytes 9 and 10 for <code>Unknown</code> through 
+    <code>None</code>).</td></tr>
+<tr><td>14</td><td>Call Letters</td><td>Call Letters of the Network or Channel,
+    4 characters (bytes 11 through 14, using closed caption
+    <a href="CC_CHARS.HTML">character set</a>).</td></tr>
+<tr><td>15</td><td>Broadcast Channel</td><td>Broadcast channel number,
+    from 02 to 69, or __ if no broadcast channel (bytes 15 and 16,
+    converting each digit using closed caption
+    <a href="CC_CHARS.HTML">character set</a>; "__" is encoded as two
+    space characters).</td></tr>
+<tr><td>16</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 17 and 18
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="Dn">Program Description</a> (up to eight
+  lines)</th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:01:12:00	{XDS Fs D1 Dennis Quaid; }
+           	      |  |        |
+           	      1  2        3
+00:01:12:08	{EDM}{EDM}
+00:01:12:10	{XDS Fc D1 Benny "Boom Boom" \C34}
+           	      |  |         |            |
+           	      N N+1        3            4</pre>
+  <b>SCC:</b><pre>
+00:01:12:00	8310 c4e5 6e6e e973 2051 7561 e964 3b20
+
+00:01:12:08	152c 152c
+
+00:01:12:10	0410 c2e5 6e6e 7920 a2c2 efef 6d20 c2ef ef6d a240 8f34</pre></td>
+  </tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>s</code>tart (byte 1 = 0x01 for Current start,
+    0x83 for Future start).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Program Description Type
+    (byte 2 = 0x10, 0x91, 0x92, 0x13, 0x94, 0x15, 0x16 or 0x97 for lines
+    1, 2, 3, 4, 5, 6, 7 or 8).</td></tr>
+<tr><td>3</td><td>Description</td><td>From 0 to 32 characters describing the 
+    program (byte 3 and up, using closed caption 
+    <a href="CC_CHARS.HTML">character set</a>).  Generating a Program
+    Description packet with an empty Description field will create a blank
+    line.</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>C</code>urrent or 
+    <code>F</code>uture <code>c</code>ontinue, applied at any time packet has
+    to be continued after an interruption (byte N = 0x02 for Current continue,
+    0x04 for Future continue).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+</table>
+</p>
+<hr />
+<p>
+<table width="100%" border="1">
+<tr><th><a name="H">CHANNEL CLASS</a></th></tr>
+<tr><td>Start code for Channel class is 0x85.
+  <br>Continue code is 0x86.</td></tr>
+</table>
+</p>
+<p>
+<table width="100%" border="1">
+<tr><th colspan="3"><a name="NN">Network Name</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:03:01:00	{XDS Hs NN Sci-Fi Channel}
+           	      |  |        |
+           	      1  2        3
+00:03:01:08	{EDM}{EDM}
+00:03:01:10	{XDS Hc NN  Pacific \Cc8}
+           	      |  |    |      |      
+           	      N N+1   3      4</pre>
+  <b>SCC:</b><pre>
+00:03:01:00	8501 d3e3 e9ad 46e9 2043 6861 6e6e e5ec
+
+00:03:01:08	152c 152c
+
+00:03:01:10	8601 20d0 61e3 e9e6 e9e3 8fc8</pre>
+  </td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of C<code>H</code>annel
+  <code>s</code>tart (byte 1 = 0x85).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Network Name Type
+    (byte 2 = 0x01).</td></tr>
+<tr><td>3</td><td>Name</td><td>Name of the Network or Channel, from 2 to 32 
+    characters (bytes 3 and up, using closed caption 
+    <a href="CC_CHARS.HTML">character set</a>).</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of C<code>H</code>annel
+    <code>c</code>ontinue (byte N = 0x86).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="NC">Network Call Letters</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:03:02:00	{XDS Hs NC KCRA 03 \Ce6}
+           	      |  |   |   |   |
+           	      1  2   3   4   5</pre>
+  <b>SCC:</b><pre>
+00:03:02:00	8502 cb43 52c1 b0b3 8fe6</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of C<code>H</code>annel
+  <code>s</code>tart (byte 1 = 0x85).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Network Call Letters Type
+    (byte 2 = 0x02).</td></tr>
+<tr><td>3</td><td>Call Letters</td><td>Call Letters of the Channel, 4 letters
+    (bytes 3 through 6, using closed caption <a href="CC_CHARS.HTML">character
+    set</a>).</td></tr>
+<tr><td>4</td><td>Broadcast Channel</td><td>(Optional) Broadcast channel
+    number, from 02 to 69 (bytes 7 and 8, converting each digit using closed
+    caption <a href="CC_CHARS.HTML">character set</a>).</td></tr>
+<tr><td>5</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of C<code>H</code>annel
+    <code>c</code>ontinue (byte N = 0x86).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="TD">Channel Tape Delay</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:03:03:00	{XDS Hs TD 04:00 \Ce5}
+           	      |  |  |  |   |
+           	      1  2  3  4   5</pre>
+  <b>SSC:</b><pre>
+00:03:03:00	8583 40c4 8fe5</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of C<code>H</code>annel
+  <code>s</code>tart (byte 1 = 0x85).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Channel Tape Delay Type
+    (byte 2 = 0x83).</td></tr>
+<tr><td>3</td><td>Hours</td><td>Number of Hours that channel programming is
+    delayed after live broadcast when <code>T</code> is set in
+    <a href="#ST">Start Time</a> packet, from 0 to 23 (usually 4 for Pacific
+    time zone) (byte 4 plus 0x40).</td></tr>
+<tr><td>4</td><td>Minutes</td><td>Number of additional Minutes that channel
+    programming is delayed after live broadcast when <code>T</code> is set in
+    <a href="#ST">Start Time</a> packet, from 0 to 59 (usually 0)
+    (byte 3 plus 0x40).</td></tr>
+<tr><td>5</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 5 and 6
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of C<code>H</code>annel
+    <code>c</code>ontinue (byte N = 0x86).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="TS">Transmission Signal Identifier</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:03:04:00	{XDS Hs TS 16e8 \Ccb}
+           	      |  |   |    |
+           	      1  2   3    4</pre>
+  <b>SCC:</b><pre>
+00:03:04:00	8504 c8ce 46c1 8fcb</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of C<code>H</code>annel
+  <code>s</code>tart (byte 1 = 0x85).</td></tr>
+<tr><td>2</td><td>Type</td><td>The TSID Type
+    (byte 2 = 0x04).</td></tr>
+<tr><td>3</td><td>TSID</td><td>Hexidecimal ID assigned to this channel,
+    from 0001 to ffff (take digits in reverse order to get bytes 3 - 6, adding
+    0x40 to each).</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 7 and 8
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of C<code>H</code>annel
+    <code>c</code>ontinue (byte N = 0x86).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+</table>
+</p>
+<hr />
+<p>
+<table width="100%" border="1">
+<tr><th><a name="M">MISCELLANEOUS CLASS</a></th></tr>
+<tr><td>Start code for Miscellaneous class is 0x07.
+  <br>Continue code is 0x08.</td></tr>
+</table>
+</p>
+<p>
+<table width="100%" border="1">
+<tr><th colspan="3"><a name="TM">Time of Day</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:01:00	{XDS Ms TM 18:36S ZTA Dec 06 2002 Fri \Cdf}
+           	      |  |  |  || |||  |   |   |   |    |
+           	      1  2  3  45 678  9   1   1   1    1
+           	                           0   1   2    3</pre>
+  <b>SCC:</b><pre>
+00:04:01:00	0701 6452 467c 464c 8fdf</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Time of Day Type
+    (byte 2 = 0x01).</td></tr>
+<tr><td>3</td><td>Hour</td><td>Hour in UTC (UTC is London's time 
+    zone--subtract four hours to get Eastern Time, eight hours to get Pacific 
+    Time; note that date and Day of Week are also UTC), from 00 (Midnight) to 
+    23 (11 PM) (byte 4 plus 0x40, plus Field 5).</td></tr>
+<tr><td>4</td><td>Minute</td><td>Minute, from 00 to 59 (byte 3 plus 
+    0x40).</td></tr>
+<tr><td>5</td><td>DST</td><td>Currently in <code>D</code>aylight Savings Time,
+    or <code>S</code>tandard Time (add 0x20 to byte 4 if 
+    <code>D</code>).</td></tr>
+<tr><td>6</td><td>Zero Seconds</td><td>This is either <code>_</code> for unknown
+    seconds or <code>Z</code> for zero seconds (Time of Day is transmitted
+    every eight seconds, at least by Public Broadcasting System channels in the
+    U.S.) (add 0x20 to byte 6 for <code>Z</code>).</td></tr>
+<tr><td>7</td><td>Tape Delay</td><td>Is the current program being 
+    tape-delayed: <code>T</code> for delayed, <code>S</code> for simulcast
+    (Note that Time of Day is transmitted by the local station, not the
+    national network, which means this signal should always be accurate) (add
+    0x10 to byte 6 if <code>T</code>).</td></tr>
+<tr><td>8</td><td>Leap Day</td><td>If this is February 29th, then this is
+    <code>L</code> for Leap Day, otherwise, this is <code>A</code> (add 0x20 to
+    byte 5 if <code>L</code>).</td></tr>
+<tr><td>9</td><td>Month</td><td>Month: <code>Jan</code>uary,
+    <code>Feb</code>ruary, <code>Mar</code>ch, <code>Apr</code>il, 
+    <code>May</code>, <code>Jun</code>e, <code>Jul</code>y, 
+    <code>Aug</code>ust, <code>Sep</code>tember, <code>Oct</code>ober, 
+    <code>Nov</code>ember or <code>Dec</code>ember (byte 6 = 0x41, 0x42, 0x43, 
+    0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a or 0x4b for <code>Jan</code>
+    through <code>Dec</code>, plus Fields 6 and 7).</td></tr>
+<tr><td>10</td><td>Day</td><td>Day of Month, from 01 to 31 (byte 5 plus 
+    0x40, plus Field 8).</td></tr>
+<tr><td>11</td><td>Year</td><td>Year, from 1990 to 2053 (byte 8 minus 1990 plus
+    0x40).</td></tr>
+<tr><td>12</td><td>Weekday</td><td>The Day of the Week: <code>Sun</code>day, 
+    <code>Mon</code>day, <code>Tue</code>sday, <code>Wed</code>nesday, 
+    <code>Thu</code>rsday, <code>Fri</code>day or <code>Sat</code>urday (byte 7
+    = 0xc1, 0x42, 0x43, 0xc4, 0x45, 0x46 or 0xc7 for <code>Sun</code> through
+    <code>Sat</code>).</td></tr>
+<tr><td>13</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 9 and 10
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="IC">Impulse Capture ID</a> (used to tell VCRs how
+  long to record a program)</th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:02:00	{XDS Ms IC 18:36S ZTA Dec 06 02:30 \Cd0}
+           	      |  |  |  || |||  |   |  |  |   |
+           	      1  2  3  45 678  9   1  1  1   1
+           	                           0  1  2   3</pre>
+  <b>SCC:</b><pre>
+00:04:02:00	0702 6452 467c 5ec2 8fd0</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Impulse Capture ID Type
+    (byte 2 = 0x02).</td></tr>
+<tr><td>3</td><td>Hour</td><td>Hour in UTC (UTC is London's time 
+    zone--subtract four hours to get Eastern Time, eight hours to get Pacific 
+    Time; note that date and Day of Week are also UTC), from 00 (Midnight) to 
+    23 (11 PM) to receive program (byte 4 plus 0x40, plus Field 5).</td></tr>
+<tr><td>4</td><td>Minute</td><td>Minute, from 00 to 59 to receive program
+    (byte 3 plus 0x40).</td></tr>
+<tr><td>5</td><td>DST</td><td>Currently in <code>D</code>aylight Savings Time,
+    or <code>S</code>tandard Time (add 0x20 to byte 4 if <code>D</code>).
+    Ignored by decoder.</td></tr>
+<tr><td>6</td><td>Zero Seconds</td><td>This is either <code>_</code> for
+    unknown seconds or <code>Z</code> for zero seconds (add 0x20 to byte 6 for
+    <code>Z</code>).  Ignored by decoder.</td></tr>
+<tr><td>7</td><td>Tape Delay</td><td>Is the current program being 
+    tape-delayed: <code>T</code> for delayed, <code>S</code> for simulcast
+    (add 0x10 to byte 6 if <code>T</code>).</td></tr>
+<tr><td>8</td><td>Leap Day</td><td>If this is February 29th, then this is
+    <code>L</code> for Leap Day, otherwise, this is <code>A</code> (add 0x20 to
+    byte 5 if <code>L</code>).  Ignored by decoder.</td></tr>
+<tr><td>9</td><td>Month</td><td>Month: <code>Jan</code>uary,
+    <code>Feb</code>ruary, <code>Mar</code>ch, <code>Apr</code>il, 
+    <code>May</code>, <code>Jun</code>e, <code>Jul</code>y, 
+    <code>Aug</code>ust, <code>Sep</code>tember, <code>Oct</code>ober, 
+    <code>Nov</code>ember or <code>Dec</code>ember (byte 6 = 0x41, 0x42, 0x43, 
+    0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4a or 0x4b for <code>Jan</code>
+    through <code>Dec</code>, plus Fields 6 and 7).</td></tr>
+<tr><td>10</td><td>Day</td><td>Day of Month, from 01 to 31 (byte 5 plus 
+    0x40, plus Field 8).</td></tr>
+<tr><td>11</td><td>Hours Long</td><td>Hour portion of program length, from 00
+    to 63 (byte 8 + 0x40).</td></tr>
+<tr><td>12</td><td>Minutes Long</td><td>Minute portion of program length, from 
+    00 to 59 (byte 7 + 0x40).</td></tr>
+<tr><td>13</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 9 and 10
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="SD">Supplemental Data Location</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:03:00	{XDS Ms SD 20.1 18.2 \Ca1}
+           	      |  |  | |  | |   |
+           	      1  2  3 4  3 4   5</pre>
+  <b>SCC:</b><pre>
+00:04:03:00	0783 54f2 8fa1</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Supplemental Data Location Type
+    (byte 2 = 0x83).</td></tr>
+<tr><td>3</td><td>Line</td><td>Scanline in the top Vertical Blanking Interval 
+    to find supplemental data, from 10 to 20 (there can be 2 to 32 of these,
+    each including the Field in field 4) (bytes 3 and up plus 0x40).</td></tr>
+<tr><td>4</td><td>Field</td><td>Field to use, either 1 or 2 (note that, 
+    strictly speaking, "Line 10 Field 2" is actually Line 273) (add 0x20 to
+    byte from field 3 if <code>2</code>).</td></tr>
+<tr><td>5</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="TZ">Local Time Zone</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:04:00	{XDS Ms TZ -08S \Cd6}
+           	      |  |   ||   |
+           	      1  2   34   5</pre>
+  <b>SCC:</b><pre>
+00:04:04:00	0704 d040 8fd6</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Local Time Zone Type
+    (byte 2 = 0x04).</td></tr>
+<tr><td>3</td><td>TZ</td><td>Hours to add to UTC (London's Time Zone) to get
+    local time: -4 for Eastern Time, -8 for Pacific Time (24 minus byte 3 plus
+    0x40).</td></tr>
+<tr><td>4</td><td>DST</td><td>Either <code>D</code> if Daylight Savings Time is
+    currently being observed in this time zone, or <code>S</code> if Standard
+    Time is currently being observed (add 0x20 to byte 3 if 
+    <code>D</code>).</td></tr>
+<tr><td>5</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 5 and 6
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="OB">Out of Band Channel</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:05:00	{XDS Ms OB 0172 \C7c}
+           	      |  |   |    |
+           	      1  2   3    4</pre>
+  <b>SCC:</b><pre>
+00:04:05:00	0740 ecc2 8f7c</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Out of Band Channel Type
+    (byte 2 = 0x40).</td></tr>
+<tr><td>3</td><td>Channel</td><td>Channel on which to find out-of-band data, 
+    from 1 to 4096 (practically limited to range of 2 to 300 or so);
+    "out-of-band" means there is a second channel associated with this one that
+    carries data on all of its scanlines instead of video and VBI (divide by 
+    64: store result plus 0x40 in byte 4 and remainder plus 0x40 in 
+    byte 3).</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 5 and 6
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="CP">Channel Map Pointer</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:06:00	{XDS Ms CP 0099 \C85}
+           	      |  |   |    |
+           	      1  2   3    4</pre>
+  <b>SCC:</b><pre>
+00:04:06:00	07c1 e3c1 8f85</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Channel Map Pointer Type
+    (byte 2 = 0xc1).</td></tr>
+<tr><td>3</td><td>Map Channel</td><td>Channel where the channel map is being
+    broadcasted (divide by 64: store result plus 0x40 in byte 4 and remainder
+    plus 0x40 in byte 3).</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 5 and 6
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="CH">Channel Map Header</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:07:00	{XDS Ms CH 0312 v17 \C5b}
+           	      |  |   |   |    |
+           	      1  2   3   4    5</pre>
+  <b>SCC:</b><pre>
+00:04:07:00	07c2 f8c4 5140 8f5b</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Channel Map Header Type
+    (byte 2 = 0xc1).</td></tr>
+<tr><td>3</td><td>Channels</td><td>Number of channels that will be mapped in
+    the following Channel Map packets (divide by 64: store result plus 0x40 in
+    byte 4 and remainder plus 0x40 in byte 3).</td></tr>
+<tr><td>4</td><td>Version</td><td>Running count of how many times this table
+    has been revised (add 0x40 and store in byte 5; byte 6 is filler of
+    0x40).</td></tr>
+<tr><td>5</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 7 and 8
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="CM">Channel Map</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:04:08:00	{XDS Ms CM 46=173}
+           	      |  | | | |
+           	      1  2 3 4 5
+00:04:08:03	{EDM}{EDM}
+00:04:08:05	{XDS Mc CM KXRT \C61}
+           	      |  |   |    |
+           	      N N+1  6    7</pre>
+  <b>SCC:</b><pre>
+00:04:08:00	0743 6ee0 6dc2
+
+00:04:08:03	152c 152c
+
+00:04:08:05	0843 cb58 5254 8f61</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>M</code>iscellaneous
+  <code>s</code>tart (byte 1 = 0x07).</td></tr>
+<tr><td>2</td><td>Type</td><td>The Channel Map Type
+    (byte 2 = 0x43).</td></tr>
+<tr><td>3</td><td>User Channel</td><td>Public number of the channel (divide by
+    64: store result plus 0x40 in byte 4 and remainder plus 0x40 in
+    byte 3).</td></tr>
+<tr><td>4</td><td>Remapped?</td><td>(Optional) Is User Channel remapped to a
+    Tune Channel? (add 0x20 to byte 4 if there's an equals sign
+    here).</td></tr>
+<tr><td>5</td><td>Tune Channel</td><td>(Optional unless Remapped is set)
+    Number of the channel on the cable system used to tune to the User
+    Channel (divide by 64: store result plus 0x40 in byte 6 and remainder plus
+    0x40 in byte 5).</td></tr>
+<tr><td>6</td><td>Channel ID</td><td>(Optional, up to 6 characters) Public name
+    of channel (bytes 5 [if no Tune Channel] or 7 and up, using closed caption
+    <a href="CC_CHARS.HTML">character set</a>).</td></tr>
+<tr><td>7</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>M</code>iscellaneous
+    <code>c</code>ontinue (byte N = 0x08).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+</table>
+</p>
+<hr />
+<p>
+<table width="100%" border="1">
+<tr><th><a name="P">PUBLIC SERVICE CLASS</a></th></tr>
+<tr><td>Start code for Public Service class is 0x89.
+  <br>Continue code is 0x8a.</td></tr>
+</table>
+</p>
+<p>
+<table width="100%" border="1">
+<tr><th colspan="3"><a name="WB">National Weather Service Bulletin</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:05:01:00	{XDS Ps WB FFW 006 037 02:30 \Cb3}
+           	      |  |  |   |   |    |     |
+           	      1  2  3   4   5    6     7</pre>
+  <b>SCC:</b><pre>
+00:05:01:00	8901 4646 57b0 b0b6 b0b3 3731 b040 8fb3</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>P</code>ublic Service
+  <code>s</code>tart (byte 1 = 0x89).</td></tr>
+<tr><td>2</td><td>Type</td><td>The National Weather Service Bulletin Type
+    (byte 2 = 0x01).</td></tr>
+<tr><td>3</td><td>Event Category</td><td>3-character code for the weather event
+    (bytes 3 - 5, using closed caption <a href="CC_CHARS.HTML">character
+    set</a>).  Here's what they mean (note that a Warning is more severe than
+    an Advisory):
+ <table width="100%"><tr><td>
+ <table border="1">
+ <tr><th>Code</th><th>Category</th></tr>
+ <tr><td>ADR</td><td>Administrative Message</td></tr>
+ <tr><td>BRT</td><td>Composite Broadcast Statement</td></tr>
+ <tr><td>BZW</td><td>Blizzard Warning</td></tr>
+ <tr><td>CEM</td><td>Civil Emergency Message</td></tr>
+ <tr><td>DMO</td><td>Practice/Demonstration Warning</td></tr>
+ <tr><td>FFA</td><td>Flash Flood Advisory</td></tr>
+ <tr><td>FFS</td><td>Flash Flood Statement</td></tr>
+ <tr><td>FFW</td><td>Flash Flood Warning</td></tr>
+ <tr><td>FLA</td><td>Flood Advisory</td></tr>
+ <tr><td>FLS</td><td>Flood Statement</td></tr>
+ <tr><td>FLW</td><td>Flood Warning</td></tr>
+ <tr><td>HLS</td><td>Hurricane Statement</td></tr>
+ <tr><td>HUA</td><td>Hurricane Advisory</td></tr>
+ </table></td><td>
+ <table border="1">
+ <tr><th>Code</th><th>Category</th></tr>
+ <tr><td>HUW</td><td>Hurricane Warning</td></tr>
+ <tr><td>HWA</td><td>High Wind Advisory</td></tr>
+ <tr><td>HWW</td><td>High Wind Warning</td></tr>
+ <tr><td>LFP</td><td>Service Area Forecast</td></tr>
+ <tr><td>SPS</td><td>Special Weather Statement</td></tr>
+ <tr><td>SVA</td><td>Severe Thunderstorm Advisory</td></tr>
+ <tr><td>SVR</td><td>Severe Thunderstorm Warning</td></tr>
+ <tr><td>SVS</td><td>Severe Thunderstorm Statement</td></tr>
+ <tr><td>TOA</td><td>Tornado Advisory</td></tr>
+ <tr><td>TOR</td><td>Tornado Warning</td></tr>
+ <tr><td>WSA</td><td>Winter Storm Advisory</td></tr>
+ <tr><td>WSW</td><td>Winter Storm Warning</td></tr>
+ <tr><td>XXX</td><td>Unknown</td></tr>
+ </table></td></tr></table>
+</td></tr>
+<tr><td>4</td><td>State FIPS</td><td>3-digit code (taken from Federal
+    Information and Processing Standard 6-4) for the state or territory
+    the bulletin applies to (bytes 6 - 8, converting each digit using closed
+    caption <a href="CC_CHARS.HTML">character set</a>).  Here's a list:
+ <table width="100%"><tr><td>
+ <table border="1">
+ <tr><th>FIPS</th><th>State/Territory</th></tr>
+ <tr><td>001</td><td>Alabama</td></tr>
+ <tr><td>002</td><td>Alaska</td></tr>
+ <tr><td>004</td><td>Arizona</td></tr>
+ <tr><td>005</td><td>Arkansas</td></tr>
+ <tr><td>006</td><td>California</td></tr>
+ <tr><td>008</td><td>Colorado</td></tr>
+ <tr><td>009</td><td>Connecticut</td></tr>
+ <tr><td>010</td><td>Delaware</td></tr>
+ <tr><td>011</td><td>District of Columbia</td></tr>
+ <tr><td>012</td><td>Florida</td></tr>
+ <tr><td>013</td><td>Georgia</td></tr>
+ <tr><td>015</td><td>Hawaii</td></tr>
+ <tr><td>016</td><td>Idaho</td></tr>
+ <tr><td>017</td><td>Illinois</td></tr>
+ <tr><td>018</td><td>Indiana</td></tr>
+ <tr><td>019</td><td>Iowa</td></tr>
+ <tr><td>020</td><td>Kansas</td></tr>
+ <tr><td>021</td><td>Kentucky</td></tr>
+ <tr><td>022</td><td>Louisiana</td></tr>
+ <tr><td>023</td><td>Maine</td></tr>
+ <tr><td>024</td><td>Maryland</td></tr>
+ <tr><td>025</td><td>Massachusetts</td></tr>
+ <tr><td>026</td><td>Michigan</td></tr>
+ <tr><td>027</td><td>Minnesota</td></tr>
+ <tr><td>028</td><td>Mississippi</td></tr>
+ <tr><td>029</td><td>Missouri</td></tr>
+ <tr><td>030</td><td>Montana</td></tr>
+ <tr><td>031</td><td>Nebraska</td></tr>
+ </table></td><td>
+ <table border="1">
+ <tr><th>FIPS</th><th>State/Territory</th></tr>
+ <tr><td>032</td><td>Nevada</td></tr>
+ <tr><td>033</td><td>New Hampshire</td></tr>
+ <tr><td>034</td><td>New Jersey</td></tr>
+ <tr><td>035</td><td>New Mexico</td></tr>
+ <tr><td>036</td><td>New York</td></tr>
+ <tr><td>037</td><td>North Carolina</td></tr>
+ <tr><td>038</td><td>North Dakota</td></tr>
+ <tr><td>039</td><td>Ohio</td></tr>
+ <tr><td>040</td><td>Oklahoma</td></tr>
+ <tr><td>041</td><td>Oregon</td></tr>
+ <tr><td>042</td><td>Pennsylvania</td></tr>
+ <tr><td>044</td><td>Rhode Island</td></tr>
+ <tr><td>045</td><td>South Carolina</td></tr>
+ <tr><td>046</td><td>South Dakota</td></tr>
+ <tr><td>047</td><td>Tennessee</td></tr>
+ <tr><td>048</td><td>Texas</td></tr>
+ <tr><td>049</td><td>Utah</td></tr>
+ <tr><td>050</td><td>Vermont</td></tr>
+ <tr><td>051</td><td>Virginia</td></tr>
+ <tr><td>053</td><td>Washington</td></tr>
+ <tr><td>054</td><td>West Virginia</td></tr>
+ <tr><td>055</td><td>Wisconsin</td></tr>
+ <tr><td>056</td><td>Wyoming</td></tr>
+ <tr><td>060</td><td>American Samoa</td></tr>
+ <tr><td>066</td><td>Guam</td></tr>
+ <tr><td>069</td><td>Northern Mariana Islands</td></tr>
+ <tr><td>072</td><td>Puerto Rico</td></tr>
+ </table></td></tr></table>
+</td></tr>
+<tr><td>5</td><td>County FIPS</td><td>3-digit FIPS code for county the bulletin
+    applies to (bytes 9 - 11, converting each digit using closed
+    caption <a href="CC_CHARS.HTML">character set</a>).  The list is obviously
+    too long to include here, but it can be found on the Internet by typing
+    "FIPS counties list" and the state name into a search engine (in the
+    example above, county FIPS 037 in state FIPS 006 (CA) is Los Angeles
+    County).</td></tr>
+<tr><td>6</td><td>Duration</td><td>How long this bulletin applies, in hours
+    and minutes (translate into a two-digit number of quarter-hours, then
+    covert each digit using closed caption <a href="CC_CHARS.HTML">character
+    set</a> to get bytes 12 and 13; byte 14 is the the filler value
+    0x40).</td></tr>
+<tr><td>8</td><td>Checksum</td><td>Checksum, in hexidecimal (bytes 15 and 16
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>P</code>ublic Service
+    <code>c</code>ontinue (byte N = 0x8a).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+
+<tr><th colspan="3"><a name="WM">National Weather Service Message</a></th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:05:02:00	{XDS Ps WM I-5 N }
+           	      |  |    |
+           	      1  2    3
+00:05:02:04	{EDM}{EDM}
+00:05:02:06	{XDS Pc WM closed at I-110. \C68}
+           	      |  |         |          |
+           	      N N+1        3          4</pre>
+  <b>SCC:</b><pre>
+00:05:02:00	8902 49ad b520 ce20
+
+00:05:02:04	152c 152c
+
+00:05:02:06	8a02 e3ec ef73 e564 2061 f420 49ad 3131 b0ae 8f68</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>P</code>ublic Service
+  <code>s</code>tart (byte 1 = 0x89).</td></tr>
+<tr><td>2</td><td>Type</td><td>The National Weather Service Message Type
+    (byte 2 = 0x02).</td></tr>
+<tr><td>3</td><td>Program Name</td><td>The text of the message (bytes 3 and up, 
+    up to 32 characters, using closed caption <a href="CC_CHARS.HTML">character
+    set</a>).</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Class of <code>P</code>ublic Service
+    <code>c</code>ontinue (byte N = 0x8a).</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2).  This
+    is followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+</table>
+</p>
+<hr />
+<p>
+<table width="100%" border="1">
+<tr><th><a name="R">RESERVED CLASS</a></th></tr>
+<tr><td>Start code for Reserved class is 0x0b.
+  <br>Continue code is 0x8c.</td></tr>
+</table>
+</p>
+<hr />
+<p>
+<table width="100%" border="1">
+<tr><th><a name="U">UNDEFINED CLASS</a></th></tr>
+<tr><td>Start code for Undefined class is 0x0d.
+  <br>Continue code is 0x0e.</td></tr>
+</table>
+</p>
+<hr />
+<p>
+<table width="100%" border="1">
+<tr><th><a name="A">ALL CLASSES</a></th></tr>
+<tr><td>The following definition is to cover all data not defined
+  above.</td></tr>
+</table>
+</p>
+<p>
+<table width="100%" border="1">
+<tr><th colspan="3">Undocumented Type</th></tr>
+<tr><td colspan="3"><b>Example CCD:</b><pre>
+00:07:01:00	{XDS Us 01 c8 c2 4f 20 \Cea}
+           	      |  |      |        |
+           	      1  2      3        4</pre>
+  <b>SCC:</b><pre>
+00:07:01:00	0d01 c8c2 4f20 8fea</pre></td></tr>
+<tr><th>Field</th><th>Name</th><th>Explanation</th></tr>
+<tr><td>1</td><td>Class</td><td>Class of <code>C</code>urrent,
+  <code>F</code>uture, C<code>H</code>annel, <code>M</code>iscellaneous,
+  <code>P</code>ublic Service, <code>R</code>eserved or <code>U</code>ndefined,
+  <code>s</code>tart (byte 1 = 0x01, 0x83, 0x85, 0x07, 0x89, 0x0b or 0x0d for
+  Current start, Future start, Channel start, Miscellaneous start, Public
+  Service start, Reserved start, or Undefined start).</td></tr>
+<tr><td>2</td><td>Type</td><td>Undocumented type code (byte 2 =
+  value).</td></tr>
+<tr><td>3</td><td>Data</td><td>Hexidecimal dump of data in packet (bytes 3
+    and up; it may be useful to compare the bytes against the closed caption 
+    <a href="CC_CHARS.HTML">character set</a>).</td></tr>
+<tr><td>4</td><td>Checksum</td><td>Checksum, in hexidecimal (last two bytes
+    are 0x8f and checksum byte).</td></tr>
+<tr><td>N</td><td>Class Continue</td><td>Continuation of start class, applied
+    any time packet has to be continued after an interruption (byte N = 0x02
+    for <code>C</code>urrent <code>c</code>ontinue, 0x04 for
+    <code>F</code>uture <code>c</code>ontinue, 0x86 for C<code>H</code>annel
+    <code>c</code>ontinue, 0x08 for <code>M</code>iscellaneous
+    <code>c</code>ontinue, 0x8a for <code>P</code>ublic Service
+    <code>c</code>ontinue, 0x8c for <code>R</code>eserved
+    <code>c</code>ontinue, or 0x0e for <code>U</code>ndefined
+    <code>c</code>ontinue)</td></tr>
+<tr><td>N+1</td><td>Type Continue</td><td>Same value as Type (field 2). This is
+    followed by the rest of the interrupted packet (with Checksum same as if
+    there had been no interruption).</td></tr>
+</table>
+</table>
+
+<p><a href="SCC_TOOLS.HTML">Return</a> to SCC Tools Documentation.</p>
+</body>
+</html>
+

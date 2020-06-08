@@ -1,0 +1,213 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<html>
+<head>
+<title>Closed Caption Disassembly Documentation: ITV</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css" media="screen">
+<!--
+  H3 {align: center;}
+  TD {vertical-align: top;}
+  TD.centered {text-align: center;}
+  CODE {font-weight: bold;}
+-->
+</style>
+</head>
+<body>
+<h3 align="center">Closed Caption Disassembly Documentation: ITV</h3>
+<p><b><u>Overview</b></u></p>
+<p>The Interactive Television service is used to link television programming
+with the Internet by the use of interactive links.  The most prevalent provider
+of this service is MSN TV (formerly Web-TV).</p>
+<p>ITV is sent on channel T2, which means that <code>{TR}</code> (Text Restart)
+or <code>{RTD}</code> (Resume Text Display) must be transmitted first in 
+Channel 2.  Other than that, ITV is plain text in the format described below.  
+The character set is <a href="ISO_8859_1.HTML">ISO-8859-1</a> (aka Latin-1), a
+subset of Unicode.  Note that odd parity is not being observed in this
+character set.  To access characters from 0x20 to 0x7e, you can just type the
+character, but to access 0xa0 to 0xff, you have to escape the hexidecimal value
+with the percent symbol (in other words, to print a "c", use "c" (SCC 63), but
+for "&ccedil;", you use "%e7" (SCC 2565 55)).</p>
+<p>The following is a summary derived from the 
+<a href="http://developer.msntv.com/Develop/default.asp">MSN TV</a> and 
+<a href="http://www.atvef.com/library/spec.html">ATVEF</a> specifications
+documents:</p>
+<p>ITV consists of triggers and content.  The trigger is the link that appears
+on the television screen, while the content is the web page that is displayed
+on the TV when the link is selected.  The links are delivered by channel T2 as
+described above, while content can be delivered via one of two Transport Types.
+Transport Type A uses the Internet to deliver web pages over a modem, while
+Transport Type B also allows content to be downloaded in other scanlines of the
+Vertical Blanking Interval, to be treated sort of like the cache of a web
+browser.  Since SCC only covers scanline 21, a description how to load 
+Transport Type B's content is beyond the scope of this document--simply note 
+that the process assigns a URL to each resource which can either be unique or
+else have the same URL as an Internet resource (in this case, the Internet 
+version is only used if the local version was incorrectly transmitted).</p>
+<p></p>
+<hr />
+<p></p>
+<p><b><u>Preparing Web Pages for ITV Delivery</u></b></p>
+<p>The TV screen is 544 pixels wide by 372 pixels tall.  Web pages designed 
+for ITV delivery must be less than this width; usually, you will want to avoid
+vertical scrolling as well.  The style for the <code>DIV</code> and 
+<code>IMG</code> tags allows for the "position:absolute" value.  ITV web 
+pages do not allow frames (internally converting them to tables), yet another 
+reason to avoid scrolling.</p>
+<p>The TV image can be incorporated into the web page in one of two ways: as a
+full-size background, or as an object that can be sized to have web content
+around it.  To make the TV into the background, add 
+<code>background="tv:"</code> to the <code>BODY</code> tag.  Various tags
+(like <code>IMG</code> and <code>TABLE</code>) include a 
+<code>transparency</code> atrribute that can be set from 0 to 100 to control
+how much of the TV background will show through.  For the TV object, use the
+<code>OBJECT</code> tag with the src attribute set to "tv:" and width and
+height set appropriately.  You can also add ECMAScript functions that can be
+called by ITV triggers.</p>
+<p></p>
+<hr />
+<p></p>
+<p><b><u>Structure of ITV Triggers</u></b></p>
+<p>An ITV Trigger starts with the "<code>&lt;</code>" character then follows
+the pattern shown in this example:</p>
+<p style="text-indent: 3em">
+<code>&lt;http://www.msntv.com&gt;[type:network][name:MSN TV 
+Networks][tve:1.0][1a6d]{CR}{CR}</code></p>
+<p>(That was a Transport Type A example.  The differences in Transport Type B 
+will be covered below.)</p>
+<p>The trigger consists of a URL in angle brackets, followed by a number of
+type:attribute pairs in square brackets, ending with a checksum in square 
+brackets and a pair of <code>{CR}</code> codes.  The checksum is only required
+for Transport Type A, and is calculated using RFC 1071 (take pairs of
+characters, convert into four-digit hexidecimal, add them all up, then figure
+out which four-digit hexidecimal number you need to add to the sum to get 0000
+for the last four digits), not including the checksum or its bracket characters
+in the calculation.  This is not any easy calculation to do, so it is probably
+best to use MSN TV's
+<a href="http://developer.msntv.com/Tools/Link_Generator/default.htm"
+target="_blank">Link Generator Tool</a> to compose your links.</p>
+<p>The URL can use either the HTTP (HyperText Transfer Protocol) or LID 
+(Local ID) protocols.  LID is used by Transport Type B to refer to the content
+transferred on other scanlines.  No relative URL's are allowed, only 
+absolute.</p>
+<p></p>
+<hr />
+<p></p>
+<p><b><u>Trigger Attributes</u></b></p>
+<p>The following is a list of all attributes currently supported by MSN TV.
+Almost all of the type names can be abbreviated.</p>
+<dl>
+<dt><code>tve</code> or <code>v</code></dt>
+<dd>ATVEF version used (required by Transport Type A triggers).  Value must be
+  1 or 1.0.</dd>
+<dt><code>type</code> or <code>t</code></dt>
+<dd>Used to indicate what part of the broadcast the trigger belongs to, and
+  therefore how long it should be displayed:
+<table border="1">
+<tr><th>Value</th><th>Abbreviation</th><th>Description</th>
+  <th>Default Duration</th></tr>
+<tr><td><code>sponsor</code></td><td class="centered"><code>a</code></td>
+  <td>The commercial sponsor of the current program</td>
+  <td>30 Seconds</td></tr>
+<tr><td><code>program</code></td><td class="centered"><code>p</code></td>
+  <td>The current program</td><td>10 Minutes</td></tr>
+<tr><td><code>station</code></td><td class="centered"><code>s</code></td>
+  <td>The local station</td><td>10 Minutes</td></tr>
+<tr><td><code>network</code></td><td class="centered"><code>n</code></td>
+  <td>The broadcast network</td><td>10 Minutes</td></tr>
+<tr><td><code>operator</code></td><td class="centered"><code>o</code></td>
+  <td>The service operator (i.e. the cable or satellite provider)</td>
+  <td>10 Minutes</td></tr>
+</table></dd>
+<dt><code>name</code> or <code>n</code></dt>
+<dd>If specified, a panel will appear at the bottom of the screen with the
+  value and a button labeled "Go Interactive".  The link is followed only if 
+  the button is selected by the user.  If you leave out the <code>name</code>
+  attribute, the link will execute automatically.  Must be less than 20 or 30
+  characters.</dd>
+<dt><code>auto</code> or <code>a</code></dt>
+<dd>If value is <code>true</code> or <code>t</code> or <code>1</code>, the URL 
+  link will be followed without giving the user the choice to "Go Interactive" 
+  or not.</dd>
+<dt><code>view</code> or <code>v</code>
+<dd>Sets the mode that the link will be displayed as.  For values 
+  <code>tv</code> or <code>t</code>, the television image can be incorporated
+  into the linked web page and further triggers will be interpreted, while for
+  values <code>web</code> or <code>w</code>, trigger processing is turned off
+  and the TV image cannot be displayed, allowing uninterrupted web 
+  browsing.  The default value is <code>web</code>.  Note that this attribute 
+  uses the same abbreviation as <code>tve</code>, showing that these two 
+  attributes are really one with two different purposes.</dd>
+<dt><code>showpip</code> (no abbreviation)</dt>
+<dd>Allows linked web page to display TV image as Picture-In-Picture.  Possible
+  values are <code>true</code> (<code>t</code> or <code>1</code>) or 
+  <code>false</code> (<code>f</code> or <code>0</code>).  Default value is 
+  <code>true</code>.</dd>
+<dt><code>videoad</code> (no abbreviation)</dt>
+<dd>By default, a paid video advertisement will play while the linked content 
+  is being downloaded.  If you wish to deactivate this (and display a blank
+  screen during download), set this value to <code>false</code> or 
+  <code>f</code> or <code>0</code>.</dd>
+<dt><code>script</code> or <code>s</code></dt>
+<dd>Names an ECMAScript function (and any attributes it needs) to execute.
+  The function must be located within the page indicated by the URL.  If the
+  URL is the same as last time and the <code>name</code> attribute didn't
+  change, then the function will be executed without prompting the user
+  first.</dd>
+<dt><code>expires</code> or <code>e</code></dt>
+<dd>Indicates when to stop displaying the link (overriding the default given by
+  the <code>type</code> attribute).  The value is in the form 
+  <code>yyyymmddThhmiss</code> (4-digit year, 2-digit month, 2-digit day, 
+  optionally followed by "T", 2-digit hour, 2-digit minute, and 2-digit 
+  second in UTC (London time zone)).</dd>
+<dt><code>time</code> or <code>x</code></dt>
+<dd>Indicates when the link is to be displayed and optionally, when it should
+  stop being displayed.  There are many different ways to provide a value for
+  this type (UTC = Universal Time Code, the time zone of London):
+<table border="1">
+<tr><th>Format</th><th>Explanation</th></tr>
+<tr><td><pre> </pre></td><td>(blank) Now</td></tr>
+<tr><td><pre>yyyy-mm-dd</pre></td><td>Midnight on Day, Month and Year 
+    specified.  Note that the "-" characters are optional.</td></tr>
+<tr><td><pre>Thh:mi:ss.p</pre></td><td>Time indicated (Hours, Minutes, Seconds 
+    and Partial seconds) in UTC on next date it occurs (today or tomorrow).  
+    Note that the ":" characters are optional.  Also note that you can leave 
+    off any part of the time (i.e. <code>Thh:mi</code> for 00.0 
+    seconds).</td></tr>
+<tr><td><pre>yyyy-mm-ddThh:mi:ss.p</pre></td><td>Time indicated in UTC on Date 
+    indicated.</td></tr>
+<tr><td><pre>+PThh:mi:ss.p</pre></td><td>Display link hh hours, mi minutes, and 
+    ss.p seconds from now.  Note that you can also use a relative date 
+    (+Pyyyy-mm-dd), but it's unlikely you'd want to.</td></tr>
+<tr><td><pre>Chh:mi:ss.p</pre></td><td>Display link hh hours, mi minutes, and 
+    ss.p seconds after start of program.  Only the part of a second is optional 
+    in this format.  This uses the internal timecode of the tape, so it's  
+    somewhat risky (but then, so is relying on a local station to broadcast 
+    your show at a particular time of day).</td></tr>
+<tr><td><pre>Chh:mi:ss:ff</pre></td><td>Display link hh hours, mi minutes, ss 
+    seconds, and ff frames after start of program, using non-drop 
+    timecode.</td></tr>
+<tr><td><pre>Chh:mi:ss;ff</pre></td><td>Display link hh hours, mi minutes, ss 
+    seconds, and ff frames after start of program, using drop timecode.  Note 
+    that either one of these last two formats can insert a number of days 
+    before the "C" character.</td></tr>
+<tr><td><pre>+PChh:mi:ss:ff</pre></td><td>Display link hh hours, mi minutes, ss 
+    seconds, and ff frames from now, using non-drop timecode.  You can also use 
+    partial seconds or drop timecode frames for relative durations.</td></tr>
+<tr><td><pre>+PThh:mi/Ch2:m2:s2:f2</pre></td><td>Display link at hh hours and
+    mi minutes from now, then remove link at h2 hours, m2 minutes, s2 seconds,
+    and f2 frames from beginning of program in non-drop timecode.  Note that
+    any two of the above formats can be combined with the "/" character, 
+    including /Thh:mm for a link that starts now and ends at hh:mi 
+    UTC.</td></tr>
+</table></dd>
+</dl>
+<p></p>
+<hr />
+<p></p>
+<p><a href="SCC_TOOLS.HTML">Return</a> to SCC Tools Documentation.</p>
+</body>
+</html>

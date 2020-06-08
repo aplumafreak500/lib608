@@ -1,0 +1,524 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<html>
+<head>
+<title>Closed Caption Disassembly Documentation: Characters</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css" media="screen">
+<!--
+  H3 {align: center;}
+  TH.centered {align: center;}
+  TD.ex {font-family: Lucida Console, Courier New, monospace; font-size: 16pt;
+         color: white; background-color: black; text-align: center;}
+  TD.CCD {text-align: center;}
+-->
+</style>
+</head>
+<body>
+<h3 align="center">Closed Caption Disassembly Documentation: Characters</h3>
+
+<p>The <a href="cc_charset.gif" target="_blank">Closed Caption Character
+Set</a> is divided into three classes: Standard Characters, Special Characters,
+and Extended Characters.  There are two exceptions: "_" and "£" (note that
+these are different from "{_}" and "{L}").  "_" is the blank character
+(explained in the next paragraph), while "£" will appear in a CCD file 
+translated from SCC if the program found an illegal character.  CCASDI will
+refuse to convert a CCD file with "£" characters into SCC format, so you will 
+need to go through the file and turn each instance of "£" into a valid 
+character.</p>
+<p>Standard Characters are written in CCD with a single character, usually the 
+actual character to display.  Because they are transmitted two at a time, there
+must be an even number of Standard Characters between each code.  The special
+character "_", the blank character, must be added to the end of any odd set of
+Standard Characters.  This character will not be displayed.</p>
+<p>The sixteen Special Characters are actually codes, and like other codes are 
+written between curly braces.  Also like codes, Special Characters are always
+doubled up, with only one member of each pair being displayed.  This means if
+you wish to display "&agrave;" twice you need four "<code>{&agrave;}</code>" 
+codes.  Half of the Special Characters are written with the display character 
+between the braces, while the other half use abbreviations.</p>
+<p>Sixty-four Extended Characters were added to the Closed Caption 
+specification after it was originally incorporated into the Code of Federal
+Regulations.  Since the CFR is free and the Extended Characters document is 
+not, most (if not all) PC DVD players are incapable of displaying Extended 
+Characters.  This situation was taken into account when the Extended 
+Characters were suggested.  As a result, Extended Characters are treated 
+differently than any other codes.  To add an Extended Character, enter a 
+substitute character (to display if the caption decoder does not support 
+Extended Characters), followed by "_" if needed (since Extended Characters 
+still count as codes), followed by the Extended Character in braces (only
+once).  If the decoder supports Extended Characters, the substitute character
+will be replaced by the Extended Character.  For example, if you wanted a
+character to say "&iexcl;OL&Eacute;!", you'd write
+"<code>!_{!}OLE_{É}!_</code>".</p>
+<p>The following table lists all of the characters in the Closed Captioning
+Character Set, including information on the SCC hexidecimal equivalent for
+Channels 1 through 4, as well as how to type the character in Windows and Word
+environments if this isn't obvious.  The Windows shortcuts consist of holding 
+the Alt key down while typing a code on the numeric keypad, then releasing Alt 
+to display the character (it will not work with the number keys on the top row 
+of the keyboard), while the Windows shortcut involves holding one or more keys 
+down while typing other keys in sequence ("Ctrl+~,n" means to hold the Ctrl 
+key down while typing "~", then keep the Ctrl key down while typing "n", then 
+releasing the Ctrl key).</p>
+<p><table width="100%" border="1">
+<tr><th class="centered" colspan="6">STANDARD CHARACTERS</th></tr>
+<tr><th width="50">CCD</th><th width="50">Display</th>
+  <th width="85">SCC All Channels</th><th>Unicode Name</th>
+  <th width="75">Windows shortcut</th><th width="75">Word shortcut</th></tr>
+<tr><td class="CCD">&nbsp;</td><td class="ex">&nbsp</td><td>20</td>
+  <td>Space</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="CCD">!</td><td class="ex">!</td><td>a1</td>
+  <td>Exclamation Mark</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="CCD">"</td><td class="ex">"</td><td>a2</td>
+  <td>Quotation Mark</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="CCD">#</td><td class="ex">#</td><td>23</td>
+  <td>Number Sign</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="CCD">$</td><td class="ex">$</td><td>a4</td>
+  <td>Dollar Sign</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="CCD">%</td><td class="ex">%</td><td>25</td>
+  <td>Percent Sign</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td class="CCD">&</td><td class="ex">&</td><td>26</td>
+  <td>Ampersand</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">'</td><td class="ex">'</td><td>a7</td>
+  <td>Apostrophe</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">(</td><td class="ex">(</td><td>a8</td>
+  <td>Left Parenthesis</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">)</td><td class="ex">)</td><td>29</td>
+  <td>Right Parenthesis</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">&aacute;</td><td class="ex">&aacute;</td><td>2a</td>
+  <td>Latin Small Letter A With Acute</td><td>Alt+0225</td>
+  <td>Ctrl+',a</td></tr>
+<tr></td><td class="CCD">+</td><td class="ex">+</td><td>ab</td>
+  <td>Plus Sign</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">,</td><td class="ex">,</td><td>2c</td>
+  <td>Comma</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">-</td><td class="ex">-</td><td>ad</td>
+  <td>Hyphen-Minus</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">.</td><td class="ex">.</td><td>ae</td>
+  <td>Full Stop</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">/</td><td class="ex">/</td><td>2f</td>
+  <td>Solidus</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">0</td><td class="ex">0</td><td>b0</td>
+  <td>Digit Zero</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">1</td><td class="ex">1</td><td>31</td>
+  <td>Digit One</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">2</td><td class="ex">2</td><td>32</td>
+  <td>Digit Two</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">3</td><td class="ex">3</td><td>b3</td>
+  <td>Digit Three</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">4</td><td class="ex">4</td><td>34</td>
+  <td>Digit Four</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">5</td><td class="ex">5</td><td>b5</td>
+  <td>Digit Five</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">6</td><td class="ex">6</td><td>b6</td>
+  <td>Digit Six</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">7</td><td class="ex">7</td><td>37</td>
+  <td>Digit Seven</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">8</td><td class="ex">8</td><td>38</td>
+  <td>Digit Eight</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">9</td><td class="ex">9</td><td>b9</td>
+  <td>Digit Nine</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">:</td><td class="ex">:</td><td>ba</td>
+  <td>Colon</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">;</td><td class="ex">;</td><td>3b</td>
+  <td>Semicolon</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">&lt;</td><td class="ex">&lt;</td><td>bc</td>
+  <td>Less-Than Sign</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">=</td><td class="ex">=</td><td>3d</td>
+  <td>Equals Sign</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">&gt;</td><td class="ex">&gt;</td><td>3e</td>
+  <td>Greater-Than Sign</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">?</td><td class="ex">?</td><td>bf</td>
+  <td>Question Mark</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">@</td><td class="ex">@</td><td>40</td>
+  <td>Commercial At</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">A</td><td class="ex">A</td><td>c1</td>
+  <td>Latin Capital Letter A</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">B</td><td class="ex">B</td><td>c2</td>
+  <td>Latin Capital Letter B</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">C</td><td class="ex">C</td><td>43</td>
+  <td>Latin Capital Letter C</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">D</td><td class="ex">D</td><td>c4</td>
+  <td>Latin Capital Letter D</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">E</td><td class="ex">E</td><td>45</td>
+  <td>Latin Capital Letter E</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">F</td><td class="ex">F</td><td>46</td>
+  <td>Latin Capital Letter F</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">G</td><td class="ex">G</td><td>c7</td>
+  <td>Latin Capital Letter G</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">H</td><td class="ex">H</td><td>c8</td>
+  <td>Latin Capital Letter H</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">I</td><td class="ex">I</td><td>49</td>
+  <td>Latin Capital Letter I</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">J</td><td class="ex">J</td><td>4a</td>
+  <td>Latin Capital Letter J</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">K</td><td class="ex">K</td><td>cb</td>
+  <td>Latin Capital Letter K</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">L</td><td class="ex">L</td><td>4c</td>
+  <td>Latin Capital Letter L</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">M</td><td class="ex">M</td><td>cd</td>
+  <td>Latin Capital Letter M</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">N</td><td class="ex">N</td><td>ce</td>
+  <td>Latin Capital Letter N</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">O</td><td class="ex">O</td><td>4f</td>
+  <td>Latin Capital Letter O</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">P</td><td class="ex">P</td><td>d0</td>
+  <td>Latin Capital Letter P</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">Q</td><td class="ex">Q</td><td>51</td>
+  <td>Latin Capital Letter Q</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">R</td><td class="ex">R</td><td>52</td>
+  <td>Latin Capital Letter R</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">S</td><td class="ex">S</td><td>d3</td>
+  <td>Latin Capital Letter S</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">T</td><td class="ex">T</td><td>54</td>
+  <td>Latin Capital Letter T</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">U</td><td class="ex">U</td><td>d5</td>
+  <td>Latin Capital Letter U</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">V</td><td class="ex">V</td><td>d6</td>
+  <td>Latin Capital Letter V</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">W</td><td class="ex">W</td><td>57</td>
+  <td>Latin Capital Letter W</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">X</td><td class="ex">X</td><td>58</td>
+  <td>Latin Capital Letter X</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">Y</td><td class="ex">Y</td><td>d9</td>
+  <td>Latin Capital Letter Y</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">Z</td><td class="ex">Z</td><td>da</td>
+  <td>Latin Capital Letter Z</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">[</td><td class="ex">[</td><td>5b</td>
+  <td>Left Square Bracket</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">&eacute;</td><td class="ex">&eacute;</td><td>dc</td>
+  <td>Latin Small Letter E With Acute</td><td>Alt+0233</td>
+  <td>Ctrl+',e</td></tr>
+<tr></td><td class="CCD">]</td><td class="ex">]</td><td>5d</td>
+  <td>Right Square Bracket</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">&iacute;</td><td class="ex">&iacute;</td><td>5e</td>
+  <td>Latin Small Letter I With Acute</td><td>Alt+0237</td>
+  <td>Ctrl+',i</td></tr>
+<tr></td><td class="CCD">&oacute;</td><td class="ex">&oacute;</td><td>df</td>
+  <td>Latin Small Letter O With Acute</td><td>Alt+0243</td>
+  <td>Ctrl+',o</td></tr>
+<tr></td><td class="CCD">&uacute;</td><td class="ex">&uacute;</td><td>e0</td>
+  <td>Latin Small Letter U With Acute</td><td>Alt+0250</td>
+  <td>Ctrl+',u</td></tr>
+<tr></td><td class="CCD">a</td><td class="ex">a</td><td>61</td>
+  <td>Latin Small Letter A</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">b</td><td class="ex">b</td><td>62</td>
+  <td>Latin Small Letter B</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">c</td><td class="ex">c</td><td>e3</td>
+  <td>Latin Small Letter C</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">d</td><td class="ex">d</td><td>64</td>
+  <td>Latin Small Letter D</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">e</td><td class="ex">e</td><td>e5</td>
+  <td>Latin Small Letter E</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">f</td><td class="ex">f</td><td>e6</td>
+  <td>Latin Small Letter F</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">g</td><td class="ex">g</td><td>67</td>
+  <td>Latin Small Letter G</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">h</td><td class="ex">h</td><td>68</td>
+  <td>Latin Small Letter H</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">i</td><td class="ex">i</td><td>e9</td>
+  <td>Latin Small Letter I</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">j</td><td class="ex">j</td><td>ea</td>
+  <td>Latin Small Letter J</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">k</td><td class="ex">k</td><td>6b</td>
+  <td>Latin Small Letter K</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">l</td><td class="ex">l</td><td>ec</td>
+  <td>Latin Small Letter L</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">m</td><td class="ex">m</td><td>6d</td>
+  <td>Latin Small Letter M</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">n</td><td class="ex">n</td><td>6e</td>
+  <td>Latin Small Letter N</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">o</td><td class="ex">o</td><td>ef</td>
+  <td>Latin Small Letter O</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">p</td><td class="ex">p</td><td>70</td>
+  <td>Latin Small Letter P</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">q</td><td class="ex">q</td><td>f1</td>
+  <td>Latin Small Letter Q</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">r</td><td class="ex">r</td><td>f2</td>
+  <td>Latin Small Letter R</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">s</td><td class="ex">s</td><td>73</td>
+  <td>Latin Small Letter S</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">t</td><td class="ex">t</td><td>f4</td>
+  <td>Latin Small Letter T</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">u</td><td class="ex">u</td><td>75</td>
+  <td>Latin Small Letter U</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">v</td><td class="ex">v</td><td>76</td>
+  <td>Latin Small Letter V</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">w</td><td class="ex">w</td><td>f7</td>
+  <td>Latin Small Letter W</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">x</td><td class="ex">x</td><td>f8</td>
+  <td>Latin Small Letter X</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">y</td><td class="ex">y</td><td>79</td>
+  <td>Latin Small Letter Y</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">z</td><td class="ex">z</td><td>7a</td>
+  <td>Latin Small Letter Z</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">&ccedil;</td><td class="ex">&ccedil;</td><td>fb</td>
+  <td>Latin Small Letter C With Cedilla</td><td>Alt+0231</td>
+  <td>Ctrl+,,c</td></tr>
+<tr></td><td class="CCD">&divide;</td><td class="ex">&divide;</td><td>7c</td>
+  <td>Division Sign</td><td>Alt+0247</td><td>Alt+0247</td></tr>
+<tr></td><td class="CCD">&Ntilde;</td><td class="ex">&Ntilde;</td><td>fd</td>
+  <td>Latin Capital Letter N With Tilde</td><td>Alt+0209</td>
+  <td>Ctrl+~,N</td></tr>
+<tr></td><td class="CCD">&ntilde;</td><td class="ex">&ntilde;</td><td>fe</td>
+  <td>Latin Small Letter N With Tilde</td><td>Alt+0241</td>
+  <td>Ctrl+~,n</td></tr>
+<tr></td><td class="CCD">|</td><td class="ex"><img src="char7f.gif" width="13"
+    height = "21" alt="solid block" /></td><td>7f</td>
+  <td>Full Block</td><td>[none]</td><td>[none]</td></tr>
+</table>
+
+<table width="100%" border="1">
+<tr><th class="centered" colspan="7">SPECIAL CHARACTERS</th></tr>
+<tr><th width="50" rowspan="2">CCD</th><th width="50" rowspan="2">Display</th>
+  <th colspan="2">SCC Channels</th><th rowspan="2">Unicode Name</th>
+  <th width="75" rowspan="2">Windows shortcut</th>
+  <th width="75" rowspan="2">Word shortcut</th></tr>
+<tr><th width="40">1 & 3</th><th width="40">2 & 4</th></tr>
+<tr></td><td class="CCD">{reg}</td><td class="ex">&reg;</td><td>91b0</td>
+  <td>19b0</td><td>Registered Sign</td><td>Alt+0174</td>
+  <td>Alt+Ctrl+R</td></tr>
+<tr></td><td class="CCD">{o}</td><td class="ex">&deg;</td><td>9131</td>
+  <td>1931</td><td>Degree Sign</td><td>Alt+0176</td><td>Ctrl+@, Space</td></tr>
+<tr></td><td class="CCD">{1/2}</td><td class="ex">&frac12;</td><td>9132</td>
+  <td>1932</td><td>Vulgar Fraction One Half</td><td>Alt+0189</td>
+  <td>[none]</td></tr>
+<tr></td><td class="CCD">{?}</td><td class="ex">&iquest;</td><td>91b3</td>
+  <td>19b3</td><td>Inverted Question Mark</td><td>Alt+0191</td>
+  <td>Alt+Ctrl+?</td></tr>
+<tr></td><td class="CCD">{tm}</td><td class="ex">&#153;</td><td>9134</td>
+  <td>1934</td><td>Trade Mark Sign</td><td>Alt+0153</td>
+  <td>Alt+Ctrl+T</td></tr>
+<tr></td><td class="CCD">{cent}</td><td class="ex">&cent;</td><td>91b5</td>
+  <td>19b5</td><td>Cent Sign</td><td>Alt+0162</td><td>Ctrl+/,C</td></tr>
+<tr></td><td class="CCD">{L}</td><td class="ex">&pound;</td><td>91b6</td>
+  <td>19b6</td><td>Pound Sign</td><td>Alt+0163</td><td>[none]</td></tr>
+<tr></td><td class="CCD">{note}</td><td class="ex"><img src="char9137.gif" 
+    width="13" height="21" alt="eighth note"></td><td>9137</td><td>1937</td>
+  <td>Eighth Note</td><td>[none]</td><td>[none]</td></tr>
+<tr></td><td class="CCD">{&agrave;}</td><td class="ex">&agrave;</td>
+  <td>9138</td><td>1938</td><td>Latin Small Letter A With Grave</td>
+  <td>Alt+0224</td><td>Ctrl+`,a</td></tr>
+<tr></td><td class="CCD">{&nbsp;}</td><td class="ex">&nbsp;</td><td>91b9</td>
+  <td>19b9</td><td>Transparent Space</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">{&egrave;}</td><td class="ex">&egrave;</td>
+  <td>91ba</td><td>19ba</td><td>Latin Small Letter E With Grave</td>
+  <td>Alt+0232</td><td>Ctrl+`,e</td></tr>
+<tr></td><td class="CCD">{&acirc;}</td><td class="ex">&acirc;</td><td>913b</td>
+  <td>193b</td><td>Latin Small Letter A With Circumflex</td><td>Alt+0226</td>
+  <td>Ctrl+^,a</td></tr>
+<tr></td><td class="CCD">{&ecirc;}</td><td class="ex">&ecirc;</td><td>91bc</td>
+  <td>19bc</td><td>Latin Small Letter E With Circumflex</td><td>Alt+0234</td>
+  <td>Ctrl+^,e</td></tr>
+<tr></td><td class="CCD">{&icirc;}</td><td class="ex">&icirc;</td><td>913d</td>
+  <td>193d</td><td>Latin Small Letter I With Circumflex</td><td>Alt+0238</td>
+  <td>Ctrl+^,i</td></tr>
+<tr></td><td class="CCD">{&ocirc;}</td><td class="ex">&ocirc;</td><td>913e</td>
+  <td>193e</td><td>Latin Small Letter O With Circumflex</td><td>Alt+0244</td>
+  <td>Ctrl+^,o</td></tr>
+<tr></td><td class="CCD">{&ucirc;}</td><td class="ex">&ucirc;</td><td>91bf</td>
+  <td>19bf</td><td>Latin Small Letter U With Circumflex</td><td>Alt+0251</td>
+  <td>Ctrl+^,u</td></tr>
+</table>
+
+<table width="100%" border="1">
+<tr><th class="centered" colspan="7">EXTENDED CHARACTERS</th></tr>
+<tr><th width="50" rowspan="2">CCD</th><th width="50" rowspan="2">Display</th>
+  <th colspan="2">SCC Channels</th><th rowspan="2">Unicode Name</th>
+  <th width="75" rowspan="2">Windows shortcut</th>
+  <th width="75" rowspan="2">Word shortcut</th></tr>
+<tr><th width="40">1 & 3</th><th width="40">2 & 4</th></tr>
+<tr></td><td class="CCD">A{&Aacute;}</td><td class="ex">&Aacute;</td>
+  <td>9220</td><td>1a20</td><td>Latin Capital Letter A With Acute</td>
+  <td>Alt+0193</td><td>Ctrl+',A</td></tr>
+<tr></td><td class="CCD">E{&Eacute;}</td><td class="ex">&Eacute;</td>
+  <td>92a1</td><td>1aa1</td><td>Latin Capital Letter E With Acute</td>
+  <td>Alt+0201</td><td>Ctrl+',E</td></tr>
+<tr></td><td class="CCD">O{&Oacute;}</td><td class="ex">&Oacute;</td>
+  <td>92a2</td><td>1aa2</td><td>Latin Capital Letter O With Acute</td>
+  <td>Alt+0211</td><td>Ctrl+',O</td></tr>
+<tr></td><td class="CCD">U{&Uacute;}</td><td class="ex">&Uacute;</td>
+  <td>9223</td><td>1a23</td><td>Latin Capital Letter U With Acute</td>
+  <td>Alt+0218</td><td>Ctrl+',U</td></tr>
+<tr></td><td class="CCD">U{&Uuml;}</td><td class="ex">&Uuml;</td><td>92a4</td>
+  <td>1aa4</td><td>Latin Capital Letter U With Diaeresis</td><td>Alt+0220</td>
+  <td>Ctrl+:,U</td></tr>
+<tr></td><td class="CCD">u{&uuml;}</td><td class="ex">&uuml;</td><td>9225</td>
+  <td>1a25</td><td>Latin Small Letter U With Diaeresis</td><td>Alt+0252</td>
+  <td>Ctrl+:,u</td></tr>
+<tr></td><td class="CCD">'{lsq}</td><td class="ex">&#145;</td><td>9226</td>
+  <td>1a26</td><td>Left Single Quotation Mark</td><td>Alt+0145</td>
+  <td>Ctrl+`,`</td></tr>
+<tr></td><td class="CCD">!{!}</td><td class="ex">&iexcl;</td><td>92a7</td>
+  <td>1aa7</td><td>Inverted Exclamation Mark</td><td>Alt+0161</td>
+  <td>Alt+Ctrl+!</td></tr>
+<tr></td><td class="CCD">#{*}</td><td class="ex">*</td><td>92a8</td>
+  <td>1aa8</td><td>Asterisk</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">'{rsq}</td><td class="ex">&#146;</td><td>9229</td>
+  <td>1a29</td><td>Right Single Quotation Mark</td><td>Alt+0146</td>
+  <td>Ctrl+','</td></tr>
+<tr></td><td class="CCD">-{-}</td><td class="ex">&#151;</td><td>922a</td>
+  <td>1a2a</td><td>Em Dash [Word shortcut must use numeric keypad minus]</td>
+  <td>Alt+0151</td><td>Alt+Ctrl+-</td></tr>
+<tr></td><td class="CCD">c{C}</td><td class="ex">&copy;</td><td>92ab</td>
+  <td>1aab</td><td>Copyright Sign</td><td>Alt+0169</td><td>Alt+Ctrl+C</td></tr>
+<tr></td><td class="CCD">s{sm}</td><td class="ex"><img src="char922c.gif"
+    width="13" height="21" alt="service mark"></td>
+  <td>922c</td><td>1a2c</td><td>Service Mark Symbol [not accessible in
+  Windows]</td><td>[none]</td><td>[none]</td></tr>
+<tr></td><td class="CCD">.{.}</td><td class="ex">&#149;</td><td>92ad</td>
+  <td>1a2d</td><td>Middle Dot</td><td>Alt+0183</td><td>[none]</td></tr>
+<tr></td><td class="CCD">"{ldq}</td><td class="ex">&#147;</td><td>92ae</td>
+  <td>1aae</td><td>Left Double Quotation Mark</td><td>Alt+0147</td>
+  <td>Ctrl+`,"</td></tr>
+<tr></td><td class="CCD">"{rdq}</td><td class="ex">&#148;</td><td>922f</td>
+  <td>1a2f</td><td>Right Double Quotation Mark</td><td>Alt+0148</td>
+  <td>Ctrl+',"</td></tr>
+<tr></td><td class="CCD">A{&Agrave;}</td><td class="ex">&Agrave;</td>
+  <td>92b0</td><td>1ab0</td><td>Latin Capital Letter A With Grave</td>
+  <td>Alt+0192</td><td>Ctrl+`,A</td></tr>
+<tr></td><td class="CCD">A{&Acirc;}</td><td class="ex">&Acirc;</td>
+  <td>9231</td><td>1a31</td><td>Latin Capital Letter A With Circumflex</td>
+  <td>Alt+0194</td><td>Ctrl+^,A</td></tr>
+<tr></td><td class="CCD">C{&Ccedil;}</td><td class="ex">&Ccedil;</td>
+  <td>9232</td><td>1a32</td><td>Latin Capital Letter C With Cedilla</td>
+  <td>Alt+0199</td><td>Ctrl+,,C</td></tr>
+<tr></td><td class="CCD">E{&Egrave;}</td><td class="ex">&Egrave;</td>
+  <td>92b3</td><td>1ab3</td><td>Latin Capital Letter E With Grave</td>
+  <td>Alt+0200</td><td>Ctrl+`,E</td></tr>
+<tr></td><td class="CCD">E{&Ecirc;}</td><td class="ex">&Ecirc;</td>
+  <td>9234</td><td>1a34</td><td>Latin Capital Letter E With Circumflex</td>
+  <td>Alt+0202</td><td>Ctrl+^,E</td></tr>
+<tr></td><td class="CCD">E{&Euml;}</td><td class="ex">&Euml;</td><td>92b5</td>
+  <td>1ab5</td><td>Latin Capital Letter E With Diaeresis</td><td>Alt+0203</td>
+  <td>Ctrl+:,E</td></tr>
+<tr></td><td class="CCD">e{&euml;}</td><td class="ex">&euml;</td><td>92b6</td>
+  <td>1ab6</td><td>Latin Small Letter E With Diaeresis</td><td>Alt+0235</td>
+  <td>Ctrl+:,e</td></tr>
+<tr></td><td class="CCD">I{&Icirc;}</td><td class="ex">&Icirc;</td>
+  <td>9237</td><td>1a37</td><td>Latin Capital Letter I With Circumflex</td>
+  <td>Alt+0206</td><td>Ctrl+^,I</td></tr>
+<tr></td><td class="CCD">I{&Iuml;}</td><td class="ex">&Iuml;</td><td>9238</td>
+  <td>1a38</td><td>Latin Capital Letter I With Diaeresis</td><td>Alt+0207</td>
+  <td>Ctrl+:,I</td></tr>
+<tr></td><td class="CCD">i{&iuml;}</td><td class="ex">&iuml;</td><td>92b9</td>
+  <td>1ab9</td><td>Latin Small Letter I With Diaeresis</td><td>Alt+0239</td>
+  <td>Ctrl+:,i</td></tr>
+<tr></td><td class="CCD">O{&Ocirc;}</td><td class="ex">&Ocirc;</td>
+  <td>92ba</td><td>1aba</td><td>Latin Capital Letter O With Circumflex</td>
+  <td>Alt+0212</td><td>Ctrl+^,O</td></tr>
+<tr></td><td class="CCD">U{&Ugrave;}</td><td class="ex">&Ugrave;</td>
+  <td>923b</td><td>1a3b</td><td>Latin Capital Letter U With Grave</td>
+  <td>Alt+0217</td><td>Ctrl+`,U</td></tr>
+<tr></td><td class="CCD">u{&ugrave;}</td><td class="ex">&ugrave;</td>
+  <td>92bc</td><td>1abc</td><td>Latin Small Letter U With Grave</td>
+  <td>Alt+0249</td><td>Ctrl+`,u</td></tr>
+<tr></td><td class="CCD">U{&Ucirc;}</td><td class="ex">&Ucirc;</td>
+  <td>923d</td><td>1a3d</td><td>Latin Capital Letter U With Circumflex</td>
+  <td>Alt+0219</td><td>Ctrl+^,U</td></tr>
+<tr></td><td class="CCD">"{<<}</td><td class="ex">&laquo;</td><td>923e</td>
+  <td>1a3e</td><td>Left-Pointing Double Angle Quotation Mark</td>
+  <td>Alt+0171</td><td>Ctrl+`,<</td></tr>
+<tr></td><td class="CCD">"{>>}</td><td class="ex">&raquo;</td><td>92bf</td>
+  <td>1abf</td><td>Right-Pointing Double Angle Quotation Mark</td>
+  <td>Alt+0187</td><td>Ctrl+`,></td></tr>
+<tr></td><td class="CCD">A{&Atilde;}</td><td class="ex">&Atilde;</td>
+  <td>1320</td><td>9b20</td><td>Latin Capital Letter A With Tilde</td>
+  <td>Alt+0195</td><td>Ctrl+~,A</td></tr>
+<tr></td><td class="CCD">a{&atilde;}</td><td class="ex">&atilde;</td>
+  <td>13a1</td><td>9ba1</td><td>Latin Small Letter A With Tilde</td>
+  <td>Alt+0227</td><td>Ctrl+~,a</td></tr>
+<tr></td><td class="CCD">I{&Iacute;}</td><td class="ex">&Iacute;</td>
+  <td>13a2</td><td>9ba2</td><td>Latin Capital Letter I With Acute</td>
+  <td>Alt+0205</td><td>Ctrl+',I</td></tr>
+<tr></td><td class="CCD">I{&Igrave;}</td><td class="ex">&Igrave;</td>
+  <td>1323</td><td>9b23</td><td>Latin Capital Letter I With Grave</td>
+  <td>Alt+0204</td><td>Ctrl+`,I</td></tr>
+<tr></td><td class="CCD">i{&igrave;}</td><td class="ex">&igrave;</td>
+  <td>13a4</td><td>9ba4</td><td>Latin Small Letter I With Grave</td>
+  <td>Alt+0236</td><td>Ctrl+`,i</td></tr>
+<tr></td><td class="CCD">O{&Ograve;}</td><td class="ex">&Ograve;</td>
+  <td>1325</td><td>9b25</td><td>Latin Capital Letter O With Grave</td>
+  <td>Alt+0210</td><td>Ctrl+`,O</td></tr>
+<tr></td><td class="CCD">o{&ograve;}</td><td class="ex">&ograve;</td>
+  <td>1326</td><td>9b26</td><td>Latin Small Letter O With Grave</td>
+  <td>Alt+0242</td><td>Ctrl+`,o</td></tr>
+<tr></td><td class="CCD">O{&Otilde;}</td><td class="ex">&Otilde;</td>
+  <td>13a7</td><td>9ba7</td><td>Latin Capital Letter O With Tilde</td>
+  <td>Alt+0213</td><td>Ctrl+~,O</td></tr>
+<tr></td><td class="CCD">o{&otilde;}</td><td class="ex">&otilde;</td>
+  <td>13a8</td><td>9ba8</td><td>Latin Small Letter O With Tilde</td>
+  <td>Alt+0245</td><td>Ctrl+~,o</td></tr>
+<tr></td><td class="CCD">[{lb}</td><td class="ex">{</td><td>1329</td>
+  <td>9b29</td><td>Left Curly Bracket</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">]{rb}</td><td class="ex">}</td><td>132a</td>
+  <td>9b2a</td><td>Right Curly Bracket</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">/{\}</td><td class="ex">\</td><td>13ab</td>
+  <td>9bab</td><td>Reverse Solidus</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">/{^}</td><td class="ex">^</td><td>132c</td>
+  <td>9b2c</td><td>Circumflex Accent</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">-{_}</td><td class="ex">_</td><td>13ad</td>
+  <td>9bad</td><td>Low Line</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">-{|}</td><td class="ex">&brvbar;</td><td>13ae</td>
+  <td>9bae</td><td>Broken Bar</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">-{~}</td><td class="ex">~</td><td>132f</td>
+  <td>9b2f</td><td>Tilde</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">A{&Auml;}</td><td class="ex">&Auml;</td><td>13b0</td>
+  <td>9bb0</td><td>Latin Capital Letter A With Diaeresis</td><td>Alt+0196</td>
+  <td>Ctrl+:,A</td></tr>
+<tr></td><td class="CCD">a{&auml;}</td><td class="ex">&auml;</td><td>1331</td>
+  <td>9b31</td><td>Latin Small Letter A With Diaeresis</td><td>Alt+0228</td>
+  <td>Ctrl+:,a</td></tr>
+<tr></td><td class="CCD">O{&Ouml;}</td><td class="ex">&Ouml;</td><td>1332</td>
+  <td>9b32</td><td>Latin Capital Letter O With Diaeresis</td><td>Alt+0214</td>
+  <td>Ctrl+:,O</td></tr>
+<tr></td><td class="CCD">o{&ouml;}</td><td class="ex">&ouml;</td><td>13b3</td>
+  <td>9bb3</td><td>Latin Small Letter O With Diaeresis</td><td>Alt+0246</td>
+  <td>Ctrl+:,o</td></tr>
+<tr></td><td class="CCD">s{&szlig;}</td><td class="ex">&szlig;</td>
+  <td>1334</td><td>9b34</td><td>Latin Small Letter Sharp S</td><td>Alt+0196</td>
+  <td>Ctrl+&,s</td></tr>
+<tr></td><td class="CCD">Y{yen}</td><td class="ex">&yen;</td><td>13b5</td>
+  <td>9bb5</td><td>Yen Sign</td><td>Alt+0165</td><td>[none]</td></tr>
+<tr></td><td class="CCD">C{x}</td><td class="ex">&curren;</td><td>13b6</td>
+  <td>9bb6</td><td>Currency Sign</td><td>Alt+0164</td><td>[none]</td></tr>
+<tr></td><td class="CCD">/{bar}</td><td class="ex">|</td><td>1337</td>
+  <td>9b37</td><td>Vertical Bar</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr></td><td class="CCD">A{&Aring;}</td><td class="ex">&Aring;</td>
+  <td>1338</td><td>9b38</td><td>Latin Capital Letter A With Ring Above</td>
+  <td>Alt+0197</td><td>Ctrl+@,A</td></tr>
+<tr></td><td class="CCD">a{&aring;}</td><td class="ex">&aring;</td>
+  <td>13b9</td><td>9bb9</td><td>Latin Small Letter A With Ring Above</td>
+  <td>Alt+0229</td><td>Ctrl+@,a</td></tr>
+<tr></td><td class="CCD">O{&Oslash;}</td><td class="ex">&Oslash;</td>
+  <td>13ba</td><td>9bba</td><td>Latin Capital Letter O With Stroke</td>
+  <td>Alt+0216</td><td>Ctrl+/,O</td></tr>
+<tr></td><td class="CCD">o{&oslash;}</td><td class="ex">&oslash;</td>
+  <td>133b</td><td>9b3b</td><td>Latin Small Letter O With Stroke</td>
+  <td>Alt+0248</td><td>Ctrl+/,o</td></tr>
+<tr></td><td class="CCD">+{ul}</td><td class="ex"><img src="char13bc.gif"
+    width="13" height="21" alt="upper-left corner"></td>
+  <td>13bc</td><td>9bbc</td><td>Box Drawings Light Down and Right</td>
+  <td>[none]</td><td>[none]</td></tr>
+<tr></td><td class="CCD">+{ur}</td><td class="ex"><img src="char133d.gif"
+    width="13" height="21" alt="upper-right corner"></td>
+  <td>133d</td><td>9b3d</td><td>Box Drawings Light Down and Left</td>
+  <td>[none]</td><td>[none]</td></tr>
+<tr></td><td class="CCD">+{ll}</td><td class="ex"><img src="char133e.gif"
+    width="13" height="21" alt="lower-left corner"></td>
+  <td>133e</td><td>9b3e</td><td>Box Drawings Light Up and Right</td>
+  <td>[none]</td><td>[none]</td></tr>
+<tr></td><td class="CCD">+{lr}</td><td class="ex"><img src="char13bf.gif"
+    width="13" height="21" alt="lower-right corner"></td>
+  <td>13bf</td><td>9bbf</td><td>Box Drawings Light Up and Left</td>
+  <td>[none]</td><td>[none]</td></tr>
+</table>
+</p>
+
+<p><a href="SCC_TOOLS.HTML">Return</a> to SCC Tools Documentation.</p>
+</body>
+</html>
