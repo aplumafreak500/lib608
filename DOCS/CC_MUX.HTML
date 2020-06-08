@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/HTML4.01/strict.dtd">
+<html>
+<head>
+<title>Adding Closed Captions to DVDs</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="author" content="McPoodle" />
+<!--                  Designed for an 80-character display                   -->
+<style type="text/css">
+<!--
+  .centered { text-align: center; }
+  .underlined { text-decoration: underline; }
+-->
+</style>
+</head>
+<body>
+<h2 class="centered">Adding Closed Captions to DVDs</h3>
+<p>Sonic Scenarist, Spruce Maestro and Apple DVD Studio Pro are the only DVD
+authoring tools capable of adding closed captions to the DVDs they create.
+Adding captions using any other authoring tool requires two additional steps:
+muxing the captions into the MPEG-2 video elementary file, and modifying the
+appropriate VTS_XX_0.IFO file.  The second step can be performed easily using
+IfoEdit--double-click the Video line in the VTS overview - Title Set (Movie)
+attributes and check one or both boxes under "CC for Line 21":</p>
+<div class="centered">
+<a href="IFOEDIT.HTML" target="_blank">
+<img align="center" src="IfoEdit1.gif" width="384" height="305"
+ alt="Flagging Closed Captions in IfoEdit" /></a>
+</div>
+<p><b>NOTE:</b> Line 21 consists of two fields: Field 1 contains up to two
+closed caption streams, while Field 2 contains XDS (V-chip, VCR clock set, and
+various other pieces of information), ITV (Interactive TV links), and another
+closed caption stream.  I've never seen a DVD that used Field 2, but all three
+DVD authoring tools support it, just in case.</p>
+<p>The rest of this article will outline the requirements for a tool that
+would perform the first step of muxing closed captions into an MPEG-2 file.</p>
+
+<h3 class="underlined">Input</h3>
+<p>The tool would need to handle up to three inputs:</p>
+<ol>
+<li>An MPEG-2 Video Elementary Stream File (required)</li>
+<li>A closed caption file for Field 1 (required)</li>
+<li>A closed caption file for Field 2 (optional)</li>
+</ol>
+<p>I assume any programmer tackling this project knows far more about the
+structure of the first input than I do.  For the other two, there are a number
+of proprietory formats out there for storing closed captions.  Of these, the Raw
+Broadcast Format is the easiest to work with, while the Scenarist Closed Caption
+Format is the most-widely used (as well as being the only accepted input for
+the three authoring programs that import captions), so I suppose a successful
+tool would have to support both.</p>
+<p><span class="underlined">Raw Broadcast</span> files are in binary format.
+They can have any extension, but <code>.bin</code> is preferred.  The first
+four bytes are <code>ff ff ff ff</code>.  After this, bytes are associated in
+pairs with each frame of video.  Most of the byte pairs are <code>80 80</code>,
+the closed caption code for "do nothing".</p>
+<p><span class="underlined">Scenarist Closed Caption</span> files are a readable
+shorthand of the data in the Raw Broadcast format.  The file for Field 1 has the
+extension <code>.scc</code>, while the file for Field 2 has the extension
+<code>.sc2</code> (or <code>.scc</code> again).  In format, they are text files
+mostly resembling hex dumps.  Here's an example:</p>
+<p>
+<table border=1><tr><td><pre>
+Scenarist_SCC V1.0
+
+01:02:53:14	94ae 94ae 9420 9420 947a 947a 97a2 97a2 a820 68ef f26e 2068 ef6e 6be9 6e67 2029 942c 942c 8080 8080 942f 942f
+
+01:02:55:14	942c 942c
+
+01:03:27:29	94ae 94ae 9420 9420 94f2 94f2 c845 d92c 2054 c845 5245 ae80 942c 942c 8080 8080 942f 942f
+
+</pre></td></tr></table></p>
+<p>The file is double-spaced, with data lines alternating with blank lines. The
+first line identifies the format and version--there was only one version, so it
+will always be exactly as shown.  The third and subsequent alternating lines
+start with the timecode and are followed by the data.</p>
+<p>The timecode is in SMPTE format, which is either
+<code>hours:minutes:seconds:frames</code> for non-dropframe timebase or
+<code>hours:minutes:seconds;frames</code> for dropframe timebase.  The
+timebase <em>should</em> be the same as the video's timebase.</p>
+<p>The data is made up of two-byte hexidecimal words, separated from each other
+by spaces and from the timecode by a tab character.  As with Raw Broadcast
+format, each word takes one frame to transmit.</p>
+<p>The purpose of the timecodes is so that the long stretches of the word
+<code>8080</code> can be skipped (i.e. all gaps between timecodes are entirely
+made up of the bytes <code>80 80</code>).</p>
+
+<h3 class="underlined">Output</h3>
+<p>The only output is another MPEG-2 video elementary stream file, slightly
+bigger than the input file.  Specifically, it will be about 200 bytes bigger
+per second of video (1.3 MB for two hours).</p>
+
+<h3 class="underlined">Procedure</h3>
+<p>Here is how to mux closed captions into an MPEG-2 video elementary stream
+file for DVD (this is derived from examining a dozen NTSC DVD's, so hopefully
+I haven't missed anything):</p>
+<ol type="1">
+<li>Copy from MPEG input to MPEG output until an I-frame header is reached
+  (first picture header, <code>00 00 01 00</code>, after GOP header,
+  <code>00 00 01 b8</code>).  This is where the closed captions for this GOP
+  will be inserted.</li>
+<li>Look ahead in the MPEG input file to determine the number of frames in this
+  GOP, <code>N</code> (because of automatic scene detection during encoding,
+  this value can change from GOP to GOP, but for NTSC it can never be greater
+  than 18).</li>
+<li>Output the User Data Packet header: <code>00 00 01 b2</code>.
+<li>Output the Closed Caption header: <code>43 43 01 f8</code>.
+<li>Calculate then output the Attribute byte:</li>
+  <ol type="a">
+  <li>Start with <code>N</code> * 2.</li>
+  <li>Add 0 for the Extra Field Flag.  The other possible value is
+    <code>1</code>, but I've seen DVDs where this is never set, and Scenarist
+    and DVDMaestro never set it.  When it <i>is</i> set, it means that the last
+    caption segment is followed by an additional three bytes for an extra
+    field. My guess is that this is an artifact of analog editing equipment,
+    where a scene (and therefore a GOP) can be ended between the two fields of
+    a single frame. Another possibility is that it is used to force all closed
+    caption packets to have a length evenly-divisible by 4 (for a 15-frame GOP,
+    using an <code>N</code> value of 14 and setting the Extra Field Flag to 1
+    results in a closed caption packet with a length of 96 bytes).</li>
+  <li>Add the Pattern Flag, which starts as <code>80</code>, then toggles
+    between <code>0</code> and <code>80</code> every time the previous GOP's
+    Extra Field Flag is set.  Scenarist and DVDMaestro always leave this as
+    <code>80</code>.</li>
+  </ol>
+<li>Output six bytes for each frame in the GOP:</li>
+  <ol type="a">
+  <li>Output a Field Byte of <code>ff</code> for Field 1 if the Pattern Flag is
+    <code>80</code>, or <code>fe</code> for Field 2 if the Pattern Flag is
+    <code>0</code>.
+  <li>Copy two bytes from the appropriate field's closed caption file.  If a
+    file has run out, use the byte pair <code>80 80</code>.  For the case of
+    what to do with Field 2 when a file is not supplied, DVDMaestro uses
+    <code>80 80</code>, while Scenarist uses <code>00 00</code>.  I've seen
+    commercial DVD's using each of these substitutions.</li>
+  <li>Output another Field Byte with the opposite value from before
+    (<code>fe</code> or <code>ff</code>).</li>
+  <li>Copy two bytes from the other field's closed caption file (or 
+    <code>80 80</code> or <code>00 00</code>).</li>
+  <li>Loop back up to Step 6 until every frame in this GOP is accounted
+    for.</li>
+  <li>If the Extra Field Flag is set, output <code>ff</code> for Pattern Flag
+    <code>80</code> or <code>fe</code> for Pattern Flag <code>0</code>,
+    followed a pair of the appropriate field's data.</li>
+  </ol>
+<li>On some DVDs (the ones that use the Extra Field Flag a lot), the filler byte
+  <code>00</code> is output repeatedly for GOPs with less than 15 frames in
+  order to make the caption packet have a constant length of 96 bytes (I also
+  saw a DVD that padded to 100 bytes).  Other DVDs (and Scenarist and
+  DVDMaestro-produced DVDs) have no filler here.</li>
+<li>Loop back up to Step 1.  This will output the picture packets in the GOP,
+  then proceed to the captions for the next GOP.</li>
+</ol>
+
+<!--
+<p>An additional note: I don't know why, but the actual number of captions in a
+  packet is usually not the same value as N (the number of frames in the GOP).
+  Usually it is larger, in which case the extra captions are always <code>80
+  80</code> or <code>00 00</code>, and apparently, they are just thrown away by
+  the DVD player. If your goal is to exactly reproduce the caption structure
+  in an MPEG file (for example, if you're working with a DVD rip and have lost
+  the captions due to re-encoding), you will need to input that caption
+  structure somehow.</p>
+<p>One option is to read the original file and extract all of the attribute
+  bytes. This will also tell you when the caption order changes (thanks to the
+  Pattern Flag).</p>
+<p>The other option is to change your closed caption input.  When GraphEdit is
+  used to extract captions from a DVD, it results in files using the raw DVD
+  format, which is significantly different than the broadcast DVD format. The
+  raw DVD format is simply a dump of all of the closed caption packets (meaning
+  that the first four bytes are <code>00 00 01 b2</code>).  It should be quite
+  straightforward to copy this into an MPEG file.  Therefore, I believe a
+  Closed Caption muxing tool should accept raw DVD format as the preferred
+  caption input format, and only turn to counting frames in each GOP when that
+  (or the analysis file produced by Option One above) is not available.</p>
+ -->
+</body>
+</html>
+

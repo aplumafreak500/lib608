@@ -16,8 +16,26 @@
 </head>
 <body>
 <h2>SCC Tools Download</h2>
+<p><b>NOTE: These tools are no longer being developed.</b></p>
+<p><b>NOTE: Tim Singer has developed a tool called Captioneer to replace the
+buggy cc_mux tool, as well as to provide an actual GUI for creating and
+adjusting closed caption timings against a video file. You can find this tool
+<a href="http://www.tsstech.org/captioneer.html">here</a>. One thing the
+instructions on that site doesn't make clear is that if you have the M2V file
+open in the tool, you won't be able to mux it. Start a new project, load just
+the SCC file, and then multiplex.</b></p>
+<p><b>NOTE: To download the fixed CCExtract.bdl file for General Parser (to fix
+ATSC extraction), click <a href="http://www.theneitherworld.com/mcpoodle/SCC_TOOLS/CCExtract.bdl">here</a>.
+Place this in the C:\Program Files\General Parser\source\MPEG\ directory.
+This fix was by Ken Schultz.</b></p>
+<p><b>NOTE: To download the fixed version of CCASDI (3.6), click <a
+href="http://www.theneitherworld.com/mcpoodle/SCC_TOOLS/ccasdi.exe">here</a>.</b></p>
+<p><b>NOTE: Carlos Fernandez has written a tool to extract raw captions from an
+MPEG file faster than SCC_RIP.  In addition, it can also handle HDTV files,
+which my tool cannot.  You can download this CCExtractor tool (with source code)
+<a href="http://sourceforge.net/projects/ccextractor/">here</a>.</b></p>
 <p>The Scenarist Closed Caption Tools package is available for download <a
-href="http://www.geocities.com/mcpoodle43/SCC_TOOLS/SCC_TOOLS.ZIP">here</a>. 
+href="http://www.theneitherworld.com/mcpoodle/SCC_TOOLS/SCC_TOOLS.ZIP">here</a>. 
 The latest version is 3.5 (May 5, 2005), which affects three tools:
 CCADJ can now <a href="#CCADJ">scale</a> timecodes with the new <code>-m</code>
 argument; CCASDI fixed a lot of bugs, including a mistake in filler byte
@@ -603,7 +621,7 @@ captions.</li>
 <li>DSS-SD</li>
 </ol>
 <p>To install General Parser, download it from <a
-href="http://www.geocities.com/mcpoodle43/SCC_TOOLS/GeneralParser.zip">here</a>
+href="http://www.theneitherworld.com/mcpoodle/SCC_TOOLS/GeneralParser.zip">here</a>
 and unzip to a directory (such as C:\Program Files), then create a shortcut to
 General Parser\bin\gp.exe.  Open SCC_TOOLS.ZIP, put CCExtract.gp and
 CCExtract_VES.gp in General Parser\projects\MPEG\video, and put CCExtract.bdl in
@@ -645,7 +663,7 @@ section, try to use CCExtract on it.  If it works, let me know which source it
 was so I can add it to the list.  If it doesn't work, you can help me to add
 the new source to this tool by the following:</p>
 <ol><li>Download the diagnostic tool <a
-href="http://www.geocities.com/mcpoodle43/SCC_TOOLS/dvbdump.exe">DVBDUMP</a>.
+href="http://www.theneitherworld.com/mcpoodle/SCC_TOOLS/dvbdump.exe">DVBDUMP</a>.
 </li>
 <li>Run the file with the name of your file as the argument.  The program
 will produce a <code>.txt</code> file.</li>

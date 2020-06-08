@@ -3,7 +3,7 @@
 # Run file without arguments to see usage
 #
 use strict;
-my $Version = "2.8";
+my $Version = "3.0";
 # McPoodle (mcpoodle43@yahoo.com)
 #
 # Version History
@@ -24,6 +24,8 @@ my $Version = "2.8";
 # 2.7.1 fixed rounding error in timecodeof
 # 2.7.2 cosmetic: updated my e-mail address in the source code
 # 2.8 added ability to speed up or slow down captions
+# 2.9 added ability to truncate captions when using a negative offset
+# 3.0 added separate input and output frame rates and drop flags.
 
 sub usage;
 sub frame;
@@ -31,11 +33,12 @@ sub timecodeof;
 
 # initial variables
 my $offsettimecode = "00:00:00:00";
-my $fps = 30000/1001; # NTSC framerate
+my $infps = 30000/1001; # NTSC framerate; special value "d" means NTSC dropframe
+my $outfps = 30000/1001; # NTSC framerate; special value "d" means NTSC dropframe
 my $mult = 1; # assume no speed change
-my $drop = 0; # assume non-drop
 my $input = "~"; # place-holder for no input file yet
 my $output = "~"; # place-holder for no output file yet
+my $trunc = 0; # don't truncate negative timecode captions
 my $anything = "~";
 
 # process command line arguments
@@ -46,24 +49,54 @@ while ($_ = shift) {
     $mult = $_;
     next;
   }
-  if (s/-o//) {
-    $offsettimecode = $_;
+  if (s/-f//) {
+    $infps = $_;
+    $outfps = $_;
     next;
   }
-  if (s/-f//) {
-    $fps = $_;
-    $drop = 0;
+  if (s/-if//) {
+    $infps = $_;
+    next;
+  }
+  if (s/-of//) {
+    $outfps = $_;
     next;
   }
   if (s/-t//) {
     if (m/d/) { # NTSC drop frame
-      $fps = 30;
-      $drop = 1;
+      $infps = "d";
+      $outfps = "d";
     }
     if (m/n/) { # NTSC non-drop frame
-      $fps = 30000/1000;
-      $drop = 0;
+      $infps = 30000/1001;
+      $outfps = 30000/1001;
     }
+    next;
+  }
+  if (s/-it//) {
+    if (m/d/) { # NTSC drop frame
+      $infps = "d";
+    }
+    if (m/n/) { # NTSC non-drop frame
+      $infps = 30000/1001;
+    }
+    next;
+  }
+  if (s/-ot//) {
+    if (m/d/) { # NTSC drop frame
+      $outfps = "d";
+    }
+    if (m/n/) { # NTSC non-drop frame
+      $outfps = 30000/1001;
+    }
+    next;
+  }
+  if (s/-o//) {
+    $offsettimecode = $_;
+    next;
+  }
+  if (s/-y//) {
+    $trunc = 1;
     next;
   }
   if ($input =~ m\~\) {
@@ -76,9 +109,10 @@ while ($_ = shift) {
 # print ("\nInput: ", $input);
 # print ("\nOutput: ", $output);
 # print ("\nOffset: ", $offsettimecode);
-# print ("\nFPS: ", $fps);
-# print ("\nDrop: ", $drop);
-# peinr ("\nMultiplier: ", $mult);
+# print ("\nIn FPS: ", $infps);
+# print ("\nOut FPS: ", $outfps);
+# print ("\nMultiplier: ", $mult);
+# print ("\Truncate: ", $trunc);
 
 if ($anything eq "~") {
   usage();
@@ -94,9 +128,14 @@ if ($output eq "~") {
   die "No output file, stopped";
 }
 
-if (($fps < 15)||($fps > 60)) {
+if (($infps ne "d")&&(($infps < 15)||($infps > 60))) {
   usage();
-  die "Frames per second out of range, stopped";
+  die "Input Frames per second out of range, stopped";
+}
+
+if (($outfps ne "d")&&(($outfps < 15)||($outfps > 60))) {
+  usage();
+  die "Output Frames per second out of range, stopped";
 }
 
 if ($mult <= 0) {
@@ -109,7 +148,24 @@ if (($offsettimecode =~ m/\d\d:\d\d:\d\d[:;]\d\d/) != 1) {
   die "Wrong format for offset, stopped";
 }
 
-my $offset = frame($offsettimecode);
+(my $hh, my $mm, my $ss, my $ff) = split(/[:;]/, $offsettimecode);
+# hours can have any value, including negative
+if ($mm > 60) {
+  usage;
+  die "Illegal offset value (minutes), stopped";
+}
+if ($ss > 60) {
+  usage;
+  die "Illegal offset value (seconds), stopped";
+}
+my $fps = $outfps;
+if ($outfps eq "d") { $fps = 30; }
+if ($ff > int($fps)) {
+  usage;
+  die "Illegal offset value (frames), stopped";
+}
+
+my $offset = frame($offsettimecode, $outfps);
 # print ("\nOffset frames: ",$offset);
 
 # Need to determine type of first input file
@@ -148,6 +204,7 @@ my $skip = "";
 my $line = "";
 my $frames = 0;
 my $timecode = "00:00:00:00";
+my $adjFrames = 0;
 LINELOOP: while (<RH>) {
   if ($_ eq "\n") {
     print WH "\n";
@@ -161,11 +218,18 @@ LINELOOP: while (<RH>) {
     print WH $timecode."\t".$line."\n";
     next LINELOOP;
   }
-  $frames = frame($timecode);
+  $frames = frame($timecode, $infps);
   if ($frames <= $lastframe) {
     die "Timecode $timecode is out of order, stopped";
   }
-  $timecode = timecodeof($frames*$mult + $offset);
+  $adjFrames = $frames*$mult + $offset;
+  if ($adjFrames < 0) {
+    if ($trunc == 1) {
+      next LINELOOP; # if the adjusted timecode is negative
+                     # and the truncate option is on, skip the line
+    }
+  }
+  $timecode = timecodeof($adjFrames, $outfps);
   print WH $timecode."\t".$line."\n";
   $lastframe = $frames;
   next LINELOOP;
@@ -179,23 +243,31 @@ sub usage {
   printf "\nCCADJ Version %s\n", $Version;
   print "  Adjust timecodes of Scenarist Closed Caption\n";
   print "    or Closed Caption Disassembly files.\n";
-  print "  Syntax: CCADJ -m1.249 -o01:00:00:00 -td infile outfile\n";
+  print "  Syntax: CCADJ -m 1.025 -itd -otn -o01:00:00:00 infile outfile\n";
   print "    -m (OPTIONAL): Multiplier to apply to all timecodes\n";
-  print "         (1.249 will convert FILM to NTSC, 0.834 = NTSC to PAL)\n";
-  print "    -o: Offset to apply (after multiplier), in HH:MM:SS:FF format\n";
-  print "         (DEFAULT: 00:00:00:00)\n";
-  print "    -f (OPTIONAL): Number of frames per second (range 12 - 60)\n";
-  print "         (DEFAULT: 29.97)\n";
-  print "    -t (OPTIONAL; automatically sets fps to 29.97):\n";
-  print "         NTSC timebase: d (dropframe) or n (non-dropframe)\n";
+  print "    -if / -of (OPTIONAL): Number of frames per second for input and output\n";
+  print "         (range 12 - 60) (DEFAULT: 29.97)\n";
+  print "    -it / -ot (OPTIONAL; automatically sets fps to 29.97):\n";
+  print "         NTSC timebase of input and output : d (dropframe) or n (non-dropframe)\n";
   print "         (DEFAULT: n)\n";
+  print "    (use -f and -t to set input and output to the same value)\n";
+  print "    -o: Offset to apply (after multiplier and timecode conversion),\n";
+  print "         in HH:MM:SS:FF format & output FPS (DEFAULT: 00:00:00:00)\n";
+  print "    -y (OPTIONAL): Yes, you're really sure you want to\n";
+  print "         truncate a caption if the adjusted timecode is negative.\n";
   print "    Outfile will be overwritten if it exists\n";
   print "  Note: To move timecodes backwards, use a line like this:\n\n";
-  print "  CCADJ -o-00:00:03:15 captions.scc captions2.scc\n\n";
+  print "  CCADJ -o-00:00:03:15 -y captions.scc captions2.scc\n\n";
 }
 
 sub frame {
- my $timecode = shift(@_);
+  my $timecode = shift(@_);
+  my $fps = shift(@_);
+  my $drop = 0;
+  if ($fps eq 'd') {
+    $fps = 30;
+    $drop = 1;
+  }
   my $signmultiplier = +1;
   if (substr($timecode, 0, 1) eq '-') {
     $signmultiplier = -1;
@@ -236,6 +308,12 @@ sub frame {
 
 sub timecodeof {
   my $frames = shift(@_);
+  my $fps = shift(@_);
+  my $drop = 0;
+  if ($fps eq 'd') {
+    $fps = 30;
+    $drop = 1;
+  }
   if ($frames < 0) {
     die "Negative time code in line $. of $input, stopped";
   }

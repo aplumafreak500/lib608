@@ -2,7 +2,7 @@
 # Run file without arguments to see usage
 #
 use strict;
-my $Version = "2.10";
+my $Version = "2.10.1";
 # McPoodle (mcpoodle43@yahoo.com)
 #
 # Version History
@@ -32,6 +32,7 @@ my $Version = "2.10";
 #     break line anytime more than 2 nulls in a row are found
 #      (user can adjust this with -l parameter)
 # 2.10 use channel change to force new line
+# 2.10.1 reference the new tool RAWPROC when the file header's wrong
 
 sub usage;
 sub frame;
@@ -181,7 +182,10 @@ for (my $filenum = 1; $filenum < 3; $filenum++) { # loop through 2 possible raw 
     $filetype = 2;
   }
   if ($filetype == 0) {
-    die "File type of $! not recognized, stopped";
+    print "\nThis file does not have the correct header for either DVD raw or broadcast raw";
+    print "\n closed captions. If you are sure this is a broadcast raw closed caption file,";
+    print "\n use RAWPROC to fix it.\n";
+    die "File type of $input not recognized, stopped";
   }
 
   my $line = ""; # line to output

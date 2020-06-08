@@ -1,13 +1,14 @@
 # dvr2scc.pl: Rip closed captions in Scenarist Closed Caption format from DVR-MS (MediaCenter) files
 # Run file without arguments to see usage
 #
-# Version 1.2
+# Version 1.3
 # McPoodle (mcpoodle43@yahoo.com)
 #
 # Version History
 # 1.0 initial release
 # 1.1 correction based on having two videos to look at
 # 1.2 correction based on having three videos to look at
+# 1.3 new code for different MCE 2005 format
 
 sub frame;
 sub timecodeof;
@@ -119,23 +120,40 @@ READLOOP: while (sysread (RH, $byte, 1)) {
   }
   
   # printf "%02x", ord $byte;
-  if ($header ne "\x00\xff\xff\x00\x00") { # Video user data (?)
+  if ($header eq "\x00\xff\xff\x00\x00") { # MCE 2004 Video user data (?)
+    sysread (RH, $data, 3); # these bytes are specific to each recording
+    sysread (RH, $data, 13);
+    $total += 16;
+    if ($data ne "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00") {
+      $header = "\xff\xff\xff\xff\xff";
+      next READLOOP;
+    }
+    $hasCaptions = 1;
+    sysread (RH, $data1, 2);
+    $total += 2;
+    printdata $data1, $data2;
+    $data1 = "\x80\x80";
+    $header = "\xff\xff\xff\xff\xff";
+    next READLOOP;
+  }
+  if ($header ne "\x00\x01\x04\x00\x00") { # MCE 2005 Video user data (?)
     next READLOOP;
   }
   sysread (RH, $data, 3); # these bytes are specific to each recording
   sysread (RH, $data, 13);
   $total += 16;
-  if ($data ne "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00") {
+  if ($data ne "\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00") {
     $header = "\xff\xff\xff\xff\xff";
     next READLOOP;
-  }  
+  }
   $hasCaptions = 1;
   sysread (RH, $data1, 2);
   $total += 2;
-  if ($data1 eq "\x15\xc3") {
-    printf ("%06x", $total);
+  $data1 =~ m/(.)(.)/;
+  $data = ord $2;
+  if ($data > 15) { # don't know why, but I'm getting extra data, and
+    printdata $data1, $data2; #  this catches it
   }
-  printdata $data1, $data2;
   $data1 = "\x80\x80";
   $header = "\xff\xff\xff\xff\xff";
   next READLOOP;
@@ -263,7 +281,7 @@ close WH;
 exit;
 
 sub usage {
-  print "\nDVR2SCC Version 1.2\n";
+  print "\nDVR2SCC Version 1.3\n";
   print "  Rips closed captions in raw and SCC formats from MediaCenter files.\n";
   print "  Syntax: DVR2SCC -d -o-01:00:00:00 -f24 infile.dvr-ms\n";
   print "    -d: Output raw captions in DVD format\n";

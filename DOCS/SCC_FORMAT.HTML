@@ -36,7 +36,7 @@ introduction of this system, it was discovered that channels CC1, CC2, and T1
 (the first and second closed-caption channels and the first text channel) were
 the only ones broadcasters ever used, so alternate uses were found for two of
 the remaining channels.  Channel T2 is now used to transmit Interactive TV
-(ITV) signals, which is used by MSN-TV to transmit the internet links for their
+(ITV) signals, which are used by MSN-TV to transmit the internet links for their
 service.  Channel CC3 is now used to transmit the eXtended Data Service (XDS).
 XDS contains a wide variety of information, but the two portions most commonly
 used are the time of day signal which newer VCR's use to program their clocks,
@@ -341,7 +341,7 @@ between the GOP Header packet and the (I-frame) Picture Header packet.</p>
 <p>Structure of the DVD Closed Caption User Data Packet (all values are in
 hexidecimal):</p>
 <table width="80%" border="1" align="center">
-  <tr><th width="65">Bytes</th><th width="120">Sample Contents</th>
+  <tr><th width="65">Bytes</th><th width="140">Sample Contents</th>
     <th>Description</th></tr>
   <tr><td colspan="3" align="center">HEADER (9 bytes)</td></tr>
   <tr><td align="center">0 - 3</td>
@@ -350,29 +350,37 @@ hexidecimal):</p>
   <tr><td align="center">4 - 7</td>
     <td align="center"><code>43 43 01 f8</code></td><td>DVD Closed Caption
     header (never changes).</td></tr>
-  <tr><td align="center">8</td><td align="center"><code>9a</code></td>
+  <tr><td align="center">8</td><td align="center"><code>9b</code></td>
     <td>Attributes:
     <table border="1">
       <tr><th width="30">Bits</th><th width="75">Sample Contents</th>
         <th>Description</th></tr>
       <tr><td align="center">0</td>
-        <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0</code></td>
-        <td>Truncate Flag: whether or not to drop last three bytes of last
-          caption segment (used to fit 96-byte limit for a 15-frame GOP).  Note
-          that the Pattern Flag in the next CC Packet must flip if this flag is
-          set (otherwise, you'd lose that last field's worth of data).</td></tr>
-      <tr><td align="center">1 - 4</td>
-        <td><code>&nbsp;&nbsp;&nbsp;1 101&nbsp;</code></td><td>Caption Count:
-          How many caption segments in the packet (same as number of frames in
-          GOP).</td></tr>
-      <tr><td align="center">5 - 6</td>
-        <td><code>&nbsp;00&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></td>
+        <td><code>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1</code></td>
+        <td>Extra Field Flag: whether or not to add an extra field's caption to
+		  the end of the caption segments. This is a by-product of analog
+		  editing equipment, which occasionally cut scenes between two fields
+		  of the same frame. I've also seen it used to create a CC User Data
+		  Packet with a length evenly-divisible by 4 (14 frames plus an extra
+		  field of captions works out to 96 bytes). Note that the Pattern Flag
+		  in the next CC User Data Packet must flip if the Extra Field Flag is
+		  set (Otherwise, you'd lose that odd field's worth of data).</td></tr>
+      <tr><td align="center">1 - 5</td>
+        <td><code>&nbsp;&nbsp;01 101&nbsp;</code></td><td>Caption Count:
+          How many caption segments in the packet. This is always at least as
+		  large as the number of video frames in the GOP (minus 1, when the
+		  Extra Field Flag is set), but it can be greater, in which case the
+		  extra frames of caption data are not used.</td></tr>
+      <tr><td align="center">6</td>
+        <td><code>&nbsp;0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></td>
         <td>Filler (never changes)</td></tr>
       <tr><td align="center">7</td>
         <td><code>1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code></td>
         <td>Pattern Flag: Determines if each caption segment is Field 1
           followed by Field 2 (<code>1</code>) or Field 2 followed by Field 1
-          (<code>0</code>).</td></tr>
+          (<code>0</code>). This also determines what the extra field will be
+		  if the Extra Field Flag is set: Field 1 for Pattern Flag 1, or Field
+		  2 for Pattern Flag 0.</td></tr>
     </table></td></tr>
   <tr><td colspan="3" align="center">CAPTION SEGMENT (6 bytes)--repeat for
     each frame of GOP</td></tr>
@@ -385,19 +393,26 @@ hexidecimal):</p>
     <td>Field (always opposite value from above)</td></tr>
   <tr><td align="center">n+4 - n+5</td>
     <td align="center"><code>01 83</code></td><td>Caption (see above)</td></tr>
+  <tr><td colspan="3" align="center">EXTRA FIELD (3 bytes)--only if Extra Field
+    Flag is set</td></tr>
+  <tr><td align="center">m</td><td align="center"><code>ff</code></td>
+    <td>Field (<code>ff</code> = Field 1, <code>fe</code> = Field 2)</td></tr>
+  <tr><td align="center">m+1 - m+2</td><td align="center"><code>94 a3</td>
+    <td>Caption: Two bytes that are transmitted this field.  Use
+    <code>80 80</code> if there's nothing to transmit.</td></tr>
   <tr><td colspan="3" align="center">FOOTER</td></tr>
   <tr><td align="center">- x</td>
-    <td align="center"><code>00 00 00 00 00 00 00 00 00</code></td>
-    <td>Padding (repeat <code>00</code> byte until packet is 96 bytes
-      long)</td></tr>
+    <td align="center"><code>00 00 00 00 00 00</code></td>
+    <td>Padding (repeat <code>00</code> byte until packet is evenly divisible
+  	  by 4)</td></tr>
 </table></center>
 <p>Note that some DVD's create a fixed 96-byte closed caption packet size as
 described above (by using padding for GOP's below 15 frames and the Truncate
 Flag for 15-frame GOP's), but many DVD's do not do this, and the DVD's created
 by Sonic Scenarist and Spruce DVDMaestro never do this.  In these cases, 
-Truncate Flag is always 0, Pattern Flag is always 1 (Field 1 followed by
-Field 2), and no padding is used at the end of the data packet.</p>
-<p>Another thing to note is the variation of this format used by a number of
+the Extra Field Flag is always 0, the Pattern Flag is always 1 (Field 1
+followed by Field 2), and no padding is used at the end of the data packet.</p>
+<p>Another item to note is the variation of this format used by a number of
 MPEG-capturing devices, including Hauppauge's WinTV-250 card and Panasonic's
 DMR-H50S tabletop DVD recorder (in DVR mode).  These devices use
 <code>ff</code> as the flag for both fields' caption data, relying on the
@@ -407,6 +422,3 @@ Pattern Flag to tell the fields apart.</p>
 </body>
 </html>
 
-<!-- text below generated by server. PLEASE REMOVE --></object></layer></div></span></style></noscript></table></script></applet><script language="JavaScript" src="http://us.i1.yimg.com/us.yimg.com/i/mc/mc.js"></script><script language="JavaScript" src="http://geocities.com/js_source/geov2.js"></script><script language="javascript">geovisit();</script><noscript><img src="http://visit.webhosting.yahoo.com/visit.gif?us1073321759" alt="setstats" border="0" width="1" height="1"></noscript>
-<IMG SRC="http://geo.yahoo.com/serv?s=76001544&t=1073321759" ALT=1 WIDTH=1 HEIGHT=1>
-<!-- w41.geo.scd.yahoo.com compressed/chunked Mon Jan  5 08:55:59 PST 2004 -->

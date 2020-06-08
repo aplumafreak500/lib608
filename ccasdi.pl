@@ -6,7 +6,7 @@
 #  http://www.geocities.com/mcpoodle43/SCC_TOOLS/DOCS/SCC_TOOLS.HTML.
 #
 use strict;
-my $Version = "3.5";
+my $Version = "3.8";
 # McPoodle (mcpoodle43@yahoo.com)
 #
 # Version History
@@ -79,6 +79,12 @@ my $Version = "3.5";
 # 3.4 Fixed character set comparison (was always using ITV set)
 # 3.5 Fixed numerous XDS bugs, including using the wrong filler byte
 #       (0x80 instead of 0x40)
+# 3.5.1 Added check for correct word length in CCD input
+# 3.6 Fixed odd parity for CCD->SCC
+# 3.6.1 Bug fix for SAMI header and screen clear lines
+# 3.7 Added Quicktime Caption format to subtitle export
+# 3.7.1 Fixed {ldq} and {rdq} definitions.
+# 3.8 Added Timed Text output (from Thomas J. Webb)
 
 sub usage;
 sub frame;
@@ -103,8 +109,8 @@ my $fps = 30000/1001; # NTSC framerate
 my $drop = 0; # assume non-drop
 my $convert = 0; # convert to subtitles: 1 = yes, 0 = no
 my $convertFormat = "SubRip"; # output format for subtitle conversion
- # other choices: Encore, MicroDVD, SAMI, PowerDivX,
- #  Sub-Station Alpha, and Advanced Sub-Station
+ # other choices: Encore, MicroDVD, Quicktime Caption, SAMI, PowerDivX,
+ #  Sub-Station Alpha, Advanced Sub-Station
 my $convertModeChannel = "CC1"; # which channel to convert
  # other choices: CC2, CC3, CC4, T1, T2, T3, T4
 my $subRollupMode = 0; # how to convert roll-up captions to subtitles:
@@ -249,6 +255,13 @@ if ($output eq "~") {
       if ($suffix =~ m/ssa/i) { $convertFormat = "Sub-Station Alpha"; }
       if ($suffix =~ m/ass/i) { $convertFormat = "Advanced Sub-Station"; }
       if ($suffix =~ m/txt/i) { $convertFormat = "Encore"; }
+      if ($suffix =~ m/qtc/i) {
+        $convertFormat = "Quicktime Caption";
+        if ($input =~ m/(.*)(\.scc)$/i) {
+          $output = $1.".txt";
+        }
+      }
+      if ($suffix =~ m/tt/i) { $convertFormat = "Timed Text"; }
     }
     if ($convertFormat eq "~") {
       usage();
@@ -539,6 +552,17 @@ LINELOOP: while (<RH>) {
     }
     WORDLOOP: foreach $word (@words) {
       $numwords = $numwords + 1;
+      if (length($word) != 4) {
+        $outline =~ m/^( )(.+)/;
+        $outline = $2;
+        if ($convert == 0) {
+          print WH $timecode."\t".$outline."\n";
+          if ($assemble) {
+            print WH "\n";
+          }
+        }
+        die "Incorrect word length for word $numwords, timecode $timecode, stopped";
+      }
       $word =~ m/(..)(..)/;
       $hi = hex $1;
       $lo = hex $2;
@@ -677,7 +701,8 @@ sub usage {
   print "         NTSC timebase: d (dropframe) or n (non-dropframe) (DEFAULT: n)\n";
   print "  Notes: outfile argument is optional (name.scc <-> name.ccd).  For -s,\n";
   print "    control with outfile suffix: .srt SubRip, .smi SAMI, .psb Power DivX,\n";
-  print "    .ssa Sub-Station Alpha, .ass Advanced Sub-Station, or .txt Adobe Encore.\n\n";
+  print "    .ssa Sub-Station Alpha, .ass Advanced Sub-Station, .tt Timed Text, \n";
+  print "    .txt Adobe Encore or .qtc Quicktime Caption (will actually output as .txt).\n\n";
 }
 
 sub frame {
@@ -931,7 +956,7 @@ sub outputHeader {
     print WH "<SAMI>\n";
     print WH "<HEAD>\n";
     print WH "<STYLE TYPE=\"text/css\">\n";
-    print WH "<--\n";
+    print WH "<!--\n";
     print WH "P {margin-left: 16pt; margin-right: 16pt; margin-bottom: 16pt; margin-top: 16pt;\n";
     print WH "   text-align: center; font-size: 18pt; font-family: arial; font-weight: bold; color: #f0f0f0;}\n";
     print WH ".UNKNOWNCC {Name:Unknown; lang:en-US; SAMIType:CC;}\n";
@@ -989,6 +1014,19 @@ sub outputHeader {
     print WH "\n";
     print WH "[Events]\n";
     print WH "Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, Effect, Text\n";
+  }
+  if ($convertFormat eq "Quicktime Caption") {
+    print WH "{QTtext}{font:Arial}{justify:center}{size:12}{backColor:0,0,0}\n";
+    print WH "{textColor:65535,65535,65535}{timescale:30}{width:0}{height:0}\n";
+    print WH "[00:00:00.00] \n";
+  }
+  if ($convertFormat eq "Timed Text") {
+    print WH "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+    print WH "\t".'<tt xml:lang="en" xmlns="http://www.w3.org/2006/04/ttaf1"  xmlns:tts="http://www.w3.org/2006/04/ttaf1#styling">'."\n";
+    print WH "\t\t<head>\n";
+    print WH "\t\t</head>\n";
+    print WH "\t\t<body>\n";
+    print WH "\t\t\t<div xml:lang=\"en\">\n";
   }
 }
 
@@ -1091,7 +1129,7 @@ sub outputSubtitle {
       # output subtitle
       print WH "<SYNC start=\"".$tc1."\"><P class=\"UNKNOWNCC\">\n";
       print WH $subtitle."</P></SYNC>\n";
-      print WH "<SYNC start=\"".$tc2."\"><P class=\"UNKNOWNCC\">&nbsp</P></SYNC>\n\n";
+      print WH "<SYNC start=\"".$tc2."\"><P class=\"UNKNOWNCC\"></P></SYNC>\n\n";
     }
     if ($convertFormat eq "PowerDivX") {
       # timecode manipulation
@@ -1137,6 +1175,74 @@ sub outputSubtitle {
       # output subtitle
       print WH "Dialogue: ,".$tc1.",".$tc2.",*Default,,,,,,".$subtitle;
     }
+    if ($convertFormat eq "Timed Text") {
+      ($hh, $mm, $ss, $ff) = split("[:;]", $startTime);
+      $ms = sprintf("%d", ($ff / $fps * 10) + 0.5);
+      $tc1 = sprintf("%02d:%02d:%02d.%01d", $hh, $mm, $ss, $ms);
+      ($hh, $mm, $ss, $ff) = split("[:;]", $endTime);
+      $ms = sprintf("%d", ($ff / $fps * 10) + 0.5);
+      $tc2 = sprintf("%02d:%02d:%02d.%01d", $hh, $mm, $ss, $ms);
+      # subtitle manipulation
+      $subtitle =~ s/\n/<br>\n/g; # convert newlines to <br>
+      $subtitle =~ s/<br>\n$//; # then remove last one
+      # replace formatting tags with a single <span> tag
+      $formatting = "<span";
+      # font color
+      if ($subtitle =~ m/<font color=(\"\#......\")>/i) {
+        $formatting = $formatting." tts:color=".$1;
+      }
+      $subtitle =~ s/<font color=\"\#......\">//g;
+      $subtitle =~ s|</font>||g;
+      # bold
+      if ($subtitle =~ s|<b>||g) {
+        $formatting = $formatting." tts:fontWeight=\"bold\"";
+      }
+      $subtitle =~ s|</b>||g;
+      # italics
+      if ($subtitle =~ s|<i>||g) {
+        $formatting = $formatting." tts:fontStyle=\"italic\"";
+      }
+      $subtitle =~ s|</i>||g;
+      # underline is not supported
+      $subtitle =~ s|<u>||g;
+      $subtitle =~ s|</u>||g;
+      if ($formatting ne "<span") {
+        $subtitle = $formatting.">".$subtitle."</span>";
+      }
+      print WH "\t\t\t\t<p begin=\"$tc1\" end=\"$tc2\">$subtitle\n\t\t\t\t</p>\n";
+    }
+    if ($convertFormat eq "Quicktime Caption") {
+      # timecode manipulation
+      ($hh, $mm, $ss, $ff) = split("[:;]", $startTime);
+      $tc1 = sprintf("[%02s:%02s:%02s.%02s] ", $hh, $mm, $ss, $ff);
+      ($hh, $mm, $ss, $ff) = split("[:;]", $endTime);
+      $tc2 = sprintf("[%02s:%02s:%02s.%02s]", $hh, $mm, $ss, $ff);
+      # subtitle manipulation
+      $subtitle =~ s/\n/\x0d/g; # convert newlines to Mac newlines
+      $subtitle =~ s/\|$/\n/;   # then put last newline back
+      my $red = 0;
+      my $blue = 0;
+      my $green = 0;
+      my $colortag = "";
+      while ($subtitle =~ m/<font color=\"\#(..)(..)(..)\">/) {
+        $red = hex($1) * 256;
+        $blue = hex($2) * 256;
+        $green = hex($3) * 256;
+        if ($1 eq "ff") { $red = 65535; }
+        if ($2 eq "ff") { $blue = 65535; }
+        if ($3 eq "ff") { $green = 65535; }
+        $colortag = sprintf("{textColor:%d,%d,%d}", $red, $blue, $green);
+        $subtitle =~ s/<font color=\"\#......\">/$colortag/;
+      }
+      $subtitle =~ s|</font>|{textColor:65535,65535,65535}|g;
+      $subtitle =~ s/<b>/{bold}/g;
+      $subtitle =~ s/<i>/{italic}/g;
+      $subtitle =~ s/<u>/{underline}/g;
+      $subtitle =~ s|</[biu]>|{plain}|g; # replace all end tags with {plain}
+      # output subtitle
+      print WH $tc1.$subtitle;
+      print WH $tc2."\n"; # 2nd line clears screen
+    }      
     # $startTime = "";
     # $endTime = "";
     # $subtitle = "";
@@ -1150,6 +1256,11 @@ sub outputFooter {
   if ($convertFormat eq "SAMI") {
     print WH "</BODY>\n";
     print WH "</SAMI>\n";
+  }
+  if ($convertFormat eq "Timed Text") {
+    print WH "\t\t\t</div>\n";
+    print WH "\t\t</body>\n";
+    print WH "\t</tt>\n";
   }
 }
 
@@ -2649,8 +2760,8 @@ sub disCommand {
         /2b/ && do {$commandtoken = "{C}"; last SWITCH;};
         /2c/ && do {$commandtoken = "{sm}"; last SWITCH;};
         /2d/ && do {$commandtoken = "{.}"; last SWITCH;};
-        /2e/ && do {$commandtoken = "{rdq}"; last SWITCH;};
-        /2f/ && do {$commandtoken = "{ldq}"; last SWITCH;};
+        /2e/ && do {$commandtoken = "{ldq}"; last SWITCH;};
+        /2f/ && do {$commandtoken = "{rdq}"; last SWITCH;};
         /30/ && do {$commandtoken = "{À}"; last SWITCH;};
         /31/ && do {$commandtoken = "{Â}"; last SWITCH;};
         /32/ && do {$commandtoken = "{Ç}"; last SWITCH;};
@@ -3316,8 +3427,8 @@ sub disCommand {
         /2b/ && do {$commandtoken = "{C}"; last SWITCH;};
         /2c/ && do {$commandtoken = "{sm}"; last SWITCH;};
         /2d/ && do {$commandtoken = "{.}"; last SWITCH;};
-        /2e/ && do {$commandtoken = "{rdq}"; last SWITCH;};
-        /2f/ && do {$commandtoken = "{ldq}"; last SWITCH;};
+        /2e/ && do {$commandtoken = "{ldq}"; last SWITCH;};
+        /2f/ && do {$commandtoken = "{rdq}"; last SWITCH;};
         /30/ && do {$commandtoken = "{À}"; last SWITCH;};
         /31/ && do {$commandtoken = "{Â}"; last SWITCH;};
         /32/ && do {$commandtoken = "{Ç}"; last SWITCH;};
@@ -5079,8 +5190,8 @@ sub asCommand {
     /^C$/ && do {$word = ($channel =~ /[13]/) ? "92ab" : "1aab"; last SWITCH;};
     /^sm$/ && do {$word = ($channel =~ /[13]/) ? "922c" : "1a2c"; last SWITCH;};
     /^\.$/ && do {$word = ($channel =~ /[13]/) ? "92ad" : "1aad"; last SWITCH;};
-    /^rdq$/ && do {$word = ($channel =~ /[13]/) ? "92ae" : "1aae"; last SWITCH;};
-    /^ldq$/ && do {$word = ($channel =~ /[13]/) ? "922f" : "1a2f"; last SWITCH;};
+    /^ldq$/ && do {$word = ($channel =~ /[13]/) ? "92ae" : "1aae"; last SWITCH;};
+    /^rdq$/ && do {$word = ($channel =~ /[13]/) ? "922f" : "1a2f"; last SWITCH;};
     /^À$/ && do {$word = ($channel =~ /[13]/) ? "92b0" : "1ab0"; last SWITCH;};
     /^Â$/ && do {$word = ($channel =~ /[13]/) ? "9231" : "1a31"; last SWITCH;};
     /^Ç$/ && do {$word = ($channel =~ /[13]/) ? "9232" : "1a32"; last SWITCH;};
@@ -6943,7 +7054,7 @@ sub asChar {
   if ($byte eq "~") {
     die "Invalid character {".$char."} in line $. of $input, stopped";
   }
-  if ($mode != "ITV") { # ITV doesn't use odd parity
+  if ($mode ne "ITV") { # ITV doesn't use odd parity
     $byte = sprintf("%02x", oddParity(hex $byte));
   }
   return $byte;

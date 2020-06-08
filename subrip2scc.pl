@@ -1,7 +1,8 @@
 # subrip2scc.pl: Convert Subrip subtitle format to Scenarist Closed Caption format
 # Run file without arguments to see usage
 #
-# Version 2.9
+use strict;
+my $Version = "2.10";
 # McPoodle (mcpoodle43@yahoo.com)
 #
 # Version History
@@ -21,6 +22,7 @@
 # 2.9 added logic to convert "*" to note character and -k option to not do it
 #     moved display line timecodes up by 2 frames,
 #     fixed logic for positioning of clear code in middle of display line
+# 2.10 corrected newline code (char(13) to char(18)) for Mac/Unix
 #
 # Note that this program makes all kinds of assumptions to determine caption
 #   positioning.
@@ -34,16 +36,16 @@ sub oddParity;
 sub nearestColorCode;
 
 # initial variables
-$offsettimecode = "00:00:00,000";
-$fps = 30000/1001; # NTSC framerate (non-drop)
-$drop = 0; # assume non-drop
-$channel = 1; # can be 1 or 2
-$uppercase = 0; # apply standard caption capitalization rules:
-                # uppercase everything where the line doesn't start with "[" or "("
-$convertAsterisk = 1; # convert all "*" characters into note characters
-$input = "~"; # place-holder for no input file yet
-$output = "~"; # place-holder for no output file yet
-$anything = "~";
+my $offsettimecode = "00:00:00,000";
+my $fps = 30000/1001; # NTSC framerate (non-drop)
+my $drop = 0; # assume non-drop
+my $channel = 1; # can be 1 or 2
+my $uppercase = 0; # apply standard caption capitalization rules:
+                   # uppercase everything where the line doesn't start with "[" or "("
+my $convertAsterisk = 1; # convert all "*" characters into note characters
+my $input = "~"; # place-holder for no input file yet
+my $output = "~"; # place-holder for no output file yet
+my $anything = "~";
 
 # process command line arguments
 while ($_ = shift) {
@@ -129,42 +131,43 @@ if ($input eq $output) {
 open (RH, $input) or die "Unable to read from file: $!";
 open (WH, ">".$output) or die "Unable to write to file: $!";
 print WH "Scenarist_SCC V1.0\n\n";
-$offset = SubripFrame($offsettimecode);
+my $offset = SubripFrame($offsettimecode);
 
 # read loop
-$clearFrame = 2; # when screen should be cleared prior to subtitle/caption
-                 #  (same as endFrame of previous subtitle/caption)
-                 # value 2 because clear command is 2 frames long
-$startFrame = 0;
-$endFrame = 0;
-$lastFrame = -1; # last frame of last caption, to prevent overlap
-$SubripLineMode = 0; # this is 0 for index line, 1 for timecodes line,
-                     #  and 2 - 5 for up to four lines of subtitle
-$SubripLines = ''; # this will be an entire subtitle, with the following special
-                   #  characters inserted:
-                   # 13: newline
-                   # 19: color off
-                   # 20: italics on
-                   # 21: italics off
-                   # 22: underline on
-                   # 23: underline off
-                   # 24: white
-                   # 25: green
-                   # 26: blue
-                   # 27: cyan
-                   # 28: red
-                   # 29: yellow
-                   # 30: magenta
-                   # 31: black
-                   # Note that Subrip's bold characteristic cannot be applied to captions
-$SubripIndex = 0; # from index line of Subrip file
+my $clearFrame = 2; # when screen should be cleared prior to subtitle/caption
+                    #  (same as endFrame of previous subtitle/caption)
+                    # value 2 because clear command is 2 frames long
+my $startFrame = 0;
+my $endFrame = 0;
+my $lastFrame = -1; # last frame of last caption, to prevent overlap
+my $SubripLineMode = 0; # this is 0 for index line, 1 for timecodes line,
+                        #  and 2 - 5 for up to four lines of subtitle
+my $SubripLines = ''; # this will be an entire subtitle, with the following special
+                      #  characters inserted:
+                      # 18: newline (was 13)
+                      # 19: color off
+                      # 20: italics on
+                      # 21: italics off
+                      # 22: underline on
+                      # 23: underline off
+                      # 24: white
+                      # 25: green
+                      # 26: blue
+                      # 27: cyan
+                      # 28: red
+                      # 29: yellow
+                      # 30: magenta
+                      # 31: black
+                      # Note that Subrip's bold characteristic cannot be applied to captions
+my $SubripIndex = 0; # from index line of Subrip file
+my $SccLines = '';
 LINELOOP: while (<RH>) {
   if ($_ eq "\n") { # if line is blank, process subtitle (if any has been received)
     if ($SubripLines ne '') {
       my $LineAndLastFrame = processSubtitle($SubripLines, $clearFrame, $startFrame, $lastFrame,
                                              $SubripIndex);
       # use "," character to separate two outputs
-      (my $SccLines, $lastFrame) = split(/,/, $LineAndLastFrame);
+      ($SccLines, $lastFrame) = split(/,/, $LineAndLastFrame);
       # print $SubripIndex.$SccLines;
       print WH $SccLines;
       $clearFrame = $endFrame + 2;
@@ -173,15 +176,15 @@ LINELOOP: while (<RH>) {
     }
   }
   chomp;
-  if (/^\d+$/) { # if line consists of nothing but digits, this is the Subrip index
+  if (/^\s*(\d+)\s*$/) { # if line consists of nothing but digits and whitespace, this is the Subrip index
     $SubripLineMode = 0;
-    $SubripIndex = $_;
+    $SubripIndex = $1;
     next LINELOOP;
   }
   if (/-->/) { # timecodes line; may optionally start with index
     $SubripLineMode = 1;
-    @elements = split(/ /, $_);
-    $start = 0;
+    my @elements = split(/ /, $_);
+    my $start = 0;
     if ($elements[2] eq '-->') { # if divider is in position 2, position 0 must be index
       $SubripIndex = $elements[0];
       $start = 1;
@@ -195,11 +198,11 @@ LINELOOP: while (<RH>) {
     if ($SubripLineMode == 2) {
       $SubripLines = $_;
     } else {
-      $SubripLines = $SubripLines.chr(13).$_; # insert newline between two lines
+      $SubripLines = $SubripLines.chr(18).$_; # insert newline between two lines
     }
     next LINELOOP;
   }
-  die "Subrip subtitle $SubripIndex is more than 4 lines long, stopped";
+  die "Subrip subtitle $SubripIndex is more than 4 lines long ($SubripLineMode), stopped";
 }
 # clear for last caption
 if ($clearFrame - $lastFrame > 2) {
@@ -243,6 +246,7 @@ sub processSubtitle {
   my $bottomLine = 14; # dialog lines go at bottom of screen
   my $topLine = 1; # stage directions go at top of screen
   my $lineType = 0; # 0 for dialog, 1 for stage directions ("[...]" or "(...)")
+  my $firstCharacter = '';
   LINE: for (my $position = 0; $position < length($SubripLines); $position++) {
     my $character = substr $SubripLines, $position, 1;
     if (length($lines[$counter]) == 0) { # first character of line
@@ -301,7 +305,7 @@ sub processSubtitle {
       # if none of these conditions are met, this is a normal "<" character
       #  and should be displayed
     }
-    if (ord($character) == 13) { # linefeed
+    if (ord($character) == 18) { # linefeed
       $row--;
       $columns[$counter] = int(16.5 - (length($lines[$counter]) / 2));
       $counter++;
@@ -1134,7 +1138,7 @@ sub processSubtitle {
 }
 
 sub usage {
-  print "\nSUBRIP2SCC Version 2.9\n";
+  printf "\nSUBRIP2SCC Version %s\n", $Version;
   print "  Converts Subrip subtitle format to Scenarist Closed Caption format.\n";
   print "  Note: cannot handle characters not in the ISO 8859-1 character set,\n";
   print "    such as the Eighth Note, the Transparent Space, the Service Mark\n";
@@ -1186,6 +1190,10 @@ sub SubripFrame {
 sub SccFrame {
   my $timecode = shift(@_);
   my $signmultiplier = +1;
+  my $hh = 0;
+  my $mm = 0;
+  my $ss = 0;
+  my $ff = 0;
   if (substr($timecode, 0, 1) eq '-') {
     $signmultiplier = -1;
     $timecode = substr $timecode, 1, 11;
@@ -1323,7 +1331,7 @@ sub nearestColorCode {
   my $minColor = @colorOrder[2];
   # if the components are nearly the same, it's either white or black
   if (($rg < 64) && ($gb < 64) && ($rb < 64)) {
-    if (($red + $blue + $green) / 3 < 128) {
+    if (($colors{'red'} + $colors{'blue'} + $colors{'green'}) / 3 < 128) {
       return $colorCode{'black'};
     } else {
       return $colorCode{'white'};
