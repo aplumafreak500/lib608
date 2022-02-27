@@ -68,8 +68,8 @@ typedef struct {
 	char git_rev[10];
 } VersionInfo;
 
-const timecode default_timecode;
-const VersionInfo library_version;
+extern const timecode default_timecode;
+extern const VersionInfo library_version;
 
 // 608.c
 s64 tc2int(timecode pts, f32 fps);
@@ -88,7 +88,7 @@ u32 WriteSCC(scc_entry* in, size_t* length, FILE* out);
 bool8 IsSCCFile(FILE* file);
 
 // raw.c
-unsigned int MAX_NULLS; // only ReadRaw uses this value
+extern unsigned int MAX_NULLS; // only ReadRaw uses this value
 scc_entry* ReadRaw(FILE* raw, size_t* length, f32 fps, timecode start, bool8 drop);
 scc_entry* ReadNW4R(FILE* nw4r, size_t* length);
 u32 WriteRaw(scc_entry* in, size_t* length, FILE* out, f32 fps, timecode start, timecode end);

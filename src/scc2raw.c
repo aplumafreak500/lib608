@@ -369,7 +369,7 @@ static void prog_header(char* name) {
 	log_write(LOG_APPLICATION, false, "\n\n%s is distributed under the terms of the GNU General Public License v3 or later; view these terms in the included License.txt file.\n\n", name);
 }
 
-static* void usage(char* name) {
+static void usage(char* name) {
 	log_write(LOG_APPLICATION, false,
 	"The basic usage is:\n"
 	"\n%s -i <input> <output>\n\n"

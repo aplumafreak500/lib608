@@ -19,7 +19,7 @@ License: GPL v3 or later
 #define LOG_SILENT 0
 #define LOG_VERBOSE LOG_DEFAULT | LOG_DEBUG
 
-bool8 use_colors;
+extern bool8 use_colors;
 
 int log_write(u8 level, bool8 color, char* fmt, ...);
 u8 change_log_level(u8 newLevel);
