@@ -358,13 +358,19 @@ int main(int argc, char **argv) {
 }
 
 static void prog_header(char* name) {
-	log_write(LOG_APPLICATION, false, "%s version %hd.%hd.%hd.%hd", name, versionInfo.major, versionInfo.minor, versionInfo.revision, versionInfo.build);
+	log_write(LOG_APPLICATION, false, "%s version", name);
 	if (strcmp("", versionInfo.git_rev) != 0) {
 		log_write(LOG_APPLICATION, false, " %s", versionInfo.git_rev);
 	}
-	log_write(LOG_APPLICATION, false, "\nlib608 version: %hd.%hd.%hd.%hd", library_version.major, library_version.minor, library_version.revision, library_version.build);
+	else {
+		log_write(LOG_APPLICATION, false, " %hd.%hd.%hd.%hd", versionInfo.major, versionInfo.minor, versionInfo.revision, versionInfo.build);
+	}
+	log_write(LOG_APPLICATION, false, "\nlib608 version:");
 	if (strcmp("", library_version.git_rev) != 0) {
 		log_write(LOG_APPLICATION, false, " %s", library_version.git_rev);
+	}
+	else {
+		log_write(LOG_APPLICATION, false, " %hd.%hd.%hd.%hd", library_version.major, library_version.minor, library_version.revision, library_version.build);
 	}
 	log_write(LOG_APPLICATION, false, "\n\n%s is distributed under the terms of the GNU General Public License v3 or later; view these terms in the included License.txt file.\n\n", name);
 }
