@@ -72,8 +72,8 @@ extern const timecode default_timecode;
 extern const VersionInfo library_version;
 
 // 608.c
-s64 tc2int(timecode pts, f32 fps);
-timecode int2tc(s64 pts, f32 fps, bool8 drop);
+s64 tc2int(timecode pts, f64 fps);
+timecode int2tc(s64 pts, f64 fps, bool8 drop);
 u8 byteswap8(u8 in);
 u16 byteswap16(u16 in);
 u32 byteswap24(u32 in);

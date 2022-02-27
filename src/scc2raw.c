@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
 	prog_header(argv[0]);
 	change_log_level(log_level);
 	u8 mode = MODE_RAW;
-	f32 fps = 29.97003f; // HACK: just above 29.97 fps to prevent false positives for out of order scc input 
+	f64 fps = 29.97003f; // HACK: just above 29.97 fps to prevent false positives for out of order scc input
 	bool8 field1 = false;
 	bool8 field2 = false;
 	bool8 swap = !WORDS_BIGENDIAN;
@@ -117,11 +117,11 @@ int main(int argc, char **argv) {
 				change_log_level(LOG_VERBOSE);
 				break;
 			case 0x80:
-				if (sscanf(optarg, "%f", &fps) == 0) {
+				if (sscanf(optarg, "%lf", &fps) == 0) {
 					log_write(LOG_WARN, use_colors, "Invalid parameter for option --fps: %s (will assume 29.97 fps)\n", optarg);
 					fps = 30.0f/1.001f;
 				}
-				log_write(LOG_DEBUG, use_colors, "fps = %f\n", fps);
+				log_write(LOG_DEBUG, use_colors, "fps = %lf\n", fps);
 				break;
 			case 0x81:
 				file_path2 = optarg;
