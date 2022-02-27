@@ -65,7 +65,7 @@ typedef struct {
 	u16 minor;
 	u16 revision;
 	u16 build;
-	char git_rev[10];
+	char git_rev[16];
 } VersionInfo;
 
 extern const timecode default_timecode;
